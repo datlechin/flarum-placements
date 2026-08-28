@@ -1,0 +1,161 @@
+// Every colour here is a core design token, so a slot follows the forum's
+// primary colour, colour scheme, dark mode and high-contrast mode without
+// being told about any of them.
+//
+// Every inline direction is a logical property. Flarum sets `dir` on <html>
+// from the active locale, and Arabic, Hebrew, Persian and Urdu forums are a
+// meaningful share of the non-English install base; `margin-left` here would
+// put the rail on the wrong side for all of them.
+
+.Placement {
+  display: block;
+  margin-block: 15px;
+
+  // Space is held open so the page does not jump when a slot fills. The
+  // heights arrive as inline custom properties on the element rather than as
+  // generated CSS: routing them through Flarum's LESS config variables would
+  // mark assets dirty on every save, and `Assets::flushCss()` rebuilds one
+  // bundle per locale, so nudging a banner height on an eight-language forum
+  // would trigger sixteen recompiles.
+  //
+  // A slot with nothing to show renders no element at all, so an unfilled
+  // placement leaves no gap behind.
+  min-height: var(--placement-reserve-phone, 0);
+
+  @media @tablet-up {
+    min-height: var(--placement-reserve-tablet, 0);
+  }
+
+  @media @desktop-up {
+    min-height: var(--placement-reserve-desktop, 0);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+// The disclosure. Small and quiet, but never hidden: AdSense's policies
+// require advertising to be labelled and the FTC requires paid placements to
+// be identifiable, and `display: none` here would fail both.
+.Placement-label {
+  display: block;
+  margin-block-end: 4px;
+  color: var(--muted-more-color);
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.Placement-link {
+  display: inline-block;
+  max-width: 100%;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: inherit;
+  }
+}
+
+.Placement-image {
+  display: block;
+  border-radius: var(--border-radius);
+}
+
+.Placement-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 15px;
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+  background: var(--control-bg);
+  color: var(--text-color);
+
+  .Placement-link:hover & {
+    border-color: var(--primary-color);
+  }
+}
+
+.Placement-headline {
+  font-weight: 600;
+}
+
+.Placement-body {
+  color: var(--muted-color);
+  font-size: 13px;
+}
+
+.Placement-cta {
+  margin-block-start: 4px;
+  color: var(--link-color);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+// Slots that sit inside a list row or a post footer are already inside
+// something with its own spacing.
+.Post-footer .Placement,
+.DiscussionPage-nav .Placement,
+.IndexPage-nav .Placement,
+.Header-controls .Placement {
+  margin-block: 0;
+}
+
+.Header-controls .Placement {
+  margin-inline-start: 10px;
+}
+
+// The sample shown in demo mode. Deliberately looks like scaffolding rather
+// than like an advert: it is a tool for finding slots, and mistaking it for a
+// real creative would defeat the point.
+.Placement--demo {
+  .Placement-demo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px 10px;
+    height: 100%;
+    min-height: inherit;
+    padding: 10px 15px;
+    border: 1px dashed var(--muted-more-color);
+    border-radius: var(--border-radius);
+    background: var(--control-bg);
+    color: var(--muted-color);
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .Placement-demoName {
+    font-weight: 600;
+    color: var(--muted-color);
+  }
+
+  .Placement-demoKey {
+    padding: 1px 5px;
+    border-radius: var(--border-radius);
+    background: var(--code-bg);
+    color: var(--code-color);
+    font-size: 11px;
+  }
+
+  .Placement-demoSize {
+    color: var(--muted-more-color);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// The narrow rails cannot fit the three parts side by side.
+.DiscussionPage-nav,
+.IndexPage-nav {
+  .Placement--demo .Placement-demo {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

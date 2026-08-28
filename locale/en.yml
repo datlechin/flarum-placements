@@ -1,0 +1,351 @@
+datlechin-placement:
+
+  admin:
+
+    save: Save
+
+    permissions:
+      view_without_ads: Browse without advertising
+      manage: Manage advertising
+      submit: Submit a creative for review
+      author_html: Author raw HTML creatives
+
+    demo:
+      title: Find the slots
+      help: >
+        Opens the forum with a labelled sample in every slot, visible only to
+        you. It is the quickest way to see where a placement actually appears,
+        and to check that one you expected is there at all.
+      open: Open the forum in demo mode
+
+    campaigns:
+      title: Campaigns
+      create: New campaign
+      edit: Edit campaign
+      delete: Delete campaign
+      delete_confirm: Delete this campaign, along with its creatives and targeting?
+      none: No campaigns yet.
+      always: No end date
+      not_running: not running
+
+      name: Name
+      status: Status
+      advertiser: Advertiser
+      advertiser_help: Who this campaign is reported to. Optional.
+      no_advertiser: "&mdash;"
+      status_help: >
+        What you intend. Whether a campaign is actually running is worked out
+        from its dates and caps every time a page is served, so a campaign that
+        has ended stops on time even on a forum with no scheduler.
+      tier: Priority
+      tier_help: >
+        Only the most important tier with something eligible is ever drawn
+        from, so a sponsorship is never diluted by a filler. "Guaranteed" means
+        priority, not a forecast: nothing here predicts how much inventory you
+        will have.
+      is_house: House campaign
+      is_house_help: >
+        Fills space nobody paid for. Ignores caps and pacing entirely, so it
+        never leaves a hole on the page.
+      starts_at: Starts
+      ends_at: Ends
+      ends_at_help: The campaign stops at this moment, so it does not run on the end date itself.
+      max_impressions: Impression cap
+      max_clicks: Click cap
+      pacing: Delivery
+      pacing_asap: As fast as possible
+      pacing_even: Spread evenly
+      frequency_cap: Frequency cap
+      frequency_cap_help: >
+        How often one reader may see this campaign. Best effort: it is counted
+        in the reader's browser, so a private window, cleared site data or a
+        second device all start the count again. It stops somebody seeing the
+        same advert forty times in an afternoon; it is not a guarantee to quote
+        to an advertiser.
+      frequency_windows:
+        session: per visit
+        hour: per hour
+        day: per day
+      pacing_help: >
+        Even delivery slows a campaign that is ahead of schedule. It will not
+        hit the total exactly; it stops a month of inventory being spent in
+        three days.
+
+      statuses:
+        draft: Draft
+        scheduled: Scheduled
+        active: Active
+        paused: Paused
+        archived: Archived
+
+      tiers:
+        sponsorship: Sponsorship
+        guaranteed: Guaranteed
+        standard: Standard
+        remnant: Remnant
+        house: House
+
+    advertisers:
+      title: Advertisers
+      help: >
+        Optional. A forum running only its own house adverts never needs this
+        list.
+      create: New advertiser
+      edit: Edit advertiser
+      none: No advertisers yet.
+      name: Name
+      contact_email: Contact email
+      notes: Notes
+      has_link: Has a link
+      report_link: Report link
+      report_link_help: >
+        What an advertiser gets instead of a login. Unguessable, revocable, and
+        not indexed. It shows delivery only — never targeting, never rates, and
+        never another advertiser. The link is shown once, here, and cannot be
+        recovered afterwards.
+      create_link: Create a link
+      replace_link: Replace the link
+      revoke_link: Revoke
+
+    creatives:
+      title: Creatives
+      create: New creative
+      edit: Edit creative
+      none: Nothing to show yet.
+      unassigned: Not placed
+
+      name: Name
+      type: Type
+      weight: Share
+      weight_help: How often this creative is drawn compared with the others in the same tier.
+      status: Status
+      status_help: Editing an approved creative sends it back for review.
+      destination_url: Destination
+      destination_url_help: >
+        Where a click goes. Links carry rel="sponsored nofollow noopener", which
+        Google requires of paid placements.
+      asset: Image URL
+      alt: Alternative text
+      alt_help: Leave empty unless the image carries information a reader would otherwise miss.
+      width: Width
+      height: Height
+      size_help: Used to hold space open so the page does not jump when the image loads.
+      headline: Headline
+      body: Body
+      cta: Call to action
+      placements: Slots
+      placements_help: Where this creative may appear. Only slots this forum actually renders are listed.
+
+      html: HTML
+      html_help: >
+        Runs inside a sandboxed frame, never in the page itself. It cannot read
+        the forum, the reader's session, or anything else on the page. Only
+        paste code you trust the source of.
+      frame_height: Frame height
+
+      types:
+        image: Image
+        text: Text
+        raw_html: HTML
+        network: Network container
+
+      statuses:
+        draft: Draft
+        pending: Pending review
+        approved: Approved
+        rejected: Rejected
+
+    daypart:
+      label: Schedule
+      always: Every hour
+      office_hours: Weekdays, 9 to 5
+      timezone_note: Hours are the forum's, not the reader's. Set the forum's timezone below.
+      days:
+        mon: Mon
+        tue: Tue
+        wed: Wed
+        thu: Thu
+        fri: Fri
+        sat: Sat
+        sun: Sun
+
+    settings:
+      title: Settings
+      timezone: Forum timezone
+      timezone_help: Which clock scheduled hours are read against.
+      retention_days: Keep statistics for
+      retention_days_help: Hourly detail older than this is deleted. Running totals are unaffected.
+      network_scripts: Network loader scripts
+      network_scripts_help: >
+        One URL per line, loaded asynchronously in the head, and only for
+        readers who are actually being served adverts. Whether a particular
+        network permits being loaded inside a single-page application is
+        between you and that network.
+      ads_txt: ads.txt
+      ads_txt_help: >
+        Served at /ads.txt, where networks look to check who may sell this
+        forum's inventory. Leave it empty and the path returns 404, which is
+        what an unconfigured forum should do — an empty file would mean nobody
+        is authorised.
+
+    rules:
+      label: Targeting
+      add: Add a rule
+      remove: Remove this rule
+      help: >
+        A campaign with no rules reaches everybody. Rules on different axes all
+        have to match; rules on the same axis need only one to match; and an
+        exclusion always wins.
+
+      operators:
+        is: is
+        is_not: is not
+        gte: at least
+        lte: at most
+
+    dimensions:
+      visitor:
+        label: Visitor
+        guest: Not signed in
+        member: Signed in
+      group:
+        label: Group
+      route:
+        label: Page
+        names:
+          index: Discussion list
+          posts: All posts
+          discussion: A discussion
+          user: A profile
+          tag: A tag listing
+          tags: Tag directory
+          settings: Settings
+          notifications: Notifications
+          logoutPage: Sign out
+          resetPassword: Password reset
+          confirmEmail: Email confirmation
+      discussion:
+        label: Discussion
+      tag:
+        label: Tag
+      locale:
+        label: Language
+      posts:
+        label: Posts written
+      account_age:
+        label: Days since joining
+
+    reports:
+      title: Delivery
+      last_days: "Last {count} days"
+      download: Download CSV
+      none: Nothing has been delivered yet.
+      unavailable: Statistics could not be loaded.
+      impressions: Impressions
+      viewable: Viewable
+      viewable_help: At least half the advert, on screen for a full second.
+      clicks: Clicks
+      ctr: Click-through
+      filtered: Rejected
+      filtered_help: Reports discarded as invalid. Shown so a drop can be explained.
+      by_placements: By slot
+      by_creatives: By creative
+      slot: Slot
+      creative: Creative
+
+    slots:
+      title: Slots
+      rotation: Rotation
+      rotation_random: Draw again on every page
+      rotation_sticky: Keep the choice for the visit
+      every_n: Show in every nth post
+      repeat_limit: At most this many per page
+      help: >
+        Every place this forum can show a creative. Slots are declared by the
+        extensions that render them, so this list grows when you enable an
+        extension that adds one.
+
+    placement_groups:
+      global: Everywhere
+      page: Every page
+      index: Discussion list
+      discussion: Discussions
+      user: Profiles
+      tags: Tags
+
+    placements:
+
+      notice:
+        label: Notice bar
+        description: Above the header on every page, in the strip Flarum uses for its own announcements. Stays put when the reader navigates.
+
+      header:
+        label: Header
+        description: In the header's control bar, beside search and the user menu. Only wide enough for a small unit.
+
+      footer:
+        label: Footer
+        description: The very bottom of every page, below all content.
+
+      page_top:
+        label: Top of page
+        description: Below the hero, above the content, on every page including discussions and profiles.
+
+      page_bottom:
+        label: Bottom of page
+        description: Below the content on every page.
+
+      page_sidebar_top:
+        label: Sidebar, top
+        description: Above the sidebar navigation on every page that has a sidebar.
+
+      page_sidebar_bottom:
+        label: Sidebar, bottom
+        description: Below the sidebar navigation on every page that has a sidebar.
+
+      index_above_list:
+        label: Above the discussion list
+        description: Between the toolbar and the first discussion. Also appears on search results.
+
+      index_below_list:
+        label: Below the discussion list
+        description: After the last discussion on the page.
+
+      index_sidebar:
+        label: Discussion list sidebar
+        description: Under the navigation on the index, the posts page and the tag directory.
+
+      discussion_after_op:
+        label: After the first post
+        description: Directly below the post that opened the discussion. The most valuable slot on a forum, because search traffic lands here.
+
+      discussion_stream_end:
+        label: End of the discussion
+        description: After the last post, above the reply box. Only appears when the reader has reached the end.
+
+      discussion_sidebar:
+        label: Discussion sidebar
+        description: Below the scrubber, in the sticky column beside the posts. Narrower than the other sidebars.
+
+      post_footer:
+        label: Post footer
+        description: Inside the footer of every nth post. Counted by post number, so it stays put as more posts load.
+
+      profile_sidebar:
+        label: Profile sidebar
+        description: Below the navigation on a member's profile.
+
+      tags_page:
+        label: Tag directory
+        description: On the page listing all tags, between the tag tiles and the tag cloud.
+
+  forum:
+
+    label: Advertisement
+
+    notifications:
+      campaign_stopped:
+        impressions: "{campaign} has reached its impression cap and stopped."
+        clicks: "{campaign} has reached its click cap and stopped."
+
+  lib: {}

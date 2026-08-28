@@ -1,0 +1,466 @@
+@import 'common.less';
+
+// The admin panel renders the same slot markup when previewing a creative, so
+// it needs the rules in `common.less` too. Everything below is admin-only.
+//
+// Every colour is a core token and every inline direction is a logical
+// property, for the same reasons as on the forum side.
+
+.PlacementSection {
+  margin-block: 30px;
+
+  > h2 {
+    margin-block-end: 5px;
+    font-size: 18px;
+  }
+
+  > .helpText {
+    max-width: 65ch;
+    margin-block-end: 15px;
+  }
+}
+
+.PlacementSection-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: 10px;
+
+  h2,
+  h3 {
+    margin: 0;
+  }
+}
+
+// Campaigns and their creatives. Modelled on core's dropdown lists: padding
+// and hover, and no rule between rows — in Flarum a line separates groups, not
+// items.
+.PlacementList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.PlacementList--nested {
+  margin-block-start: 10px;
+  border-color: transparent;
+}
+
+.PlacementList-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 15px;
+
+  &:hover {
+    background: var(--control-bg);
+  }
+}
+
+.PlacementList-toggle,
+.PlacementList-name {
+  flex: 1 1 200px;
+  padding: 0;
+  font-weight: 600;
+  text-align: start;
+}
+
+.PlacementList-meta {
+  color: var(--muted-color);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.PlacementList-type {
+  padding: 1px 6px;
+  border-radius: var(--border-radius);
+  background: var(--code-bg);
+  color: var(--code-color);
+  font-size: 11px;
+}
+
+.PlacementList-detail {
+  padding: 5px 15px 15px;
+  border-top: 1px solid var(--control-bg);
+  background: var(--body-bg);
+}
+
+// An administrator's stated status, and — when the two disagree — the fact
+// that the campaign is not actually running. That gap is the whole point of
+// showing it.
+.PlacementBadge {
+  display: inline-flex;
+  gap: 6px;
+  align-items: baseline;
+  padding: 2px 8px;
+  border-radius: var(--border-radius);
+  background: var(--control-bg);
+  color: var(--control-color);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.PlacementBadge--live {
+  background: var(--control-success-bg);
+  color: var(--control-success-color);
+}
+
+.PlacementBadge-note {
+  color: var(--control-warning-color);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+// The targeting editor. One row per stored rule, so what an administrator sees
+// and what the evaluator reads are the same shape.
+.PlacementRules-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-block-end: 8px;
+
+  .Select,
+  .FormControl {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+}
+
+.PlacementPicker-slot {
+  padding: 8px 0;
+
+  + .PlacementPicker-slot {
+    border-top: 1px solid var(--control-bg);
+  }
+
+  .helpText {
+    margin-block-start: 2px;
+    margin-inline-start: 30px;
+  }
+}
+
+// The seven-by-twenty-four schedule grid.
+.DaypartGrid {
+  // Painting a schedule means dragging across cells, and a text selection
+  // following the pointer makes that unusable.
+  user-select: none;
+
+  &-scroll {
+    overflow-x: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th {
+    padding: 0 4px;
+    color: var(--muted-color);
+    font-size: 10px;
+    font-weight: normal;
+    text-align: center;
+  }
+
+  &-day {
+    text-align: end;
+    white-space: nowrap;
+    padding-inline-end: 8px;
+  }
+}
+
+.DaypartGrid-cell {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid var(--body-bg);
+  background: var(--control-bg);
+  cursor: pointer;
+
+  &--on {
+    background: var(--primary-color);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: -2px;
+  }
+}
+
+.DaypartGrid-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-block-start: 8px;
+
+  .helpText {
+    flex: 1 1 200px;
+    margin: 0;
+  }
+}
+
+// The report link, shown once and never again.
+.PlacementReportUrl {
+  margin-block: 8px;
+  font-family: var(--code-font, monospace);
+  font-size: 12px;
+}
+
+.PlacementReportActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-block-start: 8px;
+}
+
+.PlacementFrequency {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .FormControl {
+    flex: 0 1 120px;
+  }
+}
+
+.PlacementFlight,
+.PlacementSize {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+
+  > .Form-group {
+    flex: 1 1 160px;
+    margin: 0;
+  }
+}
+
+// Headline figures, on the pattern core uses for its own.
+.PlacementFigures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--control-bg);
+  background: var(--control-bg);
+}
+
+.PlacementFigure {
+  flex: 1 1 140px;
+  padding: 12px 15px;
+  background: var(--body-bg);
+}
+
+.PlacementFigure-value {
+  display: block;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.PlacementFigure-label {
+  display: block;
+  margin-block-start: 3px;
+  color: var(--muted-color);
+  font-size: 12px;
+}
+
+.DeliveryChart {
+  margin-block-end: 25px;
+}
+
+.DeliveryChart-svg {
+  display: block;
+  width: 100%;
+  height: 180px;
+}
+
+.DeliveryChart-grid {
+  stroke: var(--control-bg);
+  stroke-width: 1;
+}
+
+.DeliveryChart-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  // The viewBox is stretched to the container, so an unadjusted stroke would
+  // be drawn wider than it is tall.
+  vector-effect: non-scaling-stroke;
+}
+
+.DeliveryChart-area {
+  opacity: 0.12;
+  stroke: none;
+}
+
+.DeliveryChart-axis {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted-color);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.DeliveryChart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted-color);
+  font-size: 12px;
+
+  li {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+}
+
+.DeliveryChart-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.PlacementReportTable {
+  margin-block-end: 25px;
+
+  h3 {
+    margin-block-end: 8px;
+    font-size: 15px;
+  }
+
+  // Wide content scrolls inside its own box rather than pushing the page
+  // sideways.
+  &-scroll {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th,
+  td {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--control-bg);
+    text-align: start;
+  }
+
+  th {
+    color: var(--muted-color);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .num {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.PlacementSlots {
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.PlacementSlots-heading {
+  margin-block: 15px 8px;
+  color: var(--muted-color);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.PlacementSlots-item {
+  padding: 10px 0;
+
+  + .PlacementSlots-item {
+    border-top: 1px solid var(--control-bg);
+  }
+}
+
+.PlacementSlots-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+
+  // The switch carries the slot's name, so it takes the room and the rest
+  // trails after it.
+  .Switch {
+    flex: 1 1 220px;
+    margin: 0;
+  }
+}
+
+.PlacementSlots-description {
+  margin-block-start: 2px;
+  // Lines up under the switch's label rather than under its control.
+  margin-inline-start: 30px;
+}
+
+.PlacementSlots-repeat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-block-start: 8px;
+  margin-inline-start: 30px;
+
+  label {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+    font-weight: normal;
+    color: var(--muted-color);
+    font-size: 13px;
+  }
+
+  .FormControl {
+    width: 90px;
+  }
+}
+
+.PlacementSlots-name {
+  font-weight: 600;
+  margin-inline-end: 8px;
+}
+
+.PlacementSlots-key {
+  padding: 1px 6px;
+  border-radius: var(--border-radius);
+  background: var(--code-bg);
+  color: var(--code-color);
+  font-size: 11px;
+}
+
+.PlacementSlots-size {
+  margin-inline-start: 8px;
+  color: var(--muted-more-color);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
