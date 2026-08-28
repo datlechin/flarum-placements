@@ -14,6 +14,7 @@ namespace Datlechin\Placements\Http\Controller;
 use Carbon\Carbon;
 use Datlechin\Placements\Measurement\Recorder;
 use Datlechin\Placements\Model\Advertiser;
+use Datlechin\Placements\Model\Campaign;
 use Datlechin\Placements\Model\Stat;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Laminas\Diactoros\Response\HtmlResponse;
@@ -83,15 +84,36 @@ class AdvertiserReportController implements RequestHandlerInterface
     {
         $since = Carbon::now()->utc()->startOfHour()->subDays(self::DAYS);
 
-        $rows = Stat::query()
+        // Summed first, joined second, so that the raw expression touches one
+        // table and needs no table name in it.
+        //
+        // Writing it the other way round -- join, then
+        // `SUM(placement_stats.impressions)` -- puts a table name inside
+        // `selectRaw`, where the query builder never sees it and so never
+        // applies the installation's table prefix. On a prefixed install that
+        // column does not exist and the report is a 500. Aliasing the join does
+        // not rescue it either: `wrapAliasedTable` prefixes the alias as well,
+        // so `placement_stats as s` becomes `"prefix_placement_stats" as
+        // "prefix_s"` and the raw `s.impressions` is still wrong.
+        //
+        // Qualification is needed here at all only because `impressions` and
+        // `clicks` are columns on campaigns too.
+        $totals = Stat::query()
             ->toBase()
-            ->join('placement_campaigns', 'placement_campaigns.id', '=', 'placement_stats.campaign_id')
+            ->where('bucket_start', '>=', $since)
+            ->groupBy('campaign_id')
+            ->select('campaign_id')
+            ->selectRaw('SUM(impressions) as impressions, SUM(viewable_impressions) as viewable, SUM(clicks) as clicks');
+
+        $rows = Campaign::query()
+            ->toBase()
+            // The alias is written through the builder on both sides -- here
+            // and in the columns below -- so whatever prefixing it does, the
+            // two agree.
+            ->joinSub($totals, 'totals', 'totals.campaign_id', '=', 'placement_campaigns.id')
             ->where('placement_campaigns.advertiser_id', $advertiser->id)
-            ->where('placement_stats.bucket_start', '>=', $since)
-            ->groupBy('placement_campaigns.id', 'placement_campaigns.name')
-            ->select('placement_campaigns.name')
-            ->selectRaw('SUM(placement_stats.impressions) as impressions, SUM(placement_stats.viewable_impressions) as viewable, SUM(placement_stats.clicks) as clicks')
-            ->orderByDesc('impressions')
+            ->select('placement_campaigns.name', 'totals.impressions', 'totals.viewable', 'totals.clicks')
+            ->orderByDesc('totals.impressions')
             ->get();
 
         return array_values($rows->map(fn (object $row) => [
