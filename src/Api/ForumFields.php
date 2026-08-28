@@ -63,7 +63,38 @@ class ForumFields
             Schema\Arr::make('placementCreativeTypes')
                 ->visible($canManage)
                 ->get(fn (mixed $model, Context $context) => $this->creativeTypes($context)),
+
+            Schema\Boolean::make('canSubmitPlacements')
+                ->get(fn (mixed $model, Context $context) => $context->getActor()->hasPermission(Permissions::SUBMIT)),
+
+            // What the member form may offer, which is not the same list as
+            // above even for somebody holding both permissions: a type that
+            // runs code is authored in the admin panel and never submitted.
+            Schema\Arr::make('placementSubmittableTypes')
+                ->visible(fn (mixed $model, Context $context) => $context->getActor()->hasPermission(Permissions::SUBMIT))
+                ->get(fn () => $this->submittableTypes()),
         ];
+    }
+
+    /**
+     * The types a member may submit: the ones that need no permission of their
+     * own, which is the same thing as the ones that cannot execute anything.
+     *
+     * @return list<array<string, mixed>>
+     */
+    protected function submittableTypes(): array
+    {
+        $registry = $this->container->make(CreativeTypeRegistry::class);
+
+        $types = [];
+
+        foreach ($registry->all() as $key => $type) {
+            if ($type->requiredPermission() === null) {
+                $types[] = ['key' => $key, 'label' => $type->label()];
+            }
+        }
+
+        return $types;
     }
 
     /**

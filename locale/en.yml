@@ -379,4 +379,38 @@ datlechin-placement:
         impressions: "{campaign} has reached its impression cap and stopped."
         clicks: "{campaign} has reached its click cap and stopped."
 
+    submissions:
+      tab: My adverts
+      help: >
+        Adverts you have submitted. Somebody reads each one before it appears
+        on the forum, and editing an advert sends it back to be read again.
+      unavailable: This page is not available.
+      none: You have not submitted an advert yet.
+      create: Submit an advert
+      edit: Edit
+      delete: Delete
+      confirm_delete: Delete this advert?
+      submit: Submit for review
+      submit_help: An advert goes to the forum's staff before it appears anywhere.
+      approved_note: Approved. It will appear once the staff have chosen where to run it.
+
+      name: Name
+      name_help: For your own reference and the staff's. Readers never see it.
+      type: Kind of advert
+      destination_url: Where it links to
+      asset: Image address
+      alt: Alt text
+      alt_help: Describes the image for somebody who cannot see it.
+      headline: Headline
+      body: Body
+      cta: Call to action
+      source: Copy
+      source_help: Formatted the same way a post on this forum is.
+
+      statuses:
+        draft: Draft
+        pending: Waiting for review
+        approved: Approved
+        rejected: Not accepted
+
   lib: {}

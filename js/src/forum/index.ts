@@ -4,6 +4,7 @@ import { consentGranted, setConsent } from '../common/consent';
 import registerCreatives from '../common/creatives';
 import placements from '../common/placements';
 import registerSlots, { registerTagSlots } from './slots';
+import addSubmissionsTab from './addSubmissionsTab';
 
 export { default as extend } from './extend';
 
@@ -18,6 +19,12 @@ export { stickyChoice, remember } from '../common/sticky';
 export { setConsent, consentGranted, mayLoadWithConsent, whenConsented } from '../common/consent';
 
 app.initializers.add('datlechin-placement', () => {
+  // Before the guard below, deliberately. Somebody who submits adverts may
+  // perfectly well be ad-free themselves — being able to write one and being
+  // shown one are different permissions — and putting this after the return
+  // would hide their own submissions from them.
+  addSubmissionsTab();
+
   // Nothing was written for this viewer — they are ad-free, or a crawler — so
   // there is no reason to register a single extension point. Not registering
   // is also what guarantees an ad-free page has no reserved gaps in it.

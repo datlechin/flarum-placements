@@ -3,3 +3,71 @@
 // Slots render in both frontends — the admin panel previews them — so they are
 // defined once in `common.less`. This file is for anything the forum needs and
 // the admin panel does not.
+
+// The member submit portal, on a profile tab.
+.SubmissionsPage-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-block-end: 15px;
+
+  .helpText {
+    flex: 1 1 260px;
+    margin: 0;
+  }
+}
+
+.SubmissionList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.SubmissionList-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 15px;
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+}
+
+.SubmissionList-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.SubmissionList-name {
+  font-weight: 600;
+}
+
+.SubmissionList-meta {
+  color: var(--muted-color);
+  font-size: 12px;
+}
+
+// The reason is the whole value of a rejection to whoever wrote the advert,
+// so it is given the weight of a quotation rather than of a footnote.
+.SubmissionList-reason {
+  padding: 8px 12px;
+  border-inline-start: 3px solid var(--control-danger-color, var(--muted-color));
+  background: var(--control-bg);
+  font-size: 13px;
+}
+
+.SubmissionList-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.SubmissionList-note {
+  margin: 0;
+}

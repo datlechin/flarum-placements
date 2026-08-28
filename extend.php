@@ -91,6 +91,12 @@ return [
     (new Extend\ApiResource(Api\Resource\AdvertiserResource::class)),
     (new Extend\ApiResource(Api\Resource\PlacementSettingResource::class)),
 
+    // The same model as CreativeResource, behind a much narrower door: a
+    // member's own submissions and nothing else. Widening the administrative
+    // resource instead would have put one permission check between a member and
+    // every rate on the forum.
+    (new Extend\ApiResource(Api\Resource\SubmissionResource::class)),
+
     // Open to guests by necessity — most readers of a public forum are guests,
     // and refusing to count them would make every number meaningless. What
     // stops it being a stats-poisoning endpoint is that each event must carry

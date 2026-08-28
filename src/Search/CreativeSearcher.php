@@ -12,6 +12,7 @@
 namespace Datlechin\Placement\Search;
 
 use Datlechin\Placement\Model\Creative;
+use Datlechin\Placement\Support\Permissions;
 use Flarum\Search\Database\AbstractSearcher;
 use Flarum\User\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,14 +24,29 @@ use Illuminate\Database\Eloquent\Builder;
  * throws: Flarum routes every list filter through a searcher, so a review queue
  * asking for the pending ones needs one even though nothing here searches.
  *
- * No visibility scope on the query. Creatives have no per-actor visibility of
- * their own -- who may list them is decided by the endpoint, which asserts the
- * manage permission before this runs.
+ * The permission is checked here as well as by the endpoint, and that is not
+ * belt and braces. Flarum's Index endpoint routes through the searcher
+ * *instead of* the resource's own query, so a searcher hands rows to whatever
+ * asks for a list of its model -- the resource's `scope()` is never consulted.
+ * A second resource over these rows nearly shipped every advertiser's
+ * submissions to every member because of it, which is why the member side has
+ * its own model and this has its own check.
+ *
+ * @see \Datlechin\Placement\Model\Submission
  */
 class CreativeSearcher extends AbstractSearcher
 {
     public function getQuery(User $actor): Builder
     {
-        return Creative::query()->select('placement_creatives.*');
+        $query = Creative::query()->select('placement_creatives.*');
+
+        if (! $actor->hasPermission(Permissions::MANAGE)) {
+            // Rather than returning nothing at all, which would read as an
+            // empty queue instead of as a refusal. The endpoint has already
+            // answered 403 by the time anything gets here.
+            $query->whereRaw('1 = 0');
+        }
+
+        return $query;
     }
 }
