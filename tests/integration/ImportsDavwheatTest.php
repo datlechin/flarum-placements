@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\integration;
+namespace Datlechin\Placements\Tests\integration;
 
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Support\Permissions;
 use Flarum\Group\Group;
 use Flarum\Testing\integration\ConsoleTestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -29,7 +29,7 @@ class ImportsDavwheatTest extends ConsoleTestCase
     {
         parent::setUp();
 
-        $this->extension('datlechin-placement');
+        $this->extension('datlechin-placements');
     }
 
     protected function seedDavwheat(): void
@@ -52,7 +52,7 @@ class ImportsDavwheatTest extends ConsoleTestCase
     #[Test]
     public function it_says_so_when_there_is_nothing_to_import(): void
     {
-        $this->assertStringContainsString('Nothing to import', $this->runCommand(['command' => 'placement:import-davwheat']));
+        $this->assertStringContainsString('Nothing to import', $this->runCommand(['command' => 'placements:import-davwheat']));
     }
 
     #[Test]
@@ -60,7 +60,7 @@ class ImportsDavwheatTest extends ConsoleTestCase
     {
         $this->seedDavwheat();
 
-        $output = $this->runCommand(['command' => 'placement:import-davwheat', '--dry-run' => true]);
+        $output = $this->runCommand(['command' => 'placements:import-davwheat', '--dry-run' => true]);
 
         $this->assertStringContainsString('Would import 3', $output);
         $this->assertSame(0, $this->database()->table('placement_campaigns')->count());
@@ -72,7 +72,7 @@ class ImportsDavwheatTest extends ConsoleTestCase
     {
         $this->seedDavwheat();
 
-        $this->runCommand(['command' => 'placement:import-davwheat']);
+        $this->runCommand(['command' => 'placements:import-davwheat']);
 
         $slots = $this->database()->table('placement_assignments')->orderBy('placement_key')->pluck('placement_key');
 
@@ -86,7 +86,7 @@ class ImportsDavwheatTest extends ConsoleTestCase
         // create a creative that renders nothing.
         $this->seedDavwheat();
 
-        $this->runCommand(['command' => 'placement:import-davwheat']);
+        $this->runCommand(['command' => 'placements:import-davwheat']);
 
         $this->assertSame(0, $this->database()->table('placement_assignments')->where('placement_key', 'footer')->count());
     }
@@ -98,7 +98,7 @@ class ImportsDavwheatTest extends ConsoleTestCase
         // the forum.
         $this->seedDavwheat();
 
-        $this->runCommand(['command' => 'placement:import-davwheat']);
+        $this->runCommand(['command' => 'placements:import-davwheat']);
 
         $this->assertSame('draft', $this->database()->table('placement_campaigns')->value('status'));
         $this->assertSame('draft', $this->database()->table('placement_creatives')->value('status'));
@@ -111,7 +111,7 @@ class ImportsDavwheatTest extends ConsoleTestCase
         // reach.
         $this->seedDavwheat();
 
-        $this->runCommand(['command' => 'placement:import-davwheat']);
+        $this->runCommand(['command' => 'placements:import-davwheat']);
 
         $this->assertEquals(1, $this->database()->table('placement_campaigns')->value('is_house'));
     }
@@ -121,7 +121,7 @@ class ImportsDavwheatTest extends ConsoleTestCase
     {
         $this->seedDavwheat();
 
-        $this->runCommand(['command' => 'placement:import-davwheat']);
+        $this->runCommand(['command' => 'placements:import-davwheat']);
 
         $this->assertSame(5, (int) $this->database()->table('placement_settings')->where('key', 'post_footer')->value('every_n'));
     }
@@ -134,7 +134,7 @@ class ImportsDavwheatTest extends ConsoleTestCase
         // because the extension was replaced.
         $this->seedDavwheat();
 
-        $this->runCommand(['command' => 'placement:import-davwheat']);
+        $this->runCommand(['command' => 'placements:import-davwheat']);
 
         $this->assertSame(1, $this->database()->table('group_permission')
             ->where('group_id', Group::MEMBER_ID)
@@ -149,7 +149,7 @@ class ImportsDavwheatTest extends ConsoleTestCase
         // this command deliberately does not set.
         $this->seedDavwheat();
 
-        $output = $this->runCommand(['command' => 'placement:import-davwheat']);
+        $output = $this->runCommand(['command' => 'placements:import-davwheat']);
 
         $this->assertStringContainsString('config.php', $output);
         $this->assertStringContainsString('drafts', $output);

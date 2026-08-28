@@ -3,7 +3,7 @@ import type Mithril from 'mithril';
 
 export const SUBMISSION_RESOURCE = 'placement-submissions';
 
-const EXTENSION = 'datlechin-placement';
+const EXTENSION = 'datlechin-placements';
 
 export function trans(key: string, params: Record<string, unknown> = {}): Mithril.Children {
   return app.translator.trans(`${EXTENSION}.forum.submissions.${key}`, params);

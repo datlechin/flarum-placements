@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Console;
+namespace Datlechin\Placements\Console;
 
-use Datlechin\Placement\Measurement\Recorder;
+use Datlechin\Placements\Measurement\Recorder;
 use Flarum\Console\AbstractCommand;
 
 /**
@@ -32,7 +32,7 @@ class FlushStatsCommand extends AbstractCommand
     protected function configure(): void
     {
         $this
-            ->setName('placement:flush')
+            ->setName('placements:flush')
             ->setDescription('Write buffered advertising statistics to the database');
     }
 

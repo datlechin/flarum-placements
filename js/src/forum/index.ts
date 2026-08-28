@@ -18,7 +18,7 @@ export { withinCap, timesSeen, recordSeen } from '../common/frequency';
 export { stickyChoice, remember } from '../common/sticky';
 export { setConsent, consentGranted, mayLoadWithConsent, whenConsented } from '../common/consent';
 
-app.initializers.add('datlechin-placement', () => {
+app.initializers.add('datlechin-placements', () => {
   // Before the guard below, deliberately. Somebody who submits adverts may
   // perfectly well be ad-free themselves — being able to write one and being
   // shown one are different permissions — and putting this after the return

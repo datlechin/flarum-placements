@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\integration;
+namespace Datlechin\Placements\Tests\integration;
 
-use Datlechin\Placement\Model\Campaign;
-use Datlechin\Placement\Model\Creative;
+use Datlechin\Placements\Model\Campaign;
+use Datlechin\Placements\Model\Creative;
 
 /**
  * One live campaign with one approved image creative, assigned to the slot

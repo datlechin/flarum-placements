@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit\Targeting;
+namespace Datlechin\Placements\Tests\unit\Targeting;
 
-use Datlechin\Placement\Targeting\Dimension;
-use Datlechin\Placement\Targeting\DimensionInterface;
+use Datlechin\Placements\Targeting\Dimension;
+use Datlechin\Placements\Targeting\DimensionInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +20,7 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Adding a dimension and forgetting its locale entry ships a rule editor whose
- * dropdown reads "datlechin-placement.admin.dimensions.foo.label".
+ * dropdown reads "datlechin-placements.admin.dimensions.foo.label".
  */
 class DimensionLocaleTest extends TestCase
 {
@@ -46,7 +46,7 @@ class DimensionLocaleTest extends TestCase
         /** @var array<string, mixed> $parsed */
         $parsed = Yaml::parseFile(__DIR__.'/../../../locale/en.yml');
 
-        return $parsed['datlechin-placement']['admin'] ?? [];
+        return $parsed['datlechin-placements']['admin'] ?? [];
     }
 
     /**
@@ -96,7 +96,7 @@ class DimensionLocaleTest extends TestCase
             foreach ($dimension->options() as $option) {
                 $path = explode('.', $option['label']);
 
-                $this->assertSame('datlechin-placement', array_shift($path));
+                $this->assertSame('datlechin-placements', array_shift($path));
                 $this->assertSame('admin', array_shift($path));
                 $this->assertNotEmpty(self::at($path), "No translation for [{$option['label']}].");
             }

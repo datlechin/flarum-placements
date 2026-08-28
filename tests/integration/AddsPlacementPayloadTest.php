@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\integration;
+namespace Datlechin\Placements\Tests\integration;
 
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Support\Permissions;
 use Flarum\Group\Group;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
@@ -34,7 +34,7 @@ class AddsPlacementPayloadTest extends TestCase
     {
         parent::setUp();
 
-        $this->extension('datlechin-placement');
+        $this->extension('datlechin-placements');
 
         $this->prepareDatabase([
             'users' => [$this->normalUser()],

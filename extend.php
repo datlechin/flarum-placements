@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement;
+namespace Datlechin\Placements;
 
 // Imported explicitly: `use Flarum\Extend` below aliases the whole `Extend`
 // segment, so an unqualified `Extend\Placements` would resolve to Flarum's
 // namespace rather than this extension's.
-use Datlechin\Placement\Extend\Placements;
+use Datlechin\Placements\Extend\Placements;
 use Flarum\Api\Resource\ForumResource;
 use Flarum\Extend;
 // Imported rather than written inline for the same reason: inside this
 // namespace a bare `Flarum\Search\...` resolves to
-// `Datlechin\Placement\Flarum\Search\...`, and the failure is a 500 from
+// `Datlechin\Placements\Flarum\Search\...`, and the failure is a 500 from
 // the search manager rather than anything that names the mistake.
 use Flarum\Search\Database\DatabaseSearchDriver;
 use Illuminate\Console\Scheduling\Event;
@@ -70,10 +70,10 @@ return [
     // the IAB specification, and a network that cannot find it there treats the
     // forum's inventory as unauthorised.
     (new Extend\Routes('forum'))
-        ->get('/ads.txt', 'datlechin-placement.ads_txt', Http\Controller\AdsTxtController::class)
+        ->get('/ads.txt', 'datlechin-placements.ads_txt', Http\Controller\AdsTxtController::class)
         // What an advertiser gets instead of a login. The URL is the
         // credential: unguessable, revocable, and noindex.
-        ->get('/r/{token}', 'datlechin-placement.report_link', Http\Controller\AdvertiserReportController::class),
+        ->get('/r/{token}', 'datlechin-placements.report_link', Http\Controller\AdvertiserReportController::class),
 
     (new Extend\ApiResource(ForumResource::class))
         ->fields(Api\ForumFields::class),
@@ -105,13 +105,13 @@ return [
     // stops it being a stats-poisoning endpoint is that each event must carry
     // a token this server signed.
     (new Extend\Routes('api'))
-        ->post('/placements/events', 'datlechin-placement.events', Api\Controller\RecordEventsController::class)
-        ->get('/placements/report', 'datlechin-placement.report', Api\Controller\ReportController::class),
+        ->post('/placements/events', 'datlechin-placements.events', Api\Controller\RecordEventsController::class)
+        ->get('/placements/report', 'datlechin-placements.report', Api\Controller\ReportController::class),
 
     // Generous enough to survive a household, an office or a university behind
     // one address, and low enough that nobody floods the buffer from a laptop.
     (new Extend\ThrottleApi())
-        ->set('datlechin-placement.events', Api\Throttler\EventThrottler::class),
+        ->set('datlechin-placements.events', Api\Throttler\EventThrottler::class),
 
     // The beacon is fired with `navigator.sendBeacon`, which cannot set a
     // header, so a CSRF token could never reach this route.
@@ -123,7 +123,7 @@ return [
     // affected — a count — is already gated by a token this server signed for
     // one creative in one slot for one moment.
     (new Extend\Csrf())
-        ->exemptRoute('datlechin-placement.events'),
+        ->exemptRoute('datlechin-placements.events'),
 
     // Alerts only, and not email by default: a campaign reaching its cap is
     // useful to know and not worth waking somebody up for.

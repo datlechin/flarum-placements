@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit\Measurement;
+namespace Datlechin\Placements\Tests\unit\Measurement;
 
-use Datlechin\Placement\Measurement\EventToken;
+use Datlechin\Placements\Measurement\EventToken;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

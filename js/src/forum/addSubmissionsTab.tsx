@@ -23,8 +23,8 @@ export default function addSubmissionsTab(): void {
     if (!user || user.id() !== app.session.user?.id()) return;
 
     items.add(
-      'datlechin-placement-submissions',
-      <LinkButton href={app.route('datlechin-placement.submissions', { username: user.slug() })} icon="fas fa-bullhorn">
+      'datlechin-placements-submissions',
+      <LinkButton href={app.route('datlechin-placements.submissions', { username: user.slug() })} icon="fas fa-bullhorn">
         {trans('tab')}
       </LinkButton>,
       // Below the tabs core puts there, which are what somebody came to a

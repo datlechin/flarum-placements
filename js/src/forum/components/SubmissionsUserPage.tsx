@@ -18,7 +18,7 @@ import SubmissionModal from './SubmissionModal';
  * tab is only ever drawn on your own profile: everything here is between one
  * member and the staff.
  */
-export default class SubmissionsPage extends UserPage {
+export default class SubmissionsUserPage extends UserPage {
   protected submissions: Submission[] | null = null;
 
   oninit(vnode: Mithril.Vnode<any, this>) {
@@ -58,8 +58,8 @@ export default class SubmissionsPage extends UserPage {
     }
 
     return (
-      <div className="SubmissionsPage">
-        <div className="SubmissionsPage-header">
+      <div className="SubmissionsUserPage">
+        <div className="SubmissionsUserPage-header">
           <p className="helpText">{trans('help')}</p>
           <Button
             className="Button Button--primary"

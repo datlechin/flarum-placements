@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,19 +9,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit\Targeting;
+namespace Datlechin\Placements\Tests\unit\Targeting;
 
 use Carbon\Carbon;
-use Datlechin\Placement\Targeting\Dimension\AccountAgeDimension;
-use Datlechin\Placement\Targeting\Dimension\DiscussionDimension;
-use Datlechin\Placement\Targeting\Dimension\GroupDimension;
-use Datlechin\Placement\Targeting\Dimension\LocaleDimension;
-use Datlechin\Placement\Targeting\Dimension\PostCountDimension;
-use Datlechin\Placement\Targeting\Dimension\RouteDimension;
-use Datlechin\Placement\Targeting\Dimension\TagDimension;
-use Datlechin\Placement\Targeting\Dimension\VisitorDimension;
-use Datlechin\Placement\Targeting\DimensionInterface;
-use Datlechin\Placement\Tests\unit\ConnectsModels;
+use Datlechin\Placements\Targeting\Dimension\AccountAgeDimension;
+use Datlechin\Placements\Targeting\Dimension\DiscussionDimension;
+use Datlechin\Placements\Targeting\Dimension\GroupDimension;
+use Datlechin\Placements\Targeting\Dimension\LocaleDimension;
+use Datlechin\Placements\Targeting\Dimension\PostCountDimension;
+use Datlechin\Placements\Targeting\Dimension\RouteDimension;
+use Datlechin\Placements\Targeting\Dimension\TagDimension;
+use Datlechin\Placements\Targeting\Dimension\VisitorDimension;
+use Datlechin\Placements\Targeting\DimensionInterface;
+use Datlechin\Placements\Tests\unit\ConnectsModels;
 use Flarum\Group\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -61,7 +61,7 @@ class DimensionsTest extends TestCase
         $this->assertSame($keys, array_values(array_unique($keys)));
 
         foreach ($this->all() as $dimension) {
-            $this->assertStringStartsWith('datlechin-placement.', $dimension->label());
+            $this->assertStringStartsWith('datlechin-placements.', $dimension->label());
             $this->assertNotSame([], $dimension->operators());
         }
     }

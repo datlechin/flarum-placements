@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Targeting\Dimension;
+namespace Datlechin\Placements\Targeting\Dimension;
 
-use Datlechin\Placement\Targeting\DimensionInterface;
+use Datlechin\Placements\Targeting\DimensionInterface;
 
 /**
  * Sensible defaults for a dimension: set membership, decided on the server,
@@ -21,7 +21,7 @@ abstract class AbstractDimension implements DimensionInterface
 {
     public function label(): string
     {
-        return "datlechin-placement.admin.dimensions.{$this->key()}.label";
+        return "datlechin-placements.admin.dimensions.{$this->key()}.label";
     }
 
     public function operators(): array

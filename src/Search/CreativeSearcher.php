@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Search;
+namespace Datlechin\Placements\Search;
 
-use Datlechin\Placement\Model\Creative;
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Model\Creative;
+use Datlechin\Placements\Support\Permissions;
 use Flarum\Search\Database\AbstractSearcher;
 use Flarum\User\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Builder;
  * submissions to every member because of it, which is why the member side has
  * its own model and this has its own check.
  *
- * @see \Datlechin\Placement\Model\Submission
+ * @see \Datlechin\Placements\Model\Submission
  */
 class CreativeSearcher extends AbstractSearcher
 {

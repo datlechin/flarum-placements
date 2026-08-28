@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Support;
+namespace Datlechin\Placements\Support;
 
 use Flarum\User\User;
 use Illuminate\Contracts\Session\Session;
@@ -39,7 +39,7 @@ final class DemoMode
      */
     public const PARAM = 'placement_demo';
 
-    public const SESSION_KEY = 'datlechin-placement.demo';
+    public const SESSION_KEY = 'datlechin-placements.demo';
 
     /**
      * Whether this actor may use demo mode at all.

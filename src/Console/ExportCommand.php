@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,15 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Console;
+namespace Datlechin\Placements\Console;
 
-use Datlechin\Placement\Model\Advertiser;
-use Datlechin\Placement\Model\Assignment;
-use Datlechin\Placement\Model\Campaign;
-use Datlechin\Placement\Model\CampaignRule;
-use Datlechin\Placement\Model\Creative;
-use Datlechin\Placement\Model\PlacementSetting;
-use Datlechin\Placement\Support\Settings;
+use Datlechin\Placements\Model\Advertiser;
+use Datlechin\Placements\Model\Assignment;
+use Datlechin\Placements\Model\Campaign;
+use Datlechin\Placements\Model\CampaignRule;
+use Datlechin\Placements\Model\Creative;
+use Datlechin\Placements\Model\PlacementSetting;
+use Datlechin\Placements\Support\Settings;
 use Flarum\Console\AbstractCommand;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -62,7 +62,7 @@ class ExportCommand extends AbstractCommand
     protected function configure(): void
     {
         $this
-            ->setName('placement:export')
+            ->setName('placements:export')
             ->setDescription("Write the forum's advertising configuration out as JSON")
             ->addOption('output', 'o', InputOption::VALUE_REQUIRED, 'Write to this file rather than to standard output');
     }

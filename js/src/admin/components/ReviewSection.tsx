@@ -111,7 +111,7 @@ export default class ReviewSection extends Component<ReviewSectionAttrs> {
           <span className="PlacementReview-meta">
             {trans('review.from', {
               campaign: campaign ? campaign.name() : '',
-              type: app.translator.trans(`datlechin-placement.admin.creatives.types.${creative.type()}`),
+              type: app.translator.trans(`datlechin-placements.admin.creatives.types.${creative.type()}`),
             })}
           </span>
 

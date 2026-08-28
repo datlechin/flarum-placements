@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,15 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit\Extend;
+namespace Datlechin\Placements\Tests\unit\Extend;
 
-use Datlechin\Placement\Creative\CreativeTypeInterface;
-use Datlechin\Placement\Extend\Placements;
-use Datlechin\Placement\Placement;
-use Datlechin\Placement\PlacementRegistry;
-use Datlechin\Placement\PlacementServiceProvider;
-use Datlechin\Placement\Targeting\DimensionInterface;
-use Datlechin\Placement\Targeting\TargetingContext;
+use Datlechin\Placements\Creative\CreativeTypeInterface;
+use Datlechin\Placements\Extend\Placements;
+use Datlechin\Placements\Placement;
+use Datlechin\Placements\PlacementRegistry;
+use Datlechin\Placements\PlacementServiceProvider;
+use Datlechin\Placements\Targeting\DimensionInterface;
+use Datlechin\Placements\Targeting\TargetingContext;
 use Illuminate\Container\Container;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

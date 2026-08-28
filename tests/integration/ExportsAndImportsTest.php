@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\integration;
+namespace Datlechin\Placements\Tests\integration;
 
-use Datlechin\Placement\Console\ExportCommand;
-use Datlechin\Placement\Model\Campaign;
-use Datlechin\Placement\Model\Creative;
-use Datlechin\Placement\Support\Settings;
+use Datlechin\Placements\Console\ExportCommand;
+use Datlechin\Placements\Model\Campaign;
+use Datlechin\Placements\Model\Creative;
+use Datlechin\Placements\Support\Settings;
 use Flarum\Testing\integration\ConsoleTestCase;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use PHPUnit\Framework\Attributes\Test;
@@ -36,7 +36,7 @@ class ExportsAndImportsTest extends ConsoleTestCase
     {
         parent::setUp();
 
-        $this->extension('datlechin-placement');
+        $this->extension('datlechin-placements');
 
         $this->file = tempnam(sys_get_temp_dir(), 'placement').'.json';
 
@@ -129,7 +129,7 @@ class ExportsAndImportsTest extends ConsoleTestCase
      */
     private function export(): array
     {
-        $this->runCommand(['command' => 'placement:export', '--output' => $this->file]);
+        $this->runCommand(['command' => 'placements:export', '--output' => $this->file]);
 
         return json_decode((string) file_get_contents($this->file), true);
     }
@@ -147,7 +147,7 @@ class ExportsAndImportsTest extends ConsoleTestCase
      */
     private function import(array $extra = []): string
     {
-        return $this->runCommand(['command' => 'placement:import', 'file' => $this->file, ...$extra]);
+        return $this->runCommand(['command' => 'placements:import', 'file' => $this->file, ...$extra]);
     }
 
     #[Test]

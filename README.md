@@ -1,6 +1,6 @@
-# Placement
+# Placements
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/datlechin/flarum-placement.svg)](https://packagist.org/packages/datlechin/flarum-placement) [![Total Downloads](https://img.shields.io/packagist/dt/datlechin/flarum-placement.svg)](https://packagist.org/packages/datlechin/flarum-placement)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/datlechin/flarum-placements.svg)](https://packagist.org/packages/datlechin/flarum-placements) [![Total Downloads](https://img.shields.io/packagist/dt/datlechin/flarum-placements.svg)](https://packagist.org/packages/datlechin/flarum-placements)
 
 An ad server for Flarum 2.x. Campaigns with flights, caps and targeting; typed creatives rather than a box you paste HTML into; slots declared by the components that render them; and a viewer who is entitled to see nothing gets nothing at all.
 
@@ -10,7 +10,7 @@ An ad server for Flarum 2.x. Campaigns with flights, caps and targeting; typed c
 ## Installation
 
 ```sh
-composer require datlechin/flarum-placement:"*"
+composer require datlechin/flarum-placements:"*"
 ```
 
 Enable it, then grant **Manage advertising** to whoever handles sponsors — administrators have it already.
@@ -94,8 +94,8 @@ Statistics are stored as hourly buckets:
 That identifies nobody. It is also the only affordable shape — a row per event is roughly three gigabytes a year on a busy forum, against about thirty megabytes for buckets.
 
 ```sh
-php flarum placement:flush            # write buffered counts (scheduled every minute)
-php flarum placement:prune --days=90  # drop buckets past the retention window
+php flarum placements:flush            # write buffered counts (scheduled every minute)
+php flarum placements:prune --days=90  # drop buckets past the retention window
 ```
 
 The flush also runs opportunistically on about one beacon request in fifty, because a large share of self-hosted Flarum installs never added `schedule:run` and statistics that simply never appear are a worse failure than an occasional small write.
@@ -118,7 +118,7 @@ So it renders inside `<iframe sandbox="allow-scripts" srcdoc>`, never with `allo
 
 ```php
 // config.php — a file on disk, which no web request can write
-'datlechin-placement' => ['raw_html' => true],
+'datlechin-placements' => ['raw_html' => true],
 ```
 
 plus the **Author raw HTML creatives** permission, which is deliberately separate from being able to manage advertising at all. A compromised or careless administrator account can turn one of them.
@@ -162,8 +162,8 @@ Declare a slot your own frontend renders, add a creative type, or add a targetin
 ```php
 // extend.php
 return [
-    (new Datlechin\Placement\Extend\Placements())
-        ->placement(new Datlechin\Placement\Placement(
+    (new Datlechin\Placements\Extend\Placements())
+        ->placement(new Datlechin\Placements\Placement(
             key: 'acme.profile_rail',
             group: 'user',
             label: 'acme-widgets.admin.placements.profile_rail.label',
@@ -181,7 +181,7 @@ Namespace your key with a prefix of your own. Then render it wherever you like:
 ```tsx
 import { extend } from 'flarum/common/extend';
 import UserPage from 'flarum/forum/components/UserPage';
-import PlacementSlot from 'ext:datlechin/flarum-placement/common/components/PlacementSlot';
+import PlacementSlot from 'ext:datlechin/flarum-placements/common/components/PlacementSlot';
 
 extend(UserPage.prototype, 'sidebarItems', (items) => {
   items.add('acmeRail', <PlacementSlot name="acme.profile_rail" />, -50);
@@ -191,7 +191,7 @@ extend(UserPage.prototype, 'sidebarItems', (items) => {
 A creative type is a `CreativeTypeInterface` on the server (validation, payload shape, asset references) plus a renderer registered under the same key on the client:
 
 ```ts
-import { registerRenderer } from 'ext:datlechin/flarum-placement/common/renderers';
+import { registerRenderer } from 'ext:datlechin/flarum-placements/common/renderers';
 
 registerRenderer('video', (candidate) => <video src={candidate.payload.src} muted autoplay loop />);
 ```
@@ -213,9 +213,9 @@ Staff work the queue from **Waiting for review** at the top of the admin page. R
 ## Moving a configuration between forums
 
 ```sh
-php flarum placement:export -o placement.json
-php flarum placement:import placement.json --dry-run
-php flarum placement:import placement.json
+php flarum placements:export -o placement.json
+php flarum placements:import placement.json --dry-run
+php flarum placements:import placement.json
 ```
 
 For staging to production, for a copy before a large change, and for keeping the set-up in version control.
@@ -227,8 +227,8 @@ Everything arrives **paused**. A creative's approval travels with it, so the usu
 ## Coming from davwheat/flarum-ext-ads
 
 ```sh
-php flarum placement:import-davwheat --dry-run   # see what would come across
-php flarum placement:import-davwheat
+php flarum placements:import-davwheat --dry-run   # see what would come across
+php flarum placements:import-davwheat
 ```
 
 It brings the six ad slots, the "between N posts" interval, and — importantly — the ad-free permission, so a supporter who paid to browse without advertising does not start seeing it because the extension was replaced.
@@ -256,5 +256,5 @@ A few decisions that look arbitrary and are not:
 
 ## Links
 
-- [GitHub](https://github.com/datlechin/flarum-placement)
-- [Packagist](https://packagist.org/packages/datlechin/flarum-placement)
+- [GitHub](https://github.com/datlechin/flarum-placements)
+- [Packagist](https://packagist.org/packages/datlechin/flarum-placements)

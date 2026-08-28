@@ -1,5 +1,5 @@
 {
-    "name": "datlechin/flarum-placement",
+    "name": "datlechin/flarum-placements",
     "description": "An ad server for Flarum: campaigns, targeting, scheduling and reporting, served from placements declared in code.",
     "keywords": [
         "flarum",
@@ -13,8 +13,8 @@
     "type": "flarum-extension",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/datlechin/flarum-placement/issues",
-        "source": "https://github.com/datlechin/flarum-placement"
+        "issues": "https://github.com/datlechin/flarum-placements/issues",
+        "source": "https://github.com/datlechin/flarum-placements"
     },
     "require": {
         "php": "^8.2",
@@ -29,12 +29,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Datlechin\\Placement\\": "src/"
+            "Datlechin\\Placements\\": "src/"
         }
     },
     "extra": {
         "flarum-extension": {
-            "title": "Placement",
+            "title": "Placements",
             "category": "feature",
             "icon": {
                 "name": "fas fa-rectangle-ad",
@@ -67,7 +67,7 @@
     "prefer-stable": true,
     "autoload-dev": {
         "psr-4": {
-            "Datlechin\\Placement\\Tests\\": "tests/"
+            "Datlechin\\Placements\\Tests\\": "tests/"
         }
     },
     "scripts": {

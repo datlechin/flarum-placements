@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Model;
+namespace Datlechin\Placements\Model;
 
 use Carbon\Carbon;
-use Datlechin\Placement\Selection\Liveness;
+use Datlechin\Placements\Selection\Liveness;
 use Flarum\Database\AbstractModel;
 use Flarum\User\User;
 use Illuminate\Database\Eloquent\Collection;

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Targeting\Dimension;
+namespace Datlechin\Placements\Targeting\Dimension;
 
-use Datlechin\Placement\Targeting\DimensionInterface;
-use Datlechin\Placement\Targeting\TargetingContext;
+use Datlechin\Placements\Targeting\DimensionInterface;
+use Datlechin\Placements\Targeting\TargetingContext;
 
 /**
  * How many posts the viewer has written.

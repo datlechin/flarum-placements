@@ -103,7 +103,7 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
       <aside
         className={classList('Placement', `Placement--${PlacementState.modifier(slot.key)}`, state.demo && 'Placement--demo', this.attrs.className)}
         style={state.reserveVariables(slot)}
-        aria-label={extractText(app.translator.trans('datlechin-placement.forum.label'))}
+        aria-label={extractText(app.translator.trans('datlechin-placements.forum.label'))}
       >
         {content}
       </aside>
@@ -152,7 +152,7 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
    * cosmetic rules and reads in the forum's own language.
    */
   protected label(candidate: Candidate | undefined): Mithril.Children {
-    return <span className="Placement-label">{candidate?.label ?? app.translator.trans('datlechin-placement.forum.label')}</span>;
+    return <span className="Placement-label">{candidate?.label ?? app.translator.trans('datlechin-placements.forum.label')}</span>;
   }
 
   protected creative(candidate: Candidate): Mithril.Children {

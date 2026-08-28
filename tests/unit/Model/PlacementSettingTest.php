@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit\Model;
+namespace Datlechin\Placements\Tests\unit\Model;
 
-use Datlechin\Placement\Model\PlacementSetting;
-use Datlechin\Placement\Placement;
-use Datlechin\Placement\Tests\unit\ConnectsModels;
+use Datlechin\Placements\Model\PlacementSetting;
+use Datlechin\Placements\Placement;
+use Datlechin\Placements\Tests\unit\ConnectsModels;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

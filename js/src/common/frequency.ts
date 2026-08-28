@@ -13,7 +13,7 @@ import type { Candidate } from './types';
  * people actually have; it is not an auditable guarantee to an advertiser, and
  * nothing in the reports pretends otherwise.
  */
-const KEY = 'datlechin-placement.seen';
+const KEY = 'datlechin-placements.seen';
 
 interface SeenEntry {
   /** When the window this count belongs to began, as an epoch second. */

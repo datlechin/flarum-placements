@@ -1,5 +1,5 @@
 {
-    "name": "@datlechin/flarum-placement",
+    "name": "@datlechin/flarum-placements",
     "private": true,
     "version": "0.0.0",
     "devDependencies": {

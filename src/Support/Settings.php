@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Support;
+namespace Datlechin\Placements\Support;
 
 use DateTimeZone;
 use Flarum\Settings\SettingsRepositoryInterface;
@@ -24,7 +24,7 @@ use Flarum\Settings\SettingsRepositoryInterface;
  */
 final class Settings
 {
-    public const PREFIX = 'datlechin-placement.';
+    public const PREFIX = 'datlechin-placements.';
 
     /**
      * The timezone dayparting hours are read in.

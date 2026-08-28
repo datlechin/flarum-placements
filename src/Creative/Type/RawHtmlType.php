@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Creative\Type;
+namespace Datlechin\Placements\Creative\Type;
 
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Support\Permissions;
 use Flarum\Foundation\Config;
 
 /**
@@ -41,9 +41,9 @@ use Flarum\Foundation\Config;
 class RawHtmlType extends AbstractCreativeType
 {
     /**
-     * `datlechin-placement.raw_html` in `config.php`.
+     * `datlechin-placements.raw_html` in `config.php`.
      */
-    public const CONFIG_KEY = 'datlechin-placement';
+    public const CONFIG_KEY = 'datlechin-placements';
 
     public const CONFIG_FLAG = 'raw_html';
 
@@ -58,7 +58,7 @@ class RawHtmlType extends AbstractCreativeType
 
     public function label(): string
     {
-        return 'datlechin-placement.admin.creatives.types.raw_html';
+        return 'datlechin-placements.admin.creatives.types.raw_html';
     }
 
     /**
@@ -68,7 +68,7 @@ class RawHtmlType extends AbstractCreativeType
      * can write:
      *
      * ```php
-     * 'datlechin-placement' => ['raw_html' => true],
+     * 'datlechin-placements' => ['raw_html' => true],
      * ```
      */
     public function isEnabled(): bool

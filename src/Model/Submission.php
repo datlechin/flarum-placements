@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Model;
+namespace Datlechin\Placements\Model;
 
 /**
  * A creative, seen from the member side.
@@ -24,8 +24,8 @@ namespace Datlechin\Placement\Model;
  * Nothing else about it differs, and nothing should: the difference between
  * the two is who may see which rows, and that belongs on the resource.
  *
- * @see \Datlechin\Placement\Api\Resource\SubmissionResource
- * @see \Datlechin\Placement\Search\CreativeSearcher
+ * @see \Datlechin\Placements\Api\Resource\SubmissionResource
+ * @see \Datlechin\Placements\Search\CreativeSearcher
  */
 class Submission extends Creative
 {

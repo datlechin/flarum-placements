@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Measurement;
+namespace Datlechin\Placements\Measurement;
 
 use Flarum\Settings\SettingsRepositoryInterface;
 
@@ -31,7 +31,7 @@ use Flarum\Settings\SettingsRepositoryInterface;
  */
 class SigningKey
 {
-    public const SETTING = 'datlechin-placement.signing_key';
+    public const SETTING = 'datlechin-placements.signing_key';
 
     public const BYTES = 32;
 

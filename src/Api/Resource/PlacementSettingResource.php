@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Api\Resource;
+namespace Datlechin\Placements\Api\Resource;
 
-use Datlechin\Placement\Model\PlacementSetting;
-use Datlechin\Placement\PlacementRegistry;
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Model\PlacementSetting;
+use Datlechin\Placements\PlacementRegistry;
+use Datlechin\Placements\Support\Permissions;
 use Flarum\Api\Endpoint;
 use Flarum\Api\Resource\AbstractDatabaseResource;
 use Flarum\Api\Schema;

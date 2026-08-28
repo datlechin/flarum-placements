@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Api\Resource;
+namespace Datlechin\Placements\Api\Resource;
 
-use Datlechin\Placement\Model\Advertiser;
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Model\Advertiser;
+use Datlechin\Placements\Support\Permissions;
 use Flarum\Api\Endpoint;
 use Flarum\Api\Resource\AbstractDatabaseResource;
 use Flarum\Api\Schema;
@@ -88,7 +88,7 @@ class AdvertiserResource extends AbstractDatabaseResource
             // a link cannot be recovered by listing advertisers later.
             Schema\Str::make('reportUrl')
                 ->get(fn (Advertiser $advertiser) => $advertiser->wasRecentlyIssuedToken
-                    ? $this->url->to('forum')->route('datlechin-placement.report_link', ['token' => $advertiser->report_token])
+                    ? $this->url->to('forum')->route('datlechin-placements.report_link', ['token' => $advertiser->report_token])
                     : null)
                 ->nullable(),
             Schema\DateTime::make('createdAt')->property('created_at'),

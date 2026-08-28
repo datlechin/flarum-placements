@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Api\Throttler;
+namespace Datlechin\Placements\Api\Throttler;
 
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Psr\Http\Message\ServerRequestInterface;
@@ -42,7 +42,7 @@ class EventThrottler
 
     public function __invoke(ServerRequestInterface $request): ?bool
     {
-        if ($request->getAttribute('routeName') !== 'datlechin-placement.events') {
+        if ($request->getAttribute('routeName') !== 'datlechin-placements.events') {
             // Null rather than false: this throttler has no opinion about any
             // other route, and returning false would exempt them from
             // everybody else's throttles.
@@ -50,7 +50,7 @@ class EventThrottler
         }
 
         $ip = $request->getAttribute('ipAddress');
-        $key = 'datlechin-placement.throttle.'.sha1(is_string($ip) ? $ip : 'unknown');
+        $key = 'datlechin-placements.throttle.'.sha1(is_string($ip) ? $ip : 'unknown');
 
         $seen = $this->cache->get($key);
         $count = is_numeric($seen) ? (int) $seen : 0;

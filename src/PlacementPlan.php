@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement;
+namespace Datlechin\Placements;
 
-use Datlechin\Placement\Model\PlacementSetting;
-use Datlechin\Placement\Selection\PlanBuilder;
-use Datlechin\Placement\Support\DemoMode;
-use Datlechin\Placement\Support\Permissions;
-use Datlechin\Placement\Targeting\TargetingContext;
+use Datlechin\Placements\Model\PlacementSetting;
+use Datlechin\Placements\Selection\PlanBuilder;
+use Datlechin\Placements\Support\DemoMode;
+use Datlechin\Placements\Support\Permissions;
+use Datlechin\Placements\Targeting\TargetingContext;
 use Flarum\User\User;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Jenssegers\Agent\Agent;
@@ -33,7 +33,7 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class PlacementPlan
 {
-    public const CACHE_KEY = 'datlechin-placement.slots';
+    public const CACHE_KEY = 'datlechin-placements.slots';
 
     public function __construct(
         protected PlacementRegistry $registry,

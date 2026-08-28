@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Extend;
+namespace Datlechin\Placements\Extend;
 
-use Datlechin\Placement\Creative\CreativeTypeInterface;
-use Datlechin\Placement\Placement;
-use Datlechin\Placement\PlacementServiceProvider;
-use Datlechin\Placement\Targeting\DimensionInterface;
+use Datlechin\Placements\Creative\CreativeTypeInterface;
+use Datlechin\Placements\Placement;
+use Datlechin\Placements\PlacementServiceProvider;
+use Datlechin\Placements\Targeting\DimensionInterface;
 use Flarum\Extend\ExtenderInterface;
 use Flarum\Extension\Extension;
 use Illuminate\Contracts\Container\Container;
@@ -26,8 +26,8 @@ use Illuminate\Contracts\Container\Container;
  * ```php
  * // extend.php
  * return [
- *     (new Datlechin\Placement\Extend\Placements())
- *         ->placement(new Datlechin\Placement\Placement(
+ *     (new Datlechin\Placements\Extend\Placements())
+ *         ->placement(new Datlechin\Placements\Placement(
  *             key: 'acme.profile_rail',
  *             group: 'user',
  *             label: 'acme-widgets.admin.placements.profile_rail.label',

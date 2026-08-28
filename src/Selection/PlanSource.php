@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Selection;
+namespace Datlechin\Placements\Selection;
 
-use Datlechin\Placement\Model\Campaign;
-use Datlechin\Placement\Model\CampaignRule;
-use Datlechin\Placement\Model\Creative;
+use Datlechin\Placements\Model\Campaign;
+use Datlechin\Placements\Model\CampaignRule;
+use Datlechin\Placements\Model\Creative;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
 /**
@@ -63,7 +63,7 @@ use Illuminate\Contracts\Cache\Repository as Cache;
  */
 class PlanSource
 {
-    public const CACHE_KEY = 'datlechin-placement.plan';
+    public const CACHE_KEY = 'datlechin-placements.plan';
 
     public function __construct(protected Cache $cache)
     {

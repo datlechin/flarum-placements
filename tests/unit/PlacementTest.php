@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit;
+namespace Datlechin\Placements\Tests\unit;
 
-use Datlechin\Placement\Placement;
+use Datlechin\Placements\Placement;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -77,8 +77,8 @@ class PlacementTest extends TestCase
     {
         $placement = new Placement(key: 'discussion_after_op');
 
-        $this->assertSame('datlechin-placement.admin.placements.discussion_after_op.label', $placement->labelKey());
-        $this->assertSame('datlechin-placement.admin.placements.discussion_after_op.description', $placement->descriptionKey());
+        $this->assertSame('datlechin-placements.admin.placements.discussion_after_op.label', $placement->labelKey());
+        $this->assertSame('datlechin-placements.admin.placements.discussion_after_op.description', $placement->descriptionKey());
     }
 
     #[Test]
@@ -150,8 +150,8 @@ class PlacementTest extends TestCase
         $this->assertSame([
             'key' => 'post_footer',
             'group' => 'discussion',
-            'label' => 'datlechin-placement.admin.placements.post_footer.label',
-            'description' => 'datlechin-placement.admin.placements.post_footer.description',
+            'label' => 'datlechin-placements.admin.placements.post_footer.label',
+            'description' => 'datlechin-placements.admin.placements.post_footer.description',
             'allowedTypes' => ['image'],
             'maxFill' => 2,
             'repeating' => true,

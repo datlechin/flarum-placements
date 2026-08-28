@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit;
+namespace Datlechin\Placements\Tests\unit;
 
-use Datlechin\Placement\BuiltInPlacements;
-use Datlechin\Placement\Placement;
-use Datlechin\Placement\PlacementRegistry;
+use Datlechin\Placements\BuiltInPlacements;
+use Datlechin\Placements\Placement;
+use Datlechin\Placements\PlacementRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -37,7 +37,7 @@ class BuiltInPlacementsTest extends TestCase
         /** @var array<string, mixed> $parsed */
         $parsed = Yaml::parseFile(__DIR__.'/../../locale/en.yml');
 
-        return $parsed['datlechin-placement'] ?? [];
+        return $parsed['datlechin-placements'] ?? [];
     }
 
     public static function placements(): array
@@ -73,7 +73,7 @@ class BuiltInPlacementsTest extends TestCase
     {
         // Without this, adding a placement and forgetting the locale entry
         // ships an admin panel row reading
-        // "datlechin-placement.admin.placements.foo.label".
+        // "datlechin-placements.admin.placements.foo.label".
         $entry = self::locale()['admin']['placements'][$placement->key] ?? null;
 
         $this->assertIsArray($entry, "No locale entry for placement [$placement->key].");
@@ -85,8 +85,8 @@ class BuiltInPlacementsTest extends TestCase
     #[DataProvider('placements')]
     public function every_placement_uses_its_own_locale_namespace(Placement $placement): void
     {
-        $this->assertStringStartsWith('datlechin-placement.', $placement->labelKey());
-        $this->assertStringStartsWith('datlechin-placement.', $placement->descriptionKey());
+        $this->assertStringStartsWith('datlechin-placements.', $placement->labelKey());
+        $this->assertStringStartsWith('datlechin-placements.', $placement->descriptionKey());
     }
 
     #[Test]

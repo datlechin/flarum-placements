@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Api\Controller;
+namespace Datlechin\Placements\Api\Controller;
 
-use Datlechin\Placement\Measurement\EventToken;
-use Datlechin\Placement\Measurement\Recorder;
-use Datlechin\Placement\Model\Stat;
+use Datlechin\Placements\Measurement\EventToken;
+use Datlechin\Placements\Measurement\Recorder;
+use Datlechin\Placements\Model\Stat;
 use Laminas\Diactoros\Response\EmptyResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

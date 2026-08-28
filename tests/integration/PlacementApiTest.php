@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\integration;
+namespace Datlechin\Placements\Tests\integration;
 
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Support\Permissions;
 use Flarum\Group\Group;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
@@ -34,7 +34,7 @@ class PlacementApiTest extends TestCase
     {
         parent::setUp();
 
-        $this->extension('datlechin-placement');
+        $this->extension('datlechin-placements');
 
         $this->prepareDatabase([
             'users' => [$this->normalUser()],
@@ -414,7 +414,7 @@ class PlacementApiTest extends TestCase
     #[Test]
     public function ads_txt_is_served_as_plain_text_once_it_has_contents(): void
     {
-        $this->setting('datlechin-placement.ads_txt', "google.com, pub-1, DIRECT\r\nexample.com, 2, RESELLER");
+        $this->setting('datlechin-placements.ads_txt', "google.com, pub-1, DIRECT\r\nexample.com, 2, RESELLER");
 
         $response = $this->send($this->request('GET', '/ads.txt'));
 
@@ -430,7 +430,7 @@ class PlacementApiTest extends TestCase
     public function ads_txt_is_readable_by_anybody(): void
     {
         // It exists to be crawled. Requiring a session would defeat it.
-        $this->setting('datlechin-placement.ads_txt', 'google.com, pub-1, DIRECT');
+        $this->setting('datlechin-placements.ads_txt', 'google.com, pub-1, DIRECT');
 
         $this->assertSame(200, $this->send($this->request('GET', '/ads.txt'))->getStatusCode());
     }

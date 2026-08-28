@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Support;
+namespace Datlechin\Placements\Support;
 
 use Flarum\User\User;
 
@@ -23,25 +23,25 @@ final class Permissions
      * Hides every placement from the people who hold it. The most-requested
      * capability in nine years of Flarum ads discussion.
      */
-    public const VIEW_WITHOUT_ADS = 'datlechin-placement.viewWithoutAds';
+    public const VIEW_WITHOUT_ADS = 'datlechin-placements.viewWithoutAds';
 
     /**
      * Create and edit campaigns and creatives from the forum side, without
      * being a full administrator.
      */
-    public const MANAGE = 'datlechin-placement.manage';
+    public const MANAGE = 'datlechin-placements.manage';
 
     /**
      * Submit a creative for review. Members only ever author the safe types.
      */
-    public const SUBMIT = 'datlechin-placement.submit';
+    public const SUBMIT = 'datlechin-placements.submit';
 
     /**
      * Author a creative carrying raw HTML, which runs as same-origin
      * JavaScript on every page of the forum. Deliberately separate from
      * MANAGE, and useless on its own: the `config.php` flag has to be set too.
      */
-    public const AUTHOR_HTML = 'datlechin-placement.authorHtml';
+    public const AUTHOR_HTML = 'datlechin-placements.authorHtml';
 
     /**
      * @return list<string>

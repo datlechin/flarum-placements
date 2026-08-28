@@ -4,7 +4,7 @@ import type Mithril from 'mithril';
 import type { SlotConfig } from '../common/types';
 import type Advertiser from './models/Advertiser';
 
-export const EXTENSION = 'datlechin-placement';
+export const EXTENSION = 'datlechin-placements';
 
 export const PERMISSIONS = {
   viewWithoutAds: `${EXTENSION}.viewWithoutAds`,

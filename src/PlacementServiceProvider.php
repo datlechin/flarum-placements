@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,24 +9,24 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement;
+namespace Datlechin\Placements;
 
-use Datlechin\Placement\Creative\CreativeTypeInterface;
-use Datlechin\Placement\Creative\CreativeTypeRegistry;
-use Datlechin\Placement\Creative\Type;
-use Datlechin\Placement\Model\Assignment;
-use Datlechin\Placement\Model\Campaign;
-use Datlechin\Placement\Model\CampaignRule;
-use Datlechin\Placement\Model\Creative;
-use Datlechin\Placement\Measurement\EventToken;
-use Datlechin\Placement\Measurement\Recorder;
-use Datlechin\Placement\Measurement\SigningKey;
-use Datlechin\Placement\Model\PlacementSetting;
-use Datlechin\Placement\Selection\PlanBuilder;
-use Datlechin\Placement\Selection\PlanSource;
-use Datlechin\Placement\Support\Settings;
-use Datlechin\Placement\Targeting\Dimension;
-use Datlechin\Placement\Targeting\DimensionInterface;
+use Datlechin\Placements\Creative\CreativeTypeInterface;
+use Datlechin\Placements\Creative\CreativeTypeRegistry;
+use Datlechin\Placements\Creative\Type;
+use Datlechin\Placements\Model\Assignment;
+use Datlechin\Placements\Model\Campaign;
+use Datlechin\Placements\Model\CampaignRule;
+use Datlechin\Placements\Model\Creative;
+use Datlechin\Placements\Measurement\EventToken;
+use Datlechin\Placements\Measurement\Recorder;
+use Datlechin\Placements\Measurement\SigningKey;
+use Datlechin\Placements\Model\PlacementSetting;
+use Datlechin\Placements\Selection\PlanBuilder;
+use Datlechin\Placements\Selection\PlanSource;
+use Datlechin\Placements\Support\Settings;
+use Datlechin\Placements\Targeting\Dimension;
+use Datlechin\Placements\Targeting\DimensionInterface;
 use Flarum\Foundation\AbstractServiceProvider;
 use Flarum\Notification\NotificationSyncer;
 use Illuminate\Contracts\Cache\Repository as Cache;
@@ -48,17 +48,17 @@ class PlacementServiceProvider extends AbstractServiceProvider
     /**
      * Raw `Placement` value objects, before the registry validates them.
      */
-    public const PLACEMENTS = 'datlechin-placement.placements';
+    public const PLACEMENTS = 'datlechin-placements.placements';
 
     /**
      * @see CreativeTypeInterface
      */
-    public const CREATIVE_TYPES = 'datlechin-placement.creative-types';
+    public const CREATIVE_TYPES = 'datlechin-placements.creative-types';
 
     /**
      * @see DimensionInterface
      */
-    public const DIMENSIONS = 'datlechin-placement.dimensions';
+    public const DIMENSIONS = 'datlechin-placements.dimensions';
 
     public function register(): void
     {

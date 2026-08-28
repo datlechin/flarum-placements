@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit\Support;
+namespace Datlechin\Placements\Tests\unit\Support;
 
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Support\Permissions;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -44,7 +44,7 @@ class PermissionsTest extends TestCase
         // install. Renaming one later means a migration that has to guess
         // which rows were ours.
         foreach (Permissions::all() as $permission) {
-            $this->assertStringStartsWith('datlechin-placement.', $permission);
+            $this->assertStringStartsWith('datlechin-placements.', $permission);
         }
     }
 

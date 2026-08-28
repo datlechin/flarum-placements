@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Console;
+namespace Datlechin\Placements\Console;
 
 use Carbon\Carbon;
-use Datlechin\Placement\Model\Stat;
+use Datlechin\Placements\Model\Stat;
 use Flarum\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -34,7 +34,7 @@ class PruneStatsCommand extends AbstractCommand
     protected function configure(): void
     {
         $this
-            ->setName('placement:prune')
+            ->setName('placements:prune')
             ->setDescription('Delete advertising statistics older than the retention window')
             ->addOption('days', null, InputOption::VALUE_REQUIRED, 'How many days to keep', (string) self::DEFAULT_DAYS);
     }

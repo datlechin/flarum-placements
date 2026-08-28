@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,22 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit\Selection;
+namespace Datlechin\Placements\Tests\unit\Selection;
 
 use Carbon\Carbon;
-use Datlechin\Placement\Model\Campaign;
-use Datlechin\Placement\Placement;
-use Datlechin\Placement\PlacementRegistry;
-use Datlechin\Placement\PlacementServiceProvider;
-use Datlechin\Placement\Selection\PlanBuilder;
-use Datlechin\Placement\Selection\Daypart;
-use Datlechin\Placement\Selection\PlanSource;
-use Datlechin\Placement\Targeting\Dimension\GroupDimension;
-use Datlechin\Placement\Targeting\Dimension\RouteDimension;
-use Datlechin\Placement\Targeting\Dimension\VisitorDimension;
-use Datlechin\Placement\Targeting\DimensionInterface as D;
-use Datlechin\Placement\Tests\unit\ConnectsModels;
-use Datlechin\Placement\Tests\unit\Targeting\MakesContexts;
+use Datlechin\Placements\Model\Campaign;
+use Datlechin\Placements\Placement;
+use Datlechin\Placements\PlacementRegistry;
+use Datlechin\Placements\PlacementServiceProvider;
+use Datlechin\Placements\Selection\PlanBuilder;
+use Datlechin\Placements\Selection\Daypart;
+use Datlechin\Placements\Selection\PlanSource;
+use Datlechin\Placements\Targeting\Dimension\GroupDimension;
+use Datlechin\Placements\Targeting\Dimension\RouteDimension;
+use Datlechin\Placements\Targeting\Dimension\VisitorDimension;
+use Datlechin\Placements\Targeting\DimensionInterface as D;
+use Datlechin\Placements\Tests\unit\ConnectsModels;
+use Datlechin\Placements\Tests\unit\Targeting\MakesContexts;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\Repository;
 use Illuminate\Container\Container;

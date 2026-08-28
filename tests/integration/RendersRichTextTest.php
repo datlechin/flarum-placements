@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\integration;
+namespace Datlechin\Placements\Tests\integration;
 
-use Datlechin\Placement\Creative\Type\RichTextType;
+use Datlechin\Placements\Creative\Type\RichTextType;
 use Flarum\Formatter\Formatter;
 use Flarum\Testing\integration\TestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -28,7 +28,7 @@ class RendersRichTextTest extends TestCase
     {
         parent::setUp();
 
-        $this->extension('datlechin-placement');
+        $this->extension('datlechin-placements');
     }
 
     private function type(): RichTextType

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Measurement;
+namespace Datlechin\Placements\Measurement;
 
 use Carbon\Carbon;
-use Datlechin\Placement\Model\Campaign;
-use Datlechin\Placement\Model\Creative;
-use Datlechin\Placement\Model\Stat;
-use Datlechin\Placement\Notification\CampaignStoppedBlueprint;
+use Datlechin\Placements\Model\Campaign;
+use Datlechin\Placements\Model\Creative;
+use Datlechin\Placements\Model\Stat;
+use Datlechin\Placements\Notification\CampaignStoppedBlueprint;
 use Flarum\Notification\NotificationSyncer;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Database\ConnectionInterface;
@@ -35,9 +35,9 @@ use Illuminate\Database\ConnectionInterface;
  */
 class Recorder
 {
-    public const BUFFER_PREFIX = 'datlechin-placement.buf.';
-    public const BUFFER_INDEX = 'datlechin-placement.buf.index';
-    public const NONCE_PREFIX = 'datlechin-placement.nonce.';
+    public const BUFFER_PREFIX = 'datlechin-placements.buf.';
+    public const BUFFER_INDEX = 'datlechin-placements.buf.index';
+    public const NONCE_PREFIX = 'datlechin-placements.nonce.';
 
     public function __construct(
         protected Cache $cache,

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Creative\Type;
+namespace Datlechin\Placements\Creative\Type;
 
-use Datlechin\Placement\Creative\CreativeTypeInterface;
+use Datlechin\Placements\Creative\CreativeTypeInterface;
 
 /**
  * Reading a payload safely.

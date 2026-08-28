@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Console;
+namespace Datlechin\Placements\Console;
 
-use Datlechin\Placement\Creative\CreativeTypeRegistry;
-use Datlechin\Placement\Model\Advertiser;
-use Datlechin\Placement\Model\Assignment;
-use Datlechin\Placement\Model\Campaign;
-use Datlechin\Placement\Model\CampaignRule;
-use Datlechin\Placement\Model\Creative;
-use Datlechin\Placement\Model\PlacementSetting;
-use Datlechin\Placement\PlacementRegistry;
-use Datlechin\Placement\Support\Settings;
+use Datlechin\Placements\Creative\CreativeTypeRegistry;
+use Datlechin\Placements\Model\Advertiser;
+use Datlechin\Placements\Model\Assignment;
+use Datlechin\Placements\Model\Campaign;
+use Datlechin\Placements\Model\CampaignRule;
+use Datlechin\Placements\Model\Creative;
+use Datlechin\Placements\Model\PlacementSetting;
+use Datlechin\Placements\PlacementRegistry;
+use Datlechin\Placements\Support\Settings;
 use Flarum\Console\AbstractCommand;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Contracts\Validation\Factory as Validation;
@@ -28,7 +28,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Reads back what `placement:export` wrote.
+ * Reads back what `placements:export` wrote.
  *
  * Adds to what is already there rather than replacing it, and never matches on
  * an id: the file carries none, because an id from another database means
@@ -63,8 +63,8 @@ class ImportCommand extends AbstractCommand
     protected function configure(): void
     {
         $this
-            ->setName('placement:import')
-            ->setDescription('Read an advertising configuration written by placement:export')
+            ->setName('placements:import')
+            ->setDescription('Read an advertising configuration written by placements:export')
             ->addArgument('file', InputArgument::REQUIRED, 'The JSON file to read')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Report what would be imported without writing anything')
             ->addOption('settings', null, InputOption::VALUE_NONE, "Bring the forum's own settings across as well");

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement;
+namespace Datlechin\Placements;
 
 use InvalidArgumentException;
 
@@ -90,7 +90,7 @@ final class Placement
      */
     public function labelKey(): string
     {
-        return $this->label ?? "datlechin-placement.admin.placements.$this->key.label";
+        return $this->label ?? "datlechin-placements.admin.placements.$this->key.label";
     }
 
     /**
@@ -98,7 +98,7 @@ final class Placement
      */
     public function descriptionKey(): string
     {
-        return $this->description ?? "datlechin-placement.admin.placements.$this->key.description";
+        return $this->description ?? "datlechin-placements.admin.placements.$this->key.description";
     }
 
     /**

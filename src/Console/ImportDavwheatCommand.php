@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Console;
+namespace Datlechin\Placements\Console;
 
-use Datlechin\Placement\Model\Assignment;
-use Datlechin\Placement\Model\Campaign;
-use Datlechin\Placement\Model\Creative;
-use Datlechin\Placement\Model\PlacementSetting;
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Model\Assignment;
+use Datlechin\Placements\Model\Campaign;
+use Datlechin\Placements\Model\Creative;
+use Datlechin\Placements\Model\PlacementSetting;
+use Datlechin\Placements\Support\Permissions;
 use Flarum\Console\AbstractCommand;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Database\ConnectionInterface;
@@ -64,7 +64,7 @@ class ImportDavwheatCommand extends AbstractCommand
     protected function configure(): void
     {
         $this
-            ->setName('placement:import-davwheat')
+            ->setName('placements:import-davwheat')
             ->setDescription('Bring a davwheat/flarum-ext-ads configuration into this extension')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Report what would be imported without writing anything');
     }
@@ -97,7 +97,7 @@ class ImportDavwheatCommand extends AbstractCommand
             : 'Imported as drafts. Nothing shows on the forum until you approve them.');
 
         $this->info('These are raw HTML creatives, so they also need the raw_html permission and');
-        $this->info("  'datlechin-placement' => ['raw_html' => true],");
+        $this->info("  'datlechin-placements' => ['raw_html' => true],");
         $this->info('in config.php before they can serve.');
 
         return 0;

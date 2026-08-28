@@ -277,13 +277,13 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
 
         <div className="Form-group">
           <label>{trans('settings.timezone')}</label>
-          <input className="FormControl" bidi={this.setting('datlechin-placement.timezone', 'UTC')} placeholder="UTC" />
+          <input className="FormControl" bidi={this.setting('datlechin-placements.timezone', 'UTC')} placeholder="UTC" />
           <div className="helpText">{trans('settings.timezone_help')}</div>
         </div>
 
         <div className="Form-group">
           <label>{trans('settings.retention_days')}</label>
-          <input className="FormControl" type="number" min="1" max="730" bidi={this.setting('datlechin-placement.retention_days', '90')} />
+          <input className="FormControl" type="number" min="1" max="730" bidi={this.setting('datlechin-placements.retention_days', '90')} />
           <div className="helpText">{trans('settings.retention_days_help')}</div>
         </div>
 
@@ -292,7 +292,7 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
           <textarea
             className="FormControl"
             rows="5"
-            bidi={this.setting('datlechin-placement.ads_txt', '')}
+            bidi={this.setting('datlechin-placements.ads_txt', '')}
             placeholder="google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0"
           />
           <div className="helpText">{trans('settings.ads_txt_help')}</div>
@@ -303,7 +303,7 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
           <textarea
             className="FormControl"
             rows="3"
-            bidi={this.setting('datlechin-placement.network_scripts', '')}
+            bidi={this.setting('datlechin-placements.network_scripts', '')}
             placeholder="https://…/loader.js"
           />
           <div className="helpText">{trans('settings.network_scripts_help')}</div>

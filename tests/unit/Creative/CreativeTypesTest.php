@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit\Creative;
+namespace Datlechin\Placements\Tests\unit\Creative;
 
-use Datlechin\Placement\Creative\Type\ImageType;
-use Datlechin\Placement\Creative\Type\NetworkType;
-use Datlechin\Placement\Creative\Type\RawHtmlType;
-use Datlechin\Placement\Creative\Type\TextType;
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Creative\Type\ImageType;
+use Datlechin\Placements\Creative\Type\NetworkType;
+use Datlechin\Placements\Creative\Type\RawHtmlType;
+use Datlechin\Placements\Creative\Type\TextType;
+use Datlechin\Placements\Support\Permissions;
 use Flarum\Foundation\Config;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -134,19 +134,19 @@ class CreativeTypesTest extends TestCase
     {
         return [
             'nothing at all' => [[]],
-            'the section but not the flag' => [['datlechin-placement' => []]],
-            'the flag switched off' => [['datlechin-placement' => ['raw_html' => false]]],
+            'the section but not the flag' => [['datlechin-placements' => []]],
+            'the flag switched off' => [['datlechin-placements' => ['raw_html' => false]]],
             // Deliberately strict. A truthy string is how somebody ends up
             // enabling this by pasting a value from somewhere else.
-            'a truthy string rather than true' => [['datlechin-placement' => ['raw_html' => '1']]],
-            'the section is not a section' => [['datlechin-placement' => 'yes']],
+            'a truthy string rather than true' => [['datlechin-placements' => ['raw_html' => '1']]],
+            'the section is not a section' => [['datlechin-placements' => 'yes']],
         ];
     }
 
     #[Test]
     public function raw_html_is_on_when_config_php_says_so(): void
     {
-        $this->assertTrue((new RawHtmlType(self::config(['datlechin-placement' => ['raw_html' => true]])))->isEnabled());
+        $this->assertTrue((new RawHtmlType(self::config(['datlechin-placements' => ['raw_html' => true]])))->isEnabled());
     }
 
     /**

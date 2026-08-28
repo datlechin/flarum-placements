@@ -10,7 +10,7 @@ import type { Candidate } from './types';
  *
  * `sessionStorage`, so it lasts exactly as long as the visit does.
  */
-const KEY = 'datlechin-placement.sticky';
+const KEY = 'datlechin-placements.sticky';
 
 type Choices = Record<string, number[]>;
 

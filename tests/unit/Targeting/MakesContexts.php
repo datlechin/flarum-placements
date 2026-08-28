@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Tests\unit\Targeting;
+namespace Datlechin\Placements\Tests\unit\Targeting;
 
-use Datlechin\Placement\Targeting\TargetingContext;
+use Datlechin\Placements\Targeting\TargetingContext;
 use Flarum\Group\Group;
 use Flarum\User\Guest;
 use Flarum\User\User;

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of datlechin/flarum-placement.
+ * This file is part of datlechin/flarum-placements.
  *
  * Copyright (c) 2026 Ngo Quoc Dat.
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Datlechin\Placement\Creative\Type;
+namespace Datlechin\Placements\Creative\Type;
 
-use Datlechin\Placement\Support\Permissions;
+use Datlechin\Placements\Support\Permissions;
 
 /**
  * A container for something an external network fills.
@@ -47,7 +47,7 @@ class NetworkType extends AbstractCreativeType
 
     public function label(): string
     {
-        return 'datlechin-placement.admin.creatives.types.network';
+        return 'datlechin-placements.admin.creatives.types.network';
     }
 
     public function rules(): array
