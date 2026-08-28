@@ -91,10 +91,13 @@ return [
     (new Extend\ApiResource(Api\Resource\AdvertiserResource::class)),
     (new Extend\ApiResource(Api\Resource\PlacementSettingResource::class)),
 
-    // The same model as CreativeResource, behind a much narrower door: a
+    // The same rows as CreativeResource, behind a much narrower door: a
     // member's own submissions and nothing else. Widening the administrative
     // resource instead would have put one permission check between a member and
     // every rate on the forum.
+    //
+    // Its own model class, not Creative — see Model\Submission for why that is
+    // load-bearing rather than tidiness.
     (new Extend\ApiResource(Api\Resource\SubmissionResource::class)),
 
     // Open to guests by necessity — most readers of a public forum are guests,
