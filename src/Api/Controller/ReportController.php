@@ -17,7 +17,6 @@ use Datlechin\Placements\Model\Stat;
 use Datlechin\Placements\Support\Permissions;
 use Flarum\Http\RequestUtil;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Database\Query\Expression;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Response\TextResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -136,19 +135,46 @@ class ReportController implements RequestHandlerInterface
      */
     protected function daily(Carbon $since): array
     {
+        // Grouped by the hour in SQL and folded into days here, rather than
+        // asking the database for the date part.
+        //
+        // There is no portable way to write that part. `substr(bucket_start,
+        // 1, 10)` reads the datetime as text, which SQLite and MySQL allow by
+        // implicit conversion and PostgreSQL refuses outright -- there is no
+        // `substr(timestamp, integer, integer)`. `DATE()`, `CAST(... AS DATE)`
+        // and `to_char()` each work on some drivers and not others, so the
+        // alternative is branching on the connection's driver name in a
+        // report.
+        //
+        // Folding here costs nothing. The rows are already summed across every
+        // campaign, creative, slot and device, so what comes back is one row
+        // per hour in the window: 720 for a month, 8,760 for a year, whatever
+        // the size of the forum. `bucket_start` is the leading column of the
+        // unique index, so the grouping is answered by it.
         $rows = $this->query($since)
-            ->select(new Expression("substr(bucket_start, 1, 10) as day"))
+            ->select('bucket_start')
             ->selectRaw('SUM(impressions) as impressions, SUM(viewable_impressions) as viewable, SUM(clicks) as clicks')
-            ->groupBy('day')
-            ->orderBy('day')
+            ->groupBy('bucket_start')
+            ->orderBy('bucket_start')
             ->get();
 
-        return array_values($rows->map(fn (object $row) => [
-            'day' => is_scalar($row->day) ? (string) $row->day : '',
-            'impressions' => is_numeric($row->impressions) ? (int) $row->impressions : 0,
-            'viewable' => is_numeric($row->viewable) ? (int) $row->viewable : 0,
-            'clicks' => is_numeric($row->clicks) ? (int) $row->clicks : 0,
-        ])->all());
+        $days = [];
+
+        foreach ($rows as $row) {
+            // Drivers hand this back differently -- a string on MySQL and
+            // SQLite, a string PostgreSQL formats its own way -- so it is
+            // parsed rather than sliced.
+            $day = Carbon::parse((string) $row->bucket_start)->format('Y-m-d');
+
+            $days[$day] ??= ['day' => $day, 'impressions' => 0, 'viewable' => 0, 'clicks' => 0];
+
+            $days[$day]['impressions'] += is_numeric($row->impressions) ? (int) $row->impressions : 0;
+            $days[$day]['viewable'] += is_numeric($row->viewable) ? (int) $row->viewable : 0;
+            $days[$day]['clicks'] += is_numeric($row->clicks) ? (int) $row->clicks : 0;
+        }
+
+        // Ordered by the query, and insertion order preserves it.
+        return array_values($days);
     }
 
     /**

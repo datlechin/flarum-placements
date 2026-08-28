@@ -1,4 +1,4 @@
-name: Placement PHP
+name: Placements PHP
 
 on: [workflow_dispatch, push, pull_request]
 
