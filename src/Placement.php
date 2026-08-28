@@ -20,8 +20,8 @@ use InvalidArgumentException;
  * component renders a slot under its key, and it carries only what the admin
  * UI and the layout need to know about that slot. Everything an administrator
  * can change about it — whether it is on, how many creatives it holds, what it
- * falls back to — lives in the `placements` table under the same key, not
- * here.
+ * falls back to — lives in the `placement_settings` table under the same key,
+ * not here.
  *
  * That split is deliberate. Placements are declared in code and can never be
  * created by an administrator, because Flarum has no server-side templates: a

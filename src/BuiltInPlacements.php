@@ -233,7 +233,7 @@ final class BuiltInPlacements
                 reserveDesktop: 90,
             ),
 
-            // @see forum/components/DiscussionPage.tsx:303 — sidebarItems(); controls 100, scrubber -100.
+            // @see forum/components/DiscussionPage.tsx:302 — sidebarItems(); controls 100, scrubber -100.
             //      <li>-wrapped into .DiscussionPage-nav, which is position: sticky on tablet and up
             //      with --sidebar-width: 180px (less/forum/DiscussionPage.less:27). Narrower than every
             //      other sidebar on the forum.
