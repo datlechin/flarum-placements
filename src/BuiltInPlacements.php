@@ -139,7 +139,11 @@ final class BuiltInPlacements
                 key: 'page_sidebar_top',
                 group: Placement::GROUP_PAGE,
                 recommendedSize: [160, 600],
-                reserveTablet: 600,
+                // No tablet reserve, deliberately. Core lays the sidebar
+                // beside the content only at `@desktop-up`; below 992px it is
+                // stacked above it, so reserving 600px there pushes the page
+                // down by a screenful before an advert has loaded -- and the
+                // slot is not a sidebar at that width in any case.
                 reserveDesktop: 600,
             ),
 
@@ -147,7 +151,11 @@ final class BuiltInPlacements
                 key: 'page_sidebar_bottom',
                 group: Placement::GROUP_PAGE,
                 recommendedSize: [160, 600],
-                reserveTablet: 600,
+                // No tablet reserve, deliberately. Core lays the sidebar
+                // beside the content only at `@desktop-up`; below 992px it is
+                // stacked above it, so reserving 600px there pushes the page
+                // down by a screenful before an advert has loaded -- and the
+                // slot is not a sidebar at that width in any case.
                 reserveDesktop: 600,
             ),
         ];
@@ -191,7 +199,11 @@ final class BuiltInPlacements
                 key: 'index_sidebar',
                 group: Placement::GROUP_INDEX,
                 recommendedSize: [160, 600],
-                reserveTablet: 600,
+                // No tablet reserve, deliberately. Core lays the sidebar
+                // beside the content only at `@desktop-up`; below 992px it is
+                // stacked above it, so reserving 600px there pushes the page
+                // down by a screenful before an advert has loaded -- and the
+                // slot is not a sidebar at that width in any case.
                 reserveDesktop: 600,
             ),
         ];
@@ -241,7 +253,11 @@ final class BuiltInPlacements
                 key: 'discussion_sidebar',
                 group: Placement::GROUP_DISCUSSION,
                 recommendedSize: [160, 600],
-                reserveTablet: 600,
+                // No tablet reserve, deliberately. Core lays the sidebar
+                // beside the content only at `@desktop-up`; below 992px it is
+                // stacked above it, so reserving 600px there pushes the page
+                // down by a screenful before an advert has loaded -- and the
+                // slot is not a sidebar at that width in any case.
                 reserveDesktop: 600,
             ),
 
@@ -282,7 +298,11 @@ final class BuiltInPlacements
                 key: 'profile_sidebar',
                 group: Placement::GROUP_USER,
                 recommendedSize: [160, 600],
-                reserveTablet: 600,
+                // No tablet reserve, deliberately. Core lays the sidebar
+                // beside the content only at `@desktop-up`; below 992px it is
+                // stacked above it, so reserving 600px there pushes the page
+                // down by a screenful before an advert has loaded -- and the
+                // slot is not a sidebar at that width in any case.
                 reserveDesktop: 600,
             ),
         ];

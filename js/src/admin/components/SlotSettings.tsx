@@ -71,9 +71,85 @@ export default class SlotSettings extends Component<SlotSettingsAttrs> {
 
         <div className="helpText PlacementSlots-description">{app.translator.trans(slot.description)}</div>
 
+        {enabled && this.deliveryControls(slot, setting)}
+        {enabled && this.reserveControls(slot, setting)}
         {enabled && this.rotationControl(slot, setting)}
         {enabled && slot.repeating && this.repeatControls(slot, setting)}
       </li>
+    );
+  }
+
+  /**
+   * How much this slot holds and what it says about itself.
+   *
+   * Both were writable through the API and honoured at serve time with no
+   * control anywhere, which is the same as not having them.
+   */
+  protected deliveryControls(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children {
+    return (
+      <div className="PlacementSlots-repeat">
+        <label>
+          {trans('slots.max_fill')}
+          <input
+            className="FormControl"
+            type="number"
+            min="1"
+            max="10"
+            value={setting?.maxFill() ?? slot.maxFill}
+            onchange={(e: Event) => this.save(slot, { maxFill: Number((e.target as HTMLInputElement).value) || 1 })}
+          />
+        </label>
+
+        <label>
+          {trans('slots.label_mode')}
+          <Select
+            value={setting?.labelMode() ?? 'inherit'}
+            options={{
+              inherit: trans('slots.label_inherit'),
+              always: trans('slots.label_always'),
+              never: trans('slots.label_never'),
+            }}
+            onchange={(value: string) => this.save(slot, { labelMode: value })}
+          />
+        </label>
+      </div>
+    );
+  }
+
+  /**
+   * The height held open while a creative loads.
+   *
+   * Per breakpoint, because a slot that is a leaderboard on a desktop is
+   * usually something much shorter on a phone, and reserving the desktop
+   * height everywhere pushes the page down on the readers who can least
+   * afford it. Blank means reserve nothing.
+   */
+  protected reserveControls(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children {
+    const fields: Array<['reservePhone' | 'reserveTablet' | 'reserveDesktop', string]> = [
+      ['reservePhone', 'phone'],
+      ['reserveTablet', 'tablet'],
+      ['reserveDesktop', 'desktop'],
+    ];
+
+    return (
+      <div className="PlacementSlots-repeat">
+        <span className="PlacementSlots-reserveLabel">{trans('slots.reserve')}</span>
+
+        {fields.map(([attribute, name]) => (
+          <label key={name}>
+            {trans(`slots.reserve_${name}`)}
+            <input
+              className="FormControl"
+              type="number"
+              min="0"
+              max="2000"
+              placeholder="—"
+              value={setting?.[attribute]() ?? ''}
+              onchange={(e: Event) => this.save(slot, { [attribute]: this.number((e.target as HTMLInputElement).value) })}
+            />
+          </label>
+        ))}
+      </div>
     );
   }
 

@@ -319,6 +319,15 @@ datlechin-placements:
     slots:
       title: Slots
       rotation: Rotation
+      max_fill: Creatives at once
+      label_mode: Disclosure label
+      label_inherit: Follow the forum default
+      label_always: Always show
+      label_never: Never show
+      reserve: Reserved height
+      reserve_phone: Phone
+      reserve_tablet: Tablet
+      reserve_desktop: Desktop
       rotation_random: Draw again on every page
       rotation_sticky: Keep the choice for the visit
       every_n: Show in every nth post
@@ -410,6 +419,7 @@ datlechin-placements:
       campaign_stopped:
         impressions: "{campaign} has reached its impression cap and stopped."
         clicks: "{campaign} has reached its click cap and stopped."
+        unnamed: A campaign
 
     submissions:
       tab: My adverts

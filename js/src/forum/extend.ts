@@ -3,6 +3,7 @@ import UserPageResolver from 'flarum/forum/resolvers/UserPageResolver';
 import type DefaultResolver from 'flarum/common/resolvers/DefaultResolver';
 import commonExtend from '../common/extend';
 
+import CampaignStoppedNotification from './components/CampaignStoppedNotification';
 import SubmissionsUserPage from './components/SubmissionsUserPage';
 import Submission from './models/Submission';
 import { SUBMISSION_RESOURCE } from './submissions';
@@ -11,6 +12,10 @@ export default [
   ...commonExtend,
 
   new Extend.Store().add(SUBMISSION_RESOURCE, Submission),
+
+  // The blueprint has always sent these; nothing rendered them, so they
+  // arrived as an empty row in the notification list.
+  new Extend.Notification().add('datlechinPlacementCampaignStopped', CampaignStoppedNotification),
 
   // A profile tab, because that is where Flarum already keeps everything
   // belonging to one person -- and it comes with the routing and the layout.
