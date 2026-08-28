@@ -54,11 +54,7 @@ describe('drawing a creative', () => {
     it('draws only from the best tier that has anything', () => {
       // Mixing a sponsorship with a remnant filler in one weighted draw is
       // what makes "why didn't my paid campaign show?" unanswerable.
-      const candidates = [
-        candidate({ creative: 1, tier: 10 }),
-        candidate({ creative: 2, tier: 10 }),
-        candidate({ creative: 3, tier: 90 }),
-      ];
+      const candidates = [candidate({ creative: 1, tier: 10 }), candidate({ creative: 2, tier: 10 }), candidate({ creative: 3, tier: 90 })];
 
       expect(state.topTier(candidates).map((c) => c.creative)).toEqual([1, 2]);
     });
@@ -112,11 +108,7 @@ describe('drawing a creative', () => {
   });
 
   describe('filling a slot that holds more than one', () => {
-    const three = [
-      candidate({ creative: 1, weight: 1 }),
-      candidate({ creative: 2, weight: 1 }),
-      candidate({ creative: 3, weight: 1 }),
-    ];
+    const three = [candidate({ creative: 1, weight: 1 }), candidate({ creative: 2, weight: 1 }), candidate({ creative: 3, weight: 1 })];
 
     it('never draws the same creative twice', () => {
       const picked = state.pick(slot(three, { maxFill: 3 }), sequence(0, 0, 0));
@@ -244,10 +236,7 @@ describe('a slot that holds its choice', () => {
 
     // Creative 1 is gone. A fresh weighted draw at 0.9 lands on the second of
     // the two that remain, which is deliberately not the first in the list.
-    const remaining = slot(
-      [candidate({ creative: 3, weight: 1 }), candidate({ creative: 2, weight: 1 })],
-      { rotation: 'sticky' }
-    );
+    const remaining = slot([candidate({ creative: 3, weight: 1 }), candidate({ creative: 2, weight: 1 })], { rotation: 'sticky' });
 
     expect(state.pick(remaining, sequence(0.9)).map((c) => c.creative)).toEqual([2]);
   });

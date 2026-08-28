@@ -17,6 +17,11 @@ namespace Datlechin\Placement;
 use Datlechin\Placement\Extend\Placements;
 use Flarum\Api\Resource\ForumResource;
 use Flarum\Extend;
+// Imported rather than written inline for the same reason: inside this
+// namespace a bare `Flarum\Search\...` resolves to
+// `Datlechin\Placement\Flarum\Search\...`, and the failure is a 500 from
+// the search manager rather than anything that names the mistake.
+use Flarum\Search\Database\DatabaseSearchDriver;
 use Illuminate\Console\Scheduling\Event;
 
 return [
@@ -72,6 +77,14 @@ return [
 
     (new Extend\ApiResource(ForumResource::class))
         ->fields(Api\ForumFields::class),
+
+    // A searcher for a model nothing searches. Flarum routes every list filter
+    // through one — `AbstractDatabaseResource::filters()` is final and throws —
+    // so the review queue asking for `filter[status]=pending` needs this to
+    // exist before it can ask.
+    (new Extend\SearchDriver(DatabaseSearchDriver::class))
+        ->addSearcher(Model\Creative::class, Search\CreativeSearcher::class)
+        ->addFilter(Search\CreativeSearcher::class, Search\Filter\StatusFilter::class),
 
     (new Extend\ApiResource(Api\Resource\CampaignResource::class)),
     (new Extend\ApiResource(Api\Resource\CreativeResource::class)),

@@ -17,6 +17,7 @@ import CampaignModal from './CampaignModal';
 import AdvertiserModal from './AdvertiserModal';
 import CreativeModal from './CreativeModal';
 import ReportSection from './ReportSection';
+import ReviewSection from './ReviewSection';
 import SlotSettings from './SlotSettings';
 
 /**
@@ -52,6 +53,7 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
     const items = new ItemList<Mithril.Children>();
 
     items.add('demo', this.demoSection(), 100);
+    items.add('review', <ReviewSection ondecided={() => this.load()} />, 95);
     items.add('campaigns', this.campaignSection(), 90);
     items.add('reports', <ReportSection />, 85);
     items.add('advertisers', this.advertiserSection(), 82);

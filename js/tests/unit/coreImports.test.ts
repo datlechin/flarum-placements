@@ -45,7 +45,7 @@ describe('the compiled forum bundle', () => {
     bundle = fs.readFileSync(bundlePath, 'utf8');
   });
 
-  it.each(CODE_SPLIT)('does not eagerly import core\'s %s', (component) => {
+  it.each(CODE_SPLIT)("does not eagerly import core's %s", (component) => {
     // The eager form the compiler emits for `import X from 'flarum/...'`.
     // Matching this exactly matters: an earlier version of this test looked
     // for the bare module path, which also matched the *lazy* reference and
@@ -68,10 +68,8 @@ describe('the compiled forum bundle', () => {
   it('eagerly imports the components that are not split', () => {
     // The other half of the check: these are cheap and expected, and if they
     // ever move into a chunk this test starts failing and tells us.
-    ['IndexPage', 'PageStructure', 'Notices', 'HeaderSecondary', 'IndexSidebar', 'DiscussionPage', 'CommentPost'].forEach(
-      (component) => {
-        expect(bundle).toContain(`reg.get("core","forum/components/${component}")`);
-      }
-    );
+    ['IndexPage', 'PageStructure', 'Notices', 'HeaderSecondary', 'IndexSidebar', 'DiscussionPage', 'CommentPost'].forEach((component) => {
+      expect(bundle).toContain(`reg.get("core","forum/components/${component}")`);
+    });
   });
 });

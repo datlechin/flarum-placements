@@ -244,6 +244,61 @@
   }
 }
 
+.PlacementReview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.PlacementReview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 15px;
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+}
+
+.PlacementReview-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.PlacementReview-name {
+  padding: 0;
+  font-weight: 600;
+}
+
+.PlacementReview-meta {
+  color: var(--muted-color);
+  font-size: 12px;
+}
+
+.PlacementReview-reason {
+  padding: 8px 12px;
+  border-inline-start: 3px solid var(--control-danger-color, var(--muted-color));
+  background: var(--control-bg);
+  color: var(--muted-color);
+  font-size: 13px;
+}
+
+.PlacementReview-rejection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.PlacementReview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .PlacementLogos {
   display: flex;
   flex-direction: column;

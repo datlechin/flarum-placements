@@ -18,6 +18,20 @@ datlechin-placement:
         and to check that one you expected is there at all.
       open: Open the forum in demo mode
 
+    review:
+      title: Waiting for review
+      help: >
+        Creatives nobody has decided on yet, and the ones that were turned
+        down. Editing an approved creative sends it back here.
+      none: Nothing is waiting.
+      from: "{campaign} · {type}"
+      approve: Approve
+      reject: Reject
+      edit_reason: Change the reason
+      confirm_reject: Reject it
+      cancel: Cancel
+      reason_placeholder: Why is this being turned down? Whoever submitted it will see this.
+
     campaigns:
       title: Campaigns
       create: New campaign
