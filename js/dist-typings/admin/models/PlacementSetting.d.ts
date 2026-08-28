@@ -10,6 +10,7 @@ export default class PlacementSetting extends Model {
     enabled: () => boolean;
     maxFill: () => number;
     fallback: () => string;
+    passbackCreativeId: () => number | null;
     labelMode: () => string;
     /** random | sticky. Sticky holds the slot's choice for the rest of the visit. */
     rotation: () => string;

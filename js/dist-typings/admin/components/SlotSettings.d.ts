@@ -2,6 +2,7 @@ import Component from 'flarum/common/Component';
 import type { ComponentAttrs } from 'flarum/common/Component';
 import type Mithril from 'mithril';
 import type { SlotConfig } from '../../common/types';
+import type Creative from '../models/Creative';
 import type PlacementSetting from '../models/PlacementSetting';
 export interface SlotSettingsAttrs extends ComponentAttrs {
 }
@@ -15,6 +16,8 @@ export interface SlotSettingsAttrs extends ComponentAttrs {
  */
 export default class SlotSettings extends Component<SlotSettingsAttrs> {
     protected settings: Record<string, PlacementSetting>;
+    /** Approved creatives, for the passback picker. */
+    protected creatives: Creative[] | null;
     protected loading: boolean;
     protected saving: string | null;
     oninit(vnode: Mithril.Vnode<SlotSettingsAttrs, this>): void;
@@ -27,6 +30,14 @@ export default class SlotSettings extends Component<SlotSettingsAttrs> {
      * control anywhere, which is the same as not having them.
      */
     protected deliveryControls(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children;
+    /**
+     * What the slot does when nothing matched.
+     *
+     * Every mode was writable through the API and none of them did anything:
+     * the client took the best tier and ignored the setting entirely, so all
+     * four behaved as `next_tier`.
+     */
+    protected fallbackControls(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children;
     /**
      * The height held open while a creative loads.
      *

@@ -56,6 +56,25 @@ export default class PlacementState {
      * unanswerable, and the server has already sorted them, so this is the
      * leading run and nothing more.
      */
+    /**
+     * Narrow the eligible candidates to what this slot's fallback allows.
+     *
+     * Falling from one tier to the next is what the engine does by default, and
+     * for most slots it is what an administrator wants. The setting exists for
+     * the two cases where it is not:
+     *
+     * `collapse` means this slot is for its best tier or for nobody -- a
+     * sponsorship position that quietly fills with remnant is worth less than an
+     * empty one, and the sponsor notices.
+     *
+     * `house` means the opposite: never leave a hole, but do not let a paid
+     * campaign of a lower tier take a slot the top tier was sold; drop straight
+     * to the forum's own adverts instead.
+     *
+     * @param eligible What survived the frequency cap.
+     * @param inventory Everything that was sent, before the cap.
+     */
+    protected forFallback(slot: SlotConfig, eligible: Candidate[], inventory: Candidate[]): Candidate[];
     topTier(candidates: Candidate[]): Candidate[];
     /**
      * Draw up to `maxFill` creatives for a slot, by weight, without repeats.
