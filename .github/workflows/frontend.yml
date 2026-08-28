@@ -8,6 +8,7 @@ jobs:
     with:
       enable_prettier: true
       enable_typescript: true
+      type_coverage_script: ''
       enable_tests: true
 
       frontend_directory: ./js
