@@ -12,6 +12,7 @@ import type Mithril from 'mithril';
 import { RESOURCE, trans } from '../config';
 import type Creative from '../models/Creative';
 import CreativeModal from './CreativeModal';
+import CreativePreview from './CreativePreview';
 
 export interface ReviewSectionAttrs extends ComponentAttrs {
   /** Called after a decision, so the page can reload what it lists. */
@@ -119,6 +120,10 @@ export default class ReviewSection extends Component<ReviewSectionAttrs> {
         </div>
 
         {rejected && creative.reviewReason() && <div className="PlacementReview-reason">{creative.reviewReason()}</div>}
+
+        {/* The thing being judged. Approving an advert without looking at it
+            is the one mistake this queue exists to prevent. */}
+        <CreativePreview type={creative.type()} payload={creative.payload()} destinationUrl={creative.destinationUrl()} />
 
         {this.rejecting === id ? this.rejectionForm(creative) : this.decisions(creative, rejected)}
       </li>

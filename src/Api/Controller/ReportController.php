@@ -13,6 +13,8 @@ namespace Datlechin\Placements\Api\Controller;
 
 use Carbon\Carbon;
 use Datlechin\Placements\Measurement\Recorder;
+use Datlechin\Placements\Model\Campaign;
+use Datlechin\Placements\Model\Creative;
 use Datlechin\Placements\Model\Stat;
 use Datlechin\Placements\Support\Permissions;
 use Flarum\Http\RequestUtil;
@@ -71,22 +73,48 @@ class ReportController implements RequestHandlerInterface
     }
 
     /**
-     * The daily series, as a file.
+     * The report, as a file.
+     *
+     * The daily series and then each breakdown, in one file with a `section`
+     * column. Somebody reconciling an invoice needs the per-campaign numbers
+     * most of all, and a forum-wide daily total -- which is all this used to
+     * carry -- cannot answer a single question an advertiser asks.
      */
     protected function csv(Carbon $since, int $days): ResponseInterface
     {
-        $lines = ['date,impressions,viewable,clicks'];
+        $lines = ['section,key,name,impressions,viewable,clicks'];
 
         foreach ($this->daily($since) as $row) {
-            // Quoted, because a campaign name is not in this file but a date
-            // format that changes could still be.
-            $lines[] = $row['day'].','.$row['impressions'].','.$row['viewable'].','.$row['clicks'];
+            $lines[] = implode(',', ['day', $row['day'], '', $row['impressions'], $row['viewable'], $row['clicks']]);
+        }
+
+        foreach (['campaign' => 'campaign_id', 'creative' => 'creative_id', 'slot' => 'placement_key'] as $section => $column) {
+            foreach ($this->groupedBy($since, $column) as $row) {
+                $lines[] = implode(',', [
+                    $section,
+                    $this->quote($row['key']),
+                    $this->quote($row['name']),
+                    $row['impressions'],
+                    $row['viewable'],
+                    $row['clicks'],
+                ]);
+            }
         }
 
         return new TextResponse(implode("\n", $lines)."\n", 200, [
             'Content-Type' => 'text/csv; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="placement-'.$days.'-days.csv"',
+            'Content-Disposition' => 'attachment; filename="placements-'.$days.'-days.csv"',
         ]);
+    }
+
+    /**
+     * A CSV field. Campaign names are written by people and contain commas,
+     * quotes and newlines; a file that breaks on the first one of those is
+     * worse than no file.
+     */
+    protected function quote(string $value): string
+    {
+        return '"'.str_replace('"', '""', $value).'"';
     }
 
     protected function days(ServerRequestInterface $request): int
@@ -178,7 +206,7 @@ class ReportController implements RequestHandlerInterface
     }
 
     /**
-     * @return list<array{key: string, impressions: int, viewable: int, clicks: int}>
+     * @return list<array{key: string, name: string, impressions: int, viewable: int, clicks: int}>
      */
     protected function groupedBy(Carbon $since, string $column): array
     {
@@ -190,11 +218,61 @@ class ReportController implements RequestHandlerInterface
             ->limit(100)
             ->get();
 
-        return array_values($rows->map(fn (object $row) => [
-            'key' => is_scalar($row->{$column}) ? (string) $row->{$column} : '',
-            'impressions' => is_numeric($row->impressions) ? (int) $row->impressions : 0,
-            'viewable' => is_numeric($row->viewable) ? (int) $row->viewable : 0,
-            'clicks' => is_numeric($row->clicks) ? (int) $row->clicks : 0,
-        ])->all());
+        $names = $this->namesFor($column, array_values($rows->pluck($column)->all()));
+
+        return array_values($rows->map(function (object $row) use ($column, $names): array {
+            $key = is_scalar($row->{$column}) ? (string) $row->{$column} : '';
+
+            return [
+                'key' => $key,
+                // The name the row is known by, or the key when it has none.
+                // A report that prints `7` where a campaign name belongs
+                // cannot be read by the person who has to act on it, and the
+                // advertiser's own page has always joined the names.
+                'name' => $names[$key] ?? $key,
+                'impressions' => is_numeric($row->impressions) ? (int) $row->impressions : 0,
+                'viewable' => is_numeric($row->viewable) ? (int) $row->viewable : 0,
+                'clicks' => is_numeric($row->clicks) ? (int) $row->clicks : 0,
+            ];
+        })->all());
+    }
+
+    /**
+     * Names for the ids just grouped on, in one query.
+     *
+     * A slot is not a row anywhere -- it is declared in code -- so its key is
+     * looked up in the registry instead, and its label is a translation key
+     * the client resolves.
+     *
+     * The key type is `int|string` and cannot be narrowed: PHP turns a
+     * numeric string key into an int on the way in, so `['7' => 'Acme']` is
+     * really `[7 => 'Acme']`. The lookup coerces the same way, so reading it
+     * back with the string `'7'` finds it -- but saying `array<string, string>`
+     * here would be a lie about what the array holds.
+     *
+     * @param  list<mixed>  $keys
+     * @return array<int|string, string>
+     */
+    protected function namesFor(string $column, array $keys): array
+    {
+        $ids = array_values(array_filter(array_map('intval', array_filter($keys, 'is_numeric'))));
+
+        $model = match ($column) {
+            'campaign_id' => Campaign::class,
+            'creative_id' => Creative::class,
+            default => null,
+        };
+
+        if ($model === null || $ids === []) {
+            return [];
+        }
+
+        $names = [];
+
+        foreach ($model::query()->whereIn('id', $ids)->get(['id', 'name']) as $row) {
+            $names[(string) $row->id] = (string) $row->name;
+        }
+
+        return $names;
     }
 }

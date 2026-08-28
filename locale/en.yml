@@ -127,6 +127,13 @@ datlechin-placements:
       edit: Edit creative
       none: Nothing to show yet.
       unassigned: Not placed
+      delete: Delete
+      delete_confirm: "Delete {name}? Its slot assignments go with it, and any slot using it as a passback falls back to nothing."
+      preview: Preview
+      preview_empty: >
+        This renders nothing at the moment. A network container is waiting for
+        consent; anything else means the payload is not one its type can draw.
+      preview_unknown_type: No renderer is registered for the type {type}.
 
       name: Name
       type: Type
@@ -304,6 +311,8 @@ datlechin-placements:
       filtered_help: Reports discarded as invalid. Shown so a drop can be explained.
       by_placements: By slot
       by_creatives: By creative
+      by_campaigns: By campaign
+      campaign: Campaign
       slot: Slot
       creative: Creative
 

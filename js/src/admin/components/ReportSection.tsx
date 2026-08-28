@@ -11,6 +11,8 @@ import DeliveryChart from './DeliveryChart';
 
 interface Row {
   key: string;
+  /** The campaign or creative's own name; the key itself for a slot. */
+  name: string;
   impressions: number;
   viewable: number;
   clicks: number;
@@ -104,8 +106,11 @@ export default class ReportSection extends Component<ComponentAttrs> {
           { label: String(trans('reports.clicks')), colour: 'var(--control-success-color)', points: this.report.daily.map((d) => d.clicks) },
         ]}
       />,
-      this.table('placements', this.report.placements),
+      // Campaigns first: it is the breakdown somebody reconciling an invoice
+      // opens the page for, and it was computed, serialised and then dropped.
+      this.table('campaigns', this.report.campaigns),
       this.table('creatives', this.report.creatives),
+      this.table('placements', this.report.placements),
     ];
   }
 
@@ -142,7 +147,7 @@ export default class ReportSection extends Component<ComponentAttrs> {
     return `${((part / whole) * 100).toFixed(1)}%`;
   }
 
-  protected table(key: 'placements' | 'creatives', rows: Row[]): Mithril.Children {
+  protected table(key: 'placements' | 'creatives' | 'campaigns', rows: Row[]): Mithril.Children {
     if (!rows.length) return null;
 
     return (
@@ -152,7 +157,7 @@ export default class ReportSection extends Component<ComponentAttrs> {
           <table>
             <thead>
               <tr>
-                <th>{trans(`reports.${key === 'placements' ? 'slot' : 'creative'}`)}</th>
+                <th>{trans(`reports.${key === 'placements' ? 'slot' : key === 'campaigns' ? 'campaign' : 'creative'}`)}</th>
                 <th>{trans('reports.impressions')}</th>
                 <th>{trans('reports.viewable')}</th>
                 <th>{trans('reports.clicks')}</th>
@@ -163,7 +168,11 @@ export default class ReportSection extends Component<ComponentAttrs> {
               {rows.map((row) => (
                 <tr key={row.key}>
                   <td>
-                    <code>{row.key}</code>
+                    {/* A slot's key is the thing an administrator recognises
+                        and is worth showing as code; a campaign or creative id
+                        is not, and printing `7` where a name belongs is what
+                        made this table unreadable. */}
+                    {key === 'placements' ? <code>{row.key}</code> : row.name || <code>{row.key}</code>}
                   </td>
                   <td className="num">{row.impressions.toLocaleString()}</td>
                   <td className="num">{this.rate(row.viewable, row.impressions)}</td>

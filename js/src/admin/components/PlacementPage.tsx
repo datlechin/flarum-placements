@@ -16,6 +16,7 @@ import type Creative from '../models/Creative';
 import CampaignModal from './CampaignModal';
 import AdvertiserModal from './AdvertiserModal';
 import CreativeModal from './CreativeModal';
+import CreativePreview from './CreativePreview';
 import ReportSection from './ReportSection';
 import ReviewSection from './ReviewSection';
 import SlotSettings from './SlotSettings';
@@ -31,6 +32,9 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
   protected campaigns: Campaign[] | null = null;
   protected advertisers: Advertiser[] | null = null;
   protected expanded: string | null = null;
+
+  /** The creative whose preview is open, if any. */
+  protected previewing: string | null = null;
 
   oninit(vnode: Mithril.Vnode<ExtensionPageAttrs, this>) {
     super.oninit(vnode);
@@ -205,14 +209,36 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
                 <div className="PlacementList-row">
                   <span className="PlacementList-name">{creative.name()}</span>
                   <code className="PlacementList-type">{creative.type()}</code>
+
+                  {/* Whether it is actually running is the first thing anybody
+                      wants from this row, and it was the one thing missing. */}
+                  <span className={`Badge Badge--${this.creativeBadge(creative.status())}`}>{trans(`creatives.statuses.${creative.status()}`)}</span>
+
                   <span className="PlacementList-meta">{Object.keys(creative.placements() ?? {}).length || trans('creatives.unassigned')}</span>
+
+                  <Button
+                    className="Button Button--icon Button--link"
+                    icon={this.previewing === String(creative.id()) ? 'fas fa-eye-slash' : 'fas fa-eye'}
+                    aria-label={trans('creatives.preview')}
+                    onclick={() => (this.previewing = this.previewing === String(creative.id()) ? null : String(creative.id()))}
+                  />
                   <Button
                     className="Button Button--icon Button--link"
                     icon="fas fa-pencil-alt"
                     aria-label={trans('creatives.edit')}
                     onclick={() => app.modal.show(CreativeModal, { campaign, creative, onsaved: () => this.load() })}
                   />
+                  <Button
+                    className="Button Button--icon Button--link"
+                    icon="fas fa-trash-alt"
+                    aria-label={trans('creatives.delete')}
+                    onclick={() => this.removeCreative(creative)}
+                  />
                 </div>
+
+                {this.previewing === String(creative.id()) && (
+                  <CreativePreview type={creative.type()} payload={creative.payload()} destinationUrl={creative.destinationUrl()} />
+                )}
               </li>
             ))}
           </ul>
@@ -326,6 +352,24 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
         {this.submitButton()}
       </section>
     );
+  }
+
+  protected creativeBadge(status: string): string {
+    if (status === 'approved') return 'success';
+    if (status === 'rejected') return 'danger';
+
+    return 'warning';
+  }
+
+  /**
+   * Deleting a creative also drops its slot assignments and clears it from any
+   * slot using it as a passback -- the model does that -- so the confirmation
+   * says so rather than asking a bare "are you sure?".
+   */
+  protected removeCreative(creative: Creative): void {
+    if (!confirm(extractText(trans('creatives.delete_confirm', { name: creative.name() })))) return;
+
+    creative.delete().then(() => this.load());
   }
 
   protected remove(campaign: Campaign): void {

@@ -325,6 +325,6 @@ class RecordsEventsTest extends TestCase
 
         $this->assertStringStartsWith('text/csv', $response->getHeaderLine('Content-Type'));
         $this->assertStringContainsString('attachment', $response->getHeaderLine('Content-Disposition'));
-        $this->assertStringStartsWith('date,impressions,viewable,clicks', (string) $response->getBody());
+        $this->assertStringStartsWith('section,key,name,impressions,viewable,clicks', (string) $response->getBody());
     }
 }

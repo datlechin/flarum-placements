@@ -306,6 +306,30 @@
   margin-block: 8px;
 }
 
+.CreativePreview {
+  margin-block-start: 10px;
+  padding: 12px 15px;
+  border: 1px dashed var(--control-bg);
+  border-radius: var(--border-radius);
+}
+
+.CreativePreview-caption {
+  display: block;
+  margin-block-end: 8px;
+  color: var(--muted-color);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// Bounded, because a creative is sized for a forum slot and the panel is
+// wider than any of them -- an unbounded leaderboard would misrepresent what
+// a reader sees.
+.CreativePreview-slot {
+  max-width: 728px;
+  margin: 0;
+}
+
 .PlacementPairs {
   display: flex;
   flex-direction: column;

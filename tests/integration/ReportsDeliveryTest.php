@@ -163,21 +163,65 @@ class ReportsDeliveryTest extends TestCase
         $this->assertSame(3, $byKey['index_sidebar']);
     }
 
-    #[Test]
-    public function the_csv_carries_the_same_series(): void
+    /**
+     * @return list<string>
+     */
+    private function csv(): array
     {
-        $this->seedBuckets();
-
         $response = $this->send($this->request('GET', '/api/placements/report', [
             'authenticatedAs' => 1,
         ])->withQueryParams(['format' => 'csv']));
 
-        $lines = explode("\n", trim((string) $response->getBody()));
+        $this->assertStringStartsWith('text/csv', $response->getHeaderLine('Content-Type'));
 
-        $this->assertSame('date,impressions,viewable,clicks', $lines[0]);
-        $this->assertCount(3, $lines);
-        $this->assertStringEndsWith(',10,3,3', $lines[1]);
-        $this->assertStringEndsWith(',7,1,1', $lines[2]);
+        return explode("\n", trim((string) $response->getBody()));
+    }
+
+    #[Test]
+    public function the_csv_carries_the_daily_series(): void
+    {
+        $this->seedBuckets();
+
+        $lines = $this->csv();
+        $days = array_values(array_filter($lines, fn (string $line): bool => str_starts_with($line, 'day,')));
+
+        $this->assertSame('section,key,name,impressions,viewable,clicks', $lines[0]);
+        $this->assertCount(2, $days);
+        $this->assertStringEndsWith(',10,3,3', $days[0]);
+        $this->assertStringEndsWith(',7,1,1', $days[1]);
+    }
+
+    /**
+     * The breakdown is the reason somebody downloads this at all. A
+     * forum-wide daily total, which is all the file used to hold, answers no
+     * question an advertiser asks.
+     */
+    #[Test]
+    public function the_csv_carries_the_breakdowns_too(): void
+    {
+        $this->seedBuckets();
+
+        $lines = $this->csv();
+
+        $this->assertContains('campaign,"1","Acme",17,4,4', $lines);
+        $this->assertContains('creative,"1","Acme leaderboard",17,4,4', $lines);
+        $this->assertContains('slot,"index_above_list","index_above_list",14,3,3', $lines);
+        $this->assertContains('slot,"index_sidebar","index_sidebar",3,1,1', $lines);
+    }
+
+    /**
+     * Campaign names are written by people, and a file that breaks on the
+     * first comma in one is worse than no file.
+     */
+    #[Test]
+    public function a_name_with_a_comma_or_a_quote_in_it_survives(): void
+    {
+        $this->database()->table('placement_campaigns')->where('id', 1)->update(['name' => 'Acme, "Inc"']);
+        $this->seedBuckets();
+
+        $expected = 'campaign,"1","Acme, ""Inc""",17,4,4';
+
+        $this->assertContains($expected, $this->csv());
     }
 
     #[Test]
