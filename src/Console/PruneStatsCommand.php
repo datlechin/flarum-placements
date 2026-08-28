@@ -13,7 +13,9 @@ namespace Datlechin\Placements\Console;
 
 use Carbon\Carbon;
 use Datlechin\Placements\Model\Stat;
+use Datlechin\Placements\Support\Settings;
 use Flarum\Console\AbstractCommand;
+use Flarum\Settings\SettingsRepositoryInterface;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
@@ -29,20 +31,31 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class PruneStatsCommand extends AbstractCommand
 {
-    public const DEFAULT_DAYS = 90;
+    public const DEFAULT_DAYS = Settings::DEFAULT_RETENTION_DAYS;
+
+    public function __construct(protected SettingsRepositoryInterface $settings)
+    {
+        parent::__construct();
+    }
 
     protected function configure(): void
     {
         $this
             ->setName('placements:prune')
             ->setDescription('Delete advertising statistics older than the retention window')
-            ->addOption('days', null, InputOption::VALUE_REQUIRED, 'How many days to keep', (string) self::DEFAULT_DAYS);
+            // No default. Absent means "whatever the forum was told to keep",
+            // which is the admin panel's "Keep statistics for" field; a default
+            // here would quietly outrank it, which is what it used to do.
+            ->addOption('days', null, InputOption::VALUE_REQUIRED, 'How many days to keep, overriding the setting');
     }
 
     protected function fire(): int
     {
         $option = $this->input->getOption('days');
-        $days = is_numeric($option) ? (int) $option : 0;
+
+        $days = is_numeric($option)
+            ? (int) $option
+            : Settings::retentionDays($this->settings);
 
         if ($days < 1) {
             $this->error('Keep at least one day.');
