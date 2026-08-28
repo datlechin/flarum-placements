@@ -1,0 +1,16 @@
+includes:
+  - vendor/flarum/phpstan/extension.neon
+
+parameters:
+  # Above the level 6 the skeleton ships and the level flarum/phpstan targets.
+  # Level 6 does not check calls on `mixed`, and the first thing written
+  # against a `$request->getAttribute()` here called a method that does not
+  # exist on the object Flarum actually puts there. Nine costs nothing on a
+  # codebase written to it from the start.
+  level: 9
+  paths:
+    - extend.php
+    - src
+  excludePaths:
+    - *.blade.php
+  databaseMigrationsPath: ['migrations']
