@@ -22,6 +22,11 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
      */
     protected payload: Stream<Record<string, unknown>>;
     protected placements: Stream<Record<string, number | null>>;
+    /**
+     * A network container's attributes, held as ordered pairs while they are
+     * being typed. See `attributePairs()`.
+     */
+    protected attributes: Stream<Array<[string, string]>>;
     oninit(vnode: Mithril.Vnode<CreativeModalAttrs, this>): void;
     className(): string;
     title(): Mithril.Children;
@@ -50,6 +55,27 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
      */
     protected richTextFields(): Mithril.Children;
     protected logoWallFields(): Mithril.Children;
+    /**
+     * A container an external network fills.
+     *
+     * The attributes are typed in as name/value pairs rather than pasted as a
+     * snippet, because that is how they are stored and how they are rendered:
+     * as real attributes on a real element, never through `innerHTML`. The
+     * server keeps only `data-*`, `class`, `id` and `style`, which is said here
+     * rather than discovered by having a save silently drop half the form.
+     */
+    protected networkFields(): Mithril.Children;
+    /**
+     * The attributes being edited, as an ordered list of pairs.
+     *
+     * A map cannot be edited in place. Renaming a key means deleting one and
+     * adding another, so the row would jump or vanish under the cursor as it was
+     * typed, and two rows briefly sharing a blank name would collapse into one.
+     * The list is turned back into a map on save, and only then.
+     */
+    protected attributePairs(): Array<[string, string]>;
+    protected setAttributes(pairs: Array<[string, string]>): void;
+    protected setAttributeAt(index: number, name: string, value: string): void;
     /**
      * @return The logo rows currently being edited, always a real array so that
      *         the form works the same on a new creative and an existing one.

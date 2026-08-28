@@ -3,6 +3,8 @@ import type { ComponentAttrs } from 'flarum/common/Component';
 import type Mithril from 'mithril';
 interface Row {
     key: string;
+    /** The campaign or creative's own name; the key itself for a slot. */
+    name: string;
     impressions: number;
     viewable: number;
     clicks: number;
@@ -40,6 +42,6 @@ export default class ReportSection extends Component<ComponentAttrs> {
      * A percentage, or a dash when there is not enough to divide by.
      */
     protected rate(part: number, whole: number): string;
-    protected table(key: 'placements' | 'creatives', rows: Row[]): Mithril.Children;
+    protected table(key: 'placements' | 'creatives' | 'campaigns', rows: Row[]): Mithril.Children;
 }
 export {};

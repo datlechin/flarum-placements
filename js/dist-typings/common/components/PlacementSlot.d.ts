@@ -34,6 +34,14 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
      */
     protected picked: Candidate[];
     /**
+     * The subset of `picked` that actually drew something, filled in by
+     * `contentItems()` during `view()` and read by `oncreate()` afterwards.
+     *
+     * These are two different lists and the difference is what gets counted: a
+     * candidate can be chosen and then render nothing.
+     */
+    protected drawn: Candidate[];
+    /**
      * Stops the viewability observers when this slot goes away. A discussion
      * page creates and destroys dozens of these as the reader scrolls.
      */

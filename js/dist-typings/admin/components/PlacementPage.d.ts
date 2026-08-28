@@ -4,6 +4,7 @@ import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 import type Campaign from '../models/Campaign';
 import type Advertiser from '../models/Advertiser';
+import type Creative from '../models/Creative';
 /**
  * Where advertising is managed.
  *
@@ -15,6 +16,8 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
     protected campaigns: Campaign[] | null;
     protected advertisers: Advertiser[] | null;
     protected expanded: string | null;
+    /** The creative whose preview is open, if any. */
+    protected previewing: string | null;
     oninit(vnode: Mithril.Vnode<ExtensionPageAttrs, this>): void;
     protected load(): void;
     content(): JSX.Element;
@@ -54,5 +57,12 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
      * The two things that really are settings. Everything else is a record.
      */
     protected settingsSection(): Mithril.Children;
+    protected creativeBadge(status: string): string;
+    /**
+     * Deleting a creative also drops its slot assignments and clears it from any
+     * slot using it as a passback -- the model does that -- so the confirmation
+     * says so rather than asking a bare "are you sure?".
+     */
+    protected removeCreative(creative: Creative): void;
     protected remove(campaign: Campaign): void;
 }

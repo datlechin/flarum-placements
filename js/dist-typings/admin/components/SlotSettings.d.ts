@@ -21,6 +21,22 @@ export default class SlotSettings extends Component<SlotSettingsAttrs> {
     view(): Mithril.Children;
     protected row(slot: SlotConfig): Mithril.Children;
     /**
+     * How much this slot holds and what it says about itself.
+     *
+     * Both were writable through the API and honoured at serve time with no
+     * control anywhere, which is the same as not having them.
+     */
+    protected deliveryControls(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children;
+    /**
+     * The height held open while a creative loads.
+     *
+     * Per breakpoint, because a slot that is a leaderboard on a desktop is
+     * usually something much shorter on a phone, and reserving the desktop
+     * height everywhere pushes the page down on the readers who can least
+     * afford it. Blank means reserve nothing.
+     */
+    protected reserveControls(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children;
+    /**
      * Whether the slot draws again on every page, or keeps what it drew.
      */
     protected rotationControl(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children;
