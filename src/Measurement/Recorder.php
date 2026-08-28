@@ -16,6 +16,7 @@ use Datlechin\Placements\Model\Campaign;
 use Datlechin\Placements\Model\Creative;
 use Datlechin\Placements\Model\Stat;
 use Datlechin\Placements\Notification\CampaignStoppedBlueprint;
+use Datlechin\Placements\Selection\PlanSource;
 use Flarum\Notification\NotificationSyncer;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Database\ConnectionInterface;
@@ -42,6 +43,7 @@ class Recorder
     public function __construct(
         protected Cache $cache,
         protected ConnectionInterface $db,
+        protected PlanSource $plan,
         protected ?NotificationSyncer $notifications = null,
     ) {
     }
@@ -106,6 +108,9 @@ class Recorder
 
         $written = 0;
 
+        /** @var array<int, true> $touched */
+        $touched = [];
+
         foreach ($keys as $key) {
             $buffered = $this->cache->pull(self::BUFFER_PREFIX.$key);
 
@@ -134,10 +139,51 @@ class Recorder
                 $count
             );
 
+            $touched[(int) $campaign] = true;
             $written++;
         }
 
+        $this->refreshPlanIfDeliveryChanged(array_keys($touched));
+
         return $written;
+    }
+
+    /**
+     * Drop the cached plan when what was just counted can change who is
+     * eligible.
+     *
+     * The plan is cached with each campaign's running totals baked into it,
+     * and it is invalidated by model events. The counters here are moved with
+     * a query-builder `increment()`, which fires none -- so without this, a
+     * campaign that reaches its cap between rebuilds keeps being offered for
+     * as long as the cache lives, which is until somebody happens to save a
+     * campaign. Overdelivery would be bounded by nothing, while the owner is
+     * sent an alert saying the campaign stopped.
+     *
+     * Only when it can matter. A forum whose campaigns have no caps and no
+     * even pacing gets its plan rebuilt never, rather than once a minute
+     * forever.
+     *
+     * @param  list<int>  $campaigns
+     */
+    protected function refreshPlanIfDeliveryChanged(array $campaigns): void
+    {
+        if ($campaigns === []) {
+            return;
+        }
+
+        $matters = Campaign::query()
+            ->whereIn('id', $campaigns)
+            ->where(function ($query): void {
+                $query->whereNotNull('max_impressions')
+                    ->orWhereNotNull('max_clicks')
+                    ->orWhere('pacing', Campaign::PACING_EVEN);
+            })
+            ->exists();
+
+        if ($matters) {
+            $this->plan->flush();
+        }
     }
 
     /**

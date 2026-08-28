@@ -14,6 +14,7 @@ namespace Datlechin\Placements\Tests\unit\Measurement;
 use Carbon\Carbon;
 use Datlechin\Placements\Measurement\Recorder;
 use Datlechin\Placements\Model\Stat;
+use Datlechin\Placements\Selection\PlanSource;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\Repository;
 use Illuminate\Database\Capsule\Manager;
@@ -55,10 +56,16 @@ class RecorderTest extends TestCase
         $this->cache = new Repository(new ArrayStore());
 
         // The running totals live on models this test has no tables for, so
-        // the recorder is given a subclass that skips them. They are covered
-        // by the integration suite, which has a real Flarum behind it.
-        $this->recorder = new class($this->cache, $this->capsule->getConnection()) extends Recorder {
+        // the recorder is given a subclass that skips them, along with the
+        // plan refresh that decides from those same rows whether the cached
+        // plan still holds. Both are covered by the integration suite, which
+        // has a real Flarum behind it -- see StopsAtTheCapTest.
+        $this->recorder = new class($this->cache, $this->capsule->getConnection(), new PlanSource($this->cache)) extends Recorder {
             protected function bumpRunningTotals(int $campaign, int $creative, string $column, int $count): void
+            {
+            }
+
+            protected function refreshPlanIfDeliveryChanged(array $campaigns): void
             {
             }
         };

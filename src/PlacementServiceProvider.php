@@ -115,6 +115,7 @@ class PlacementServiceProvider extends AbstractServiceProvider
             fn (Container $container) => new Recorder(
                 $container->make(Cache::class),
                 $container->make(ConnectionInterface::class),
+                $container->make(PlanSource::class),
                 $container->make(NotificationSyncer::class),
             )
         );
