@@ -102,9 +102,15 @@ The flush also runs opportunistically on about one beacon request in fifty, beca
 
 ## Creatives
 
-Three types ship, and a fourth can be registered by any extension.
+Six types ship, and a seventh can be registered by any extension.
 
 **Image** is a picture with a link. **Text** is a headline, some words and a call to action, stored and rendered as text so there is nothing to escape.
+
+**Formatted text** sits between them and HTML: copy with a bold word and a link in it, written the same way a post on this forum is written and rendered through the same formatter. Whatever markdown or BBCode the forum has enabled works here, the output is safe because it comes from a parse tree rather than from filtering, and links are marked `rel="sponsored"` — a pattern of paid links passing PageRank earns an unnatural-outbound-links action against the whole forum.
+
+**Logo wall** is a row of sponsor logos, each linking somewhere of its own. It is the shape a community forum actually sells: one creative naming everybody who paid this quarter, rather than one slot per sponsor and a stack of assignments to keep in step.
+
+**Network container** is described under *Third-party networks* below.
 
 **HTML** is markup somebody pasted in, and it is treated as what it is: privilege escalation with a delivery mechanism. Unsandboxed, it would run as same-origin JavaScript on every page of the forum including the one an administrator is looking at — and Flarum renders the CSRF token into the boot payload in plain text, so one `getElementById` is the whole chain from "pasted an advert" to "posts to the API as whoever is reading".
 
@@ -191,6 +197,32 @@ registerRenderer('video', (candidate) => <video src={candidate.payload.src} mute
 ```
 
 A targeting axis is a `DimensionInterface`. `resolve()` runs on the serving path of every page view and must not query — everything it needs is already on the actor, on the request, or in the API document the page is about to send anyway. Say `isServerSide(): false` if your axis can only be decided in the browser.
+
+## Letting members submit adverts
+
+Grant **Submit adverts for review** to a group and its members get a **My adverts** tab on their own profile. They write the advert, it goes into the queue, and staff decide.
+
+A member can reach nothing else. Not a campaign, not a rate, not another advertiser, not a weight, and not a slot: where an advert runs and how much of the rotation it takes are the forum's decisions, made on something somebody already read. Every write leaves the row pending, editing an approved one included, so there is no path from the portal to an advert on the forum that nobody looked at. The types that run code are refused outright rather than checked against a permission.
+
+Submitting makes the member an advertiser: an advertiser row and one campaign, created the first time and reused after. Approval and a slot assignment are the two things that put an advert on the page, and a member can do neither, so nothing appears until staff have done both.
+
+Ten undecided submissions per member. Not a rate limit — somebody has to read each of these.
+
+Staff work the queue from **Waiting for review** at the top of the admin page. Rejected adverts stay in the list with their reason, because a rejection is the start of a conversation and an administrator who cannot see what they turned down cannot answer "why?" a week later.
+
+## Moving a configuration between forums
+
+```sh
+php flarum placement:export -o placement.json
+php flarum placement:import placement.json --dry-run
+php flarum placement:import placement.json
+```
+
+For staging to production, for a copy before a large change, and for keeping the set-up in version control.
+
+Three things the file never carries. **Counts**, because they describe one forum's traffic. **Report tokens**, because an advertiser's report link is the whole of their authentication and a file holding one is a working login. **Member submissions**, because a `user_id` points at an account that does not exist on the machine the file is going to.
+
+Everything arrives **paused**. A creative's approval travels with it, so the usual review gate is already spent by the time the file lands, and the last thing an import should do is put adverts on the page before anybody has looked at the result. Advertisers and campaigns are matched by name and never by id, so importing the same file twice updates rather than duplicates. Assignments naming a slot this forum does not have are dropped and reported; so is a creative whose payload no longer validates. `--settings` also brings the forum's own settings across, and only the four this extension owns — a file is a text file somebody may have edited.
 
 ## Coming from davwheat/flarum-ext-ads
 

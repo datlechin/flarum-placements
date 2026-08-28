@@ -60,6 +60,16 @@ final class Settings
      */
     public const NETWORK_SCRIPTS = self::PREFIX.'network_scripts';
 
+    /**
+     * The settings a configuration bundle carries.
+     *
+     * Named rather than taken from a prefix scan, so that a setting added
+     * later has to be considered before it travels between forums.
+     *
+     * @var list<string>
+     */
+    public const EXPORTABLE = [self::TIMEZONE, self::RETENTION_DAYS, self::ADS_TXT, self::NETWORK_SCRIPTS];
+
     public const DEFAULT_TIMEZONE = 'UTC';
 
     public const DEFAULT_RETENTION_DAYS = 90;

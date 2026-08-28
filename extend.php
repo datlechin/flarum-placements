@@ -131,6 +131,8 @@ return [
         ->command(Console\FlushStatsCommand::class)
         ->command(Console\PruneStatsCommand::class)
         ->command(Console\ImportDavwheatCommand::class)
+        ->command(Console\ExportCommand::class)
+        ->command(Console\ImportCommand::class)
         // Every minute, so a cap is enforced within a minute of being reached
         // and overdelivery is bounded by that and nothing else. Daily pruning
         // is enough: the table grows by hours, not by seconds.
