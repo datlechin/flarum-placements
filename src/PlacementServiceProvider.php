@@ -68,6 +68,8 @@ class PlacementServiceProvider extends AbstractServiceProvider
         $this->container->singleton(self::CREATIVE_TYPES, fn () => [
             Type\ImageType::class,
             Type\TextType::class,
+            Type\RichTextType::class,
+            Type\LogoWallType::class,
             Type\RawHtmlType::class,
             Type\NetworkType::class,
         ]);

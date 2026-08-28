@@ -143,9 +143,26 @@ datlechin-placement:
         paste code you trust the source of.
       frame_height: Frame height
 
+      source: Copy
+      source_help: >
+        Formatted the same way a post on this forum is. Links get a sponsored
+        rel automatically. Saving re-renders it.
+
+      logos: Logos
+      logos_help: >
+        One row per sponsor: image address, alt text, and where it links. Rows
+        with no image are dropped on save.
+      logo_url: Links to
+      add_logo: Add a logo
+      remove_logo: Remove this logo
+      columns: Columns
+      columns_help: How many logos sit side by side before the row wraps.
+
       types:
         image: Image
         text: Text
+        rich_text: Formatted text
+        logo_wall: Logo wall
         raw_html: HTML
         network: Network container
 

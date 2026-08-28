@@ -5,6 +5,7 @@ import Button from 'flarum/common/components/Button';
 import Select from 'flarum/common/components/Select';
 import Switch from 'flarum/common/components/Switch';
 import Stream from 'flarum/common/utils/Stream';
+import extractText from 'flarum/common/utils/extractText';
 import type Mithril from 'mithril';
 
 import { RESOURCE, creativeTypes, slots, trans } from '../config';
@@ -23,7 +24,12 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
   protected status!: Stream<string>;
   protected weight!: Stream<string>;
   protected url!: Stream<string>;
-  protected payload!: Stream<Record<string, string>>;
+  /**
+   * Values are `unknown` rather than `string` because not every payload is
+   * flat: a logo wall holds a list of rows. `field()` reads the scalar cases
+   * back out for the inputs that expect one.
+   */
+  protected payload!: Stream<Record<string, unknown>>;
   protected placements!: Stream<Record<string, number | null>>;
 
   oninit(vnode: Mithril.Vnode<CreativeModalAttrs, this>) {
@@ -37,7 +43,13 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
     this.status = Stream(creative?.status() ?? 'approved');
     this.weight = Stream(String(creative?.weight() ?? 10));
     this.url = Stream(creative?.destinationUrl() ?? '');
-    this.payload = Stream(Object.fromEntries(Object.entries(payload).map(([key, value]) => [key, value == null ? '' : String(value)])));
+    // Scalars become strings for the inputs to bind to; anything structured is
+    // kept as it is, because stringifying a list of logos loses it.
+    this.payload = Stream(
+      Object.fromEntries(
+        Object.entries(payload).map(([key, value]) => [key, value !== null && typeof value === 'object' ? value : String(value ?? '')])
+      )
+    );
     this.placements = Stream(creative?.placements() ?? {});
   }
 
@@ -111,6 +123,8 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
   protected typeFields(): Mithril.Children {
     if (this.type() === 'image') return this.imageFields();
     if (this.type() === 'text') return this.textFields();
+    if (this.type() === 'rich_text') return this.richTextFields();
+    if (this.type() === 'logo_wall') return this.logoWallFields();
     if (this.type() === 'raw_html') return this.rawHtmlFields();
 
     return this.group('payload', <textarea className="FormControl" rows="6" value={JSON.stringify(this.payload(), null, 2)} disabled />);
@@ -125,32 +139,25 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
     return [
       this.group(
         'html',
-        <textarea className="FormControl" rows="8" value={this.payload().html ?? ''} oninput={this.payloadInput('html')} required />,
+        <textarea className="FormControl" rows="8" value={this.field('html')} oninput={this.payloadInput('html')} required />,
         trans('creatives.html_help')
       ),
       this.group(
         'frame_height',
-        <input className="FormControl" type="number" min="1" value={this.payload().height ?? ''} oninput={this.payloadInput('height')} required />
+        <input className="FormControl" type="number" min="1" value={this.field('height')} oninput={this.payloadInput('height')} required />
       ),
     ];
   }
 
   protected imageFields(): Mithril.Children {
     return [
-      this.group(
-        'asset',
-        <input className="FormControl" type="url" value={this.payload().asset ?? ''} oninput={this.payloadInput('asset')} required />
-      ),
-      this.group(
-        'alt',
-        <input className="FormControl" value={this.payload().alt ?? ''} oninput={this.payloadInput('alt')} />,
-        trans('creatives.alt_help')
-      ),
+      this.group('asset', <input className="FormControl" type="url" value={this.field('asset')} oninput={this.payloadInput('asset')} required />),
+      this.group('alt', <input className="FormControl" value={this.field('alt')} oninput={this.payloadInput('alt')} />, trans('creatives.alt_help')),
       <div className="Form-group PlacementSize">
-        {this.group('width', <input className="FormControl" type="number" value={this.payload().width ?? ''} oninput={this.payloadInput('width')} />)}
+        {this.group('width', <input className="FormControl" type="number" value={this.field('width')} oninput={this.payloadInput('width')} />)}
         {this.group(
           'height',
-          <input className="FormControl" type="number" value={this.payload().height ?? ''} oninput={this.payloadInput('height')} />,
+          <input className="FormControl" type="number" value={this.field('height')} oninput={this.payloadInput('height')} />,
           trans('creatives.size_help')
         )}
       </div>,
@@ -159,13 +166,117 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
 
   protected textFields(): Mithril.Children {
     return [
-      this.group(
-        'headline',
-        <input className="FormControl" value={this.payload().headline ?? ''} oninput={this.payloadInput('headline')} required />
-      ),
-      this.group('body', <textarea className="FormControl" value={this.payload().body ?? ''} oninput={this.payloadInput('body')} />),
-      this.group('cta', <input className="FormControl" value={this.payload().cta ?? ''} oninput={this.payloadInput('cta')} />),
+      this.group('headline', <input className="FormControl" value={this.field('headline')} oninput={this.payloadInput('headline')} required />),
+      this.group('body', <textarea className="FormControl" value={this.field('body')} oninput={this.payloadInput('body')} />),
+      this.group('cta', <input className="FormControl" value={this.field('cta')} oninput={this.payloadInput('cta')} />),
     ];
+  }
+
+  /**
+   * Only the source is edited. The markup is the server's, rendered through
+   * the forum's own formatter on save, so the syntax here is the syntax of a
+   * post on this forum -- whatever formatting extensions happen to be on.
+   */
+  protected richTextFields(): Mithril.Children {
+    return [
+      this.group(
+        'source',
+        <textarea className="FormControl" rows="6" value={this.field('source')} oninput={this.payloadInput('source')} required />,
+        trans('creatives.source_help')
+      ),
+    ];
+  }
+
+  protected logoWallFields(): Mithril.Children {
+    const logos = this.logos();
+
+    return [
+      <div className="Form-group">
+        <label>{trans('creatives.logos')}</label>
+        <div className="helpText">{trans('creatives.logos_help')}</div>
+
+        <div className="PlacementLogos">
+          {logos.map((logo, index) => (
+            <div className="PlacementLogos-row" key={index}>
+              <input
+                className="FormControl"
+                type="url"
+                value={logo.asset ?? ''}
+                placeholder={extractText(trans('creatives.asset'))}
+                oninput={this.logoInput(index, 'asset')}
+                required
+              />
+              <input
+                className="FormControl"
+                value={logo.alt ?? ''}
+                placeholder={extractText(trans('creatives.alt'))}
+                oninput={this.logoInput(index, 'alt')}
+              />
+              <input
+                className="FormControl"
+                type="url"
+                value={logo.url ?? ''}
+                placeholder={extractText(trans('creatives.logo_url'))}
+                oninput={this.logoInput(index, 'url')}
+              />
+              <Button
+                className="Button Button--icon"
+                icon="fas fa-times"
+                type="button"
+                title={extractText(trans('creatives.remove_logo'))}
+                onclick={() => this.setLogos(logos.filter((_, i) => i !== index))}
+              />
+            </div>
+          ))}
+        </div>
+
+        <Button className="Button" type="button" onclick={() => this.setLogos([...logos, { asset: '' }])}>
+          {trans('creatives.add_logo')}
+        </Button>
+      </div>,
+
+      this.group(
+        'columns',
+        <input className="FormControl" type="number" min="1" max="8" value={this.field('columns') || '4'} oninput={this.payloadInput('columns')} />,
+        trans('creatives.columns_help')
+      ),
+    ];
+  }
+
+  /**
+   * @return The logo rows currently being edited, always a real array so that
+   *         the form works the same on a new creative and an existing one.
+   */
+  protected logos(): Array<Record<string, string>> {
+    const rows = this.payload().logos;
+
+    if (!Array.isArray(rows)) return [];
+
+    return rows.filter((row): row is Record<string, string> => typeof row === 'object' && row !== null);
+  }
+
+  protected setLogos(logos: Array<Record<string, string>>): void {
+    this.payload({ ...this.payload(), logos });
+  }
+
+  protected logoInput(index: number, key: string): (e: InputEvent) => void {
+    return (e: InputEvent) => {
+      const logos = this.logos().map((logo, i) => (i === index ? { ...logo, [key]: (e.target as HTMLInputElement).value } : logo));
+
+      this.setLogos(logos);
+    };
+  }
+
+  /**
+   * A payload value as a string, for the inputs that hold one.
+   *
+   * Anything structured reads back as empty rather than as `[object Object]`,
+   * which is what a naive cast would put into the field.
+   */
+  protected field(key: string): string {
+    const value = this.payload()[key];
+
+    return typeof value === 'string' ? value : '';
   }
 
   /**
@@ -232,7 +343,15 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
     Object.entries(this.payload()).forEach(([key, value]) => {
       if (value === '') return;
 
-      clean[key] = ['width', 'height'].includes(key) ? Number(value) : value;
+      // Structured values go through as they are. A logo row is cleaned on the
+      // server, which is the side that has to be sure of it anyway.
+      if (typeof value !== 'string') {
+        clean[key] = value;
+
+        return;
+      }
+
+      clean[key] = ['width', 'height', 'columns'].includes(key) ? Number(value) : value;
     });
 
     return clean;

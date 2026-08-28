@@ -244,6 +244,30 @@
   }
 }
 
+.PlacementLogos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-block: 8px;
+}
+
+.PlacementLogos-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+
+  // The address is the row: it gets the space, and the other two take what is
+  // left rather than each claiming a third of a line that then wraps.
+  > .FormControl:first-child {
+    flex: 2 1 220px;
+  }
+
+  > .FormControl {
+    flex: 1 1 140px;
+  }
+}
+
 // Headline figures, on the pattern core uses for its own.
 .PlacementFigures {
   display: flex;

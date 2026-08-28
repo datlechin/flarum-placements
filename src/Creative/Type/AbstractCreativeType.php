@@ -37,7 +37,11 @@ abstract class AbstractCreativeType implements CreativeTypeInterface
      * A trimmed string, or null when the value is absent, empty, or something
      * that is not a string at all.
      *
-     * @param  array<string, mixed>  $payload
+     * Keys are read by name, so the array is only required to be an array:
+     * a JSON object with a numeric-looking key decodes to an int key, and a
+     * payload nested inside another one arrives that way.
+     *
+     * @param  array<mixed, mixed>  $payload
      */
     protected function text(array $payload, string $key): ?string
     {
@@ -53,7 +57,7 @@ abstract class AbstractCreativeType implements CreativeTypeInterface
     }
 
     /**
-     * @param  array<string, mixed>  $payload
+     * @param  array<mixed, mixed>  $payload
      */
     protected function integer(array $payload, string $key): ?int
     {
