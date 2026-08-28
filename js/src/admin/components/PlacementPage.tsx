@@ -43,6 +43,16 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
       this.campaigns = campaigns;
       m.redraw();
     });
+
+    // Fetched in its own right rather than relied on as a side-load of the
+    // campaigns above. An advertiser with no campaign yet appears in neither
+    // that include nor the campaign form's picker, and the advertiser list is
+    // the only route to the report link -- so without this, issuing a link is
+    // possible and revoking one is not.
+    app.store.find<Advertiser[]>(RESOURCE.advertisers).then((advertisers) => {
+      this.advertisers = advertisers;
+      m.redraw();
+    });
   }
 
   content(): JSX.Element {
@@ -229,7 +239,11 @@ export default class PlacementPage extends ExtensionPage<ExtensionPageAttrs> {
 
         <p className="helpText">{trans('advertisers.help')}</p>
 
-        {!this.advertisers?.length ? (
+        {/* Null is still loading, empty is genuinely none. Collapsing the two
+            makes a slow request look like a failed save. */}
+        {this.advertisers === null ? (
+          <LoadingIndicator />
+        ) : !this.advertisers.length ? (
           <Placeholder text={trans('advertisers.none')} />
         ) : (
           <ul className="PlacementList">
