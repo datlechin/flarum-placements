@@ -320,6 +320,13 @@ datlechin-placements:
       title: Slots
       rotation: Rotation
       max_fill: Creatives at once
+      fallback: When nothing matched
+      fallback_next_tier: Fall to the next tier
+      fallback_house: Fall to a house advert
+      fallback_passback: Show a chosen advert
+      fallback_collapse: Show nothing
+      passback_creative: Advert to fall back to
+      passback_none: None chosen
       label_mode: Disclosure label
       label_inherit: Follow the forum default
       label_always: Always show

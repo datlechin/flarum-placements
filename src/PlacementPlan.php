@@ -11,7 +11,9 @@
 
 namespace Datlechin\Placements;
 
+use Datlechin\Placements\Model\Creative;
 use Datlechin\Placements\Model\PlacementSetting;
+use Datlechin\Placements\Selection\Candidate;
 use Datlechin\Placements\Selection\PlanBuilder;
 use Datlechin\Placements\Support\DemoMode;
 use Datlechin\Placements\Support\Permissions;
@@ -81,21 +83,98 @@ class PlacementPlan
         $context = new TargetingContext($request, $actor, $apiDocument);
         $candidates = $this->builder->forContext($context, array_keys($slots));
 
+        $passbacks = $this->passbacks($slots);
+
         $filled = [];
 
         foreach ($slots as $key => $config) {
+            $forSlot = $candidates[$key] ?? [];
+
+            // Appended after the eligible inventory and never sorted into it,
+            // so the client can tell the two apart: a passback is what a slot
+            // shows when nothing else could, not something competing to be
+            // drawn.
+            if (isset($passbacks[$key])) {
+                $forSlot[] = $passbacks[$key];
+            }
+
             // A slot with nothing eligible is left out entirely rather than
             // sent empty: it saves the bytes on the critical path, and the
             // client renders nothing and reserves no space for a key it cannot
-            // find.
-            if (($candidates[$key] ?? []) === []) {
+            // find. Checked after the passback, or a slot whose only content
+            // is its fallback would never be sent.
+            if ($forSlot === []) {
                 continue;
             }
 
-            $filled[$key] = $config + ['candidates' => $candidates[$key]];
+            $filled[$key] = $config + ['candidates' => $forSlot];
         }
 
         return $filled === [] ? null : ['demo' => false, 'slots' => $filled];
+    }
+
+    /**
+     * The nominated fallback creative for each slot set to use one.
+     *
+     * Loaded in one query for every such slot, and only for creatives that
+     * have been approved -- a passback is still an advert on the forum, and
+     * nominating one is not a way around review.
+     *
+     * Deliberately not put through targeting or pacing. It is the answer to
+     * "nothing matched", so a rule that stopped it from matching would leave
+     * the slot with nothing, which is what the setting exists to avoid.
+     *
+     * @param  array<string, array<string, mixed>>  $slots
+     * @return array<string, array<string, mixed>>
+     */
+    protected function passbacks(array $slots): array
+    {
+        $wanted = [];
+
+        foreach ($slots as $key => $config) {
+            $id = $config['passbackCreativeId'] ?? null;
+
+            if (($config['fallback'] ?? null) === PlacementSetting::FALLBACK_PASSBACK && is_numeric($id)) {
+                $wanted[$key] = (int) $id;
+            }
+        }
+
+        if ($wanted === []) {
+            return [];
+        }
+
+        $creatives = Creative::query()
+            ->whereIn('id', array_values(array_unique($wanted)))
+            ->where('status', Creative::STATUS_APPROVED)
+            ->get()
+            ->keyBy('id');
+
+        $found = [];
+
+        foreach ($wanted as $key => $id) {
+            /** @var Creative|null $creative */
+            $creative = $creatives->get($id);
+
+            if ($creative === null) {
+                continue;
+            }
+
+            $found[$key] = (new Candidate(
+                creativeId: (int) $creative->id,
+                campaignId: (int) $creative->campaign_id,
+                // The lowest priority there is: nothing should ever be drawn
+                // in preference to real inventory because of a tier number.
+                tier: PHP_INT_MAX,
+                weight: 1,
+                type: $creative->type,
+                payload: $creative->payload,
+                url: $creative->destination_url,
+                label: $creative->label_override,
+                passback: true,
+            ))->toArray();
+        }
+
+        return $found;
     }
 
     /**

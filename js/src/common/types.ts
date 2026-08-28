@@ -51,6 +51,19 @@ export interface Candidate {
    */
   cap?: number | null;
   window?: string;
+  /**
+   * Whether the campaign behind it is a house campaign.
+   *
+   * Sent rather than inferred from the tier: a campaign may sit at the house
+   * tier without being one, and the `house` fallback has to tell them apart.
+   */
+  house?: boolean;
+  /**
+   * A slot's nominated fallback rather than inventory competing to be drawn.
+   *
+   * Held out of the draw entirely and reached only when nothing else survived.
+   */
+  passback?: boolean;
 }
 
 export interface SlotConfig {

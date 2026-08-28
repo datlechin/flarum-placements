@@ -104,6 +104,55 @@ export default class PlacementState {
    * unanswerable, and the server has already sorted them, so this is the
    * leading run and nothing more.
    */
+  /**
+   * Narrow the eligible candidates to what this slot's fallback allows.
+   *
+   * Falling from one tier to the next is what the engine does by default, and
+   * for most slots it is what an administrator wants. The setting exists for
+   * the two cases where it is not:
+   *
+   * `collapse` means this slot is for its best tier or for nobody -- a
+   * sponsorship position that quietly fills with remnant is worth less than an
+   * empty one, and the sponsor notices.
+   *
+   * `house` means the opposite: never leave a hole, but do not let a paid
+   * campaign of a lower tier take a slot the top tier was sold; drop straight
+   * to the forum's own adverts instead.
+   *
+   * @param eligible What survived the frequency cap.
+   * @param inventory Everything that was sent, before the cap.
+   */
+  protected forFallback(slot: SlotConfig, eligible: Candidate[], inventory: Candidate[]): Candidate[] {
+    if (slot.fallback === 'collapse') {
+      // The best tier *sent*, not the best still standing: dropping to the
+      // next one is exactly what this asks not to happen.
+      if (!inventory.length) return [];
+
+      const best = this.topTier(inventory)[0].tier;
+
+      return eligible.filter((candidate) => candidate.tier === best);
+    }
+
+    if (slot.fallback === 'house') {
+      // From the best tier straight to the forum's own adverts, skipping the
+      // paid tiers in between. That is what makes this mode different from
+      // `next_tier`, which would reach the house campaigns eventually anyway
+      // -- two options that behave identically are one option and a bug.
+      //
+      // It is `collapse` with something in the hole: the slot was sold to its
+      // top tier, and if they have nothing left the forum would rather run its
+      // own notice than hand a premium position to remnant.
+      if (!inventory.length) return [];
+
+      const best = this.topTier(inventory)[0].tier;
+      const top = eligible.filter((candidate) => candidate.tier === best);
+
+      return top.length ? top : eligible.filter((candidate) => candidate.house);
+    }
+
+    return eligible;
+  }
+
   topTier(candidates: Candidate[]): Candidate[] {
     if (!candidates.length) return [];
 
@@ -122,13 +171,22 @@ export default class PlacementState {
    * `view()` would reshuffle the ads under the reader.
    */
   pick(slot: SlotConfig, random: () => number = Math.random): Candidate[] {
+    const all = slot.candidates ?? [];
+
+    // A passback is not inventory. It is what the slot shows when nothing else
+    // could, so it is held out of the draw entirely and only reached at the
+    // end.
+    const inventory = all.filter((candidate) => !candidate.passback);
+    const passback = all.filter((candidate) => candidate.passback);
+
     // Frequency is applied before the tier is chosen, not after: a sponsorship
     // this reader has already seen its fill of should let the next tier
     // through rather than leaving the slot empty.
-    // Frequency is applied before the tier is chosen, not after: a sponsorship
-    // this reader has already seen its fill of should let the next tier
-    // through rather than leaving the slot empty.
-    const eligible = (slot.candidates ?? []).filter((candidate) => withinCap(candidate));
+    const eligible = this.forFallback(
+      slot,
+      inventory.filter((candidate) => withinCap(candidate)),
+      inventory
+    );
 
     // A slot set to hold its choice keeps what it drew earlier in the visit —
     // but only among what is *still* eligible, so a campaign that has since
@@ -137,6 +195,12 @@ export default class PlacementState {
       const held = stickyChoice(slot.key, eligible);
 
       if (held.length) return held;
+    }
+
+    if (!eligible.length) {
+      // Everything else has failed, which is the only circumstance a passback
+      // is for.
+      return slot.fallback === 'passback' ? passback.slice(0, 1) : [];
     }
 
     const remaining = this.topTier(eligible);

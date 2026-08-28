@@ -8,6 +8,7 @@ import type Mithril from 'mithril';
 
 import type { SlotConfig } from '../../common/types';
 import { RESOURCE, slotsByGroup, trans } from '../config';
+import type Creative from '../models/Creative';
 import type PlacementSetting from '../models/PlacementSetting';
 
 export interface SlotSettingsAttrs extends ComponentAttrs {}
@@ -22,6 +23,9 @@ export interface SlotSettingsAttrs extends ComponentAttrs {}
  */
 export default class SlotSettings extends Component<SlotSettingsAttrs> {
   protected settings: Record<string, PlacementSetting> = {};
+
+  /** Approved creatives, for the passback picker. */
+  protected creatives: Creative[] | null = null;
   protected loading = true;
   protected saving: string | null = null;
 
@@ -36,6 +40,20 @@ export default class SlotSettings extends Component<SlotSettingsAttrs> {
       this.loading = false;
       m.redraw();
     });
+
+    // Needed only by the passback picker, and fetched regardless: the picker
+    // appears the moment somebody chooses that fallback, and a select that
+    // arrives empty and fills in a second later reads as broken.
+    app.store
+      .find<Creative[]>(RESOURCE.creatives)
+      .then((creatives) => {
+        this.creatives = creatives.filter((creative) => creative.status() === 'approved');
+        m.redraw();
+      })
+      .catch(() => {
+        this.creatives = [];
+        m.redraw();
+      });
   }
 
   view(): Mithril.Children {
@@ -72,6 +90,7 @@ export default class SlotSettings extends Component<SlotSettingsAttrs> {
         <div className="helpText PlacementSlots-description">{app.translator.trans(slot.description)}</div>
 
         {enabled && this.deliveryControls(slot, setting)}
+        {enabled && this.fallbackControls(slot, setting)}
         {enabled && this.reserveControls(slot, setting)}
         {enabled && this.rotationControl(slot, setting)}
         {enabled && slot.repeating && this.repeatControls(slot, setting)}
@@ -112,6 +131,49 @@ export default class SlotSettings extends Component<SlotSettingsAttrs> {
             onchange={(value: string) => this.save(slot, { labelMode: value })}
           />
         </label>
+      </div>
+    );
+  }
+
+  /**
+   * What the slot does when nothing matched.
+   *
+   * Every mode was writable through the API and none of them did anything:
+   * the client took the best tier and ignored the setting entirely, so all
+   * four behaved as `next_tier`.
+   */
+  protected fallbackControls(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children {
+    const fallback = setting?.fallback() ?? slot.fallback ?? 'house';
+
+    return (
+      <div className="PlacementSlots-repeat">
+        <label>
+          {trans('slots.fallback')}
+          <Select
+            value={fallback}
+            options={{
+              next_tier: trans('slots.fallback_next_tier'),
+              house: trans('slots.fallback_house'),
+              passback: trans('slots.fallback_passback'),
+              collapse: trans('slots.fallback_collapse'),
+            }}
+            onchange={(value: string) => this.save(slot, { fallback: value })}
+          />
+        </label>
+
+        {fallback === 'passback' && (
+          <label>
+            {trans('slots.passback_creative')}
+            <Select
+              value={String(setting?.passbackCreativeId() ?? '')}
+              options={{
+                '': trans('slots.passback_none'),
+                ...Object.fromEntries((this.creatives ?? []).map((creative) => [String(creative.id()), creative.name()])),
+              }}
+              onchange={(value: string) => this.save(slot, { passbackCreativeId: value === '' ? null : Number(value) })}
+            />
+          </label>
+        )}
       </div>
     );
   }

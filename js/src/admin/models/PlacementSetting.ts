@@ -11,6 +11,7 @@ export default class PlacementSetting extends Model {
   enabled = Model.attribute<boolean>('enabled');
   maxFill = Model.attribute<number>('maxFill');
   fallback = Model.attribute<string>('fallback');
+  passbackCreativeId = Model.attribute<number | null>('passbackCreativeId');
   labelMode = Model.attribute<string>('labelMode');
 
   /** random | sticky. Sticky holds the slot's choice for the rest of the visit. */

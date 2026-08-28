@@ -103,6 +103,19 @@ class PlacementSettingResource extends AbstractDatabaseResource
                     PlacementSetting::FALLBACK_COLLAPSE,
                 ]),
 
+            // Only meaningful when `fallback` is `passback`, and deliberately
+            // not validated against that: an administrator may nominate the
+            // creative first and switch the mode second, and refusing the
+            // first half of a two-step change is a form that fights back.
+            //
+            // The plan checks the creative is approved before it will serve
+            // one, so a nomination that points at a draft is inert rather than
+            // a way around review.
+            Schema\Integer::make('passbackCreativeId')
+                ->property('passback_creative_id')
+                ->writable()
+                ->nullable(),
+
             Schema\Str::make('labelMode')
                 ->property('label_mode')
                 ->writable()

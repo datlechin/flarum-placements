@@ -132,6 +132,7 @@ class PlanBuilder
                     weight: max(1, $weight ?? $creative['weight']),
                     type: $creative['type'],
                     payload: $creative['payload'],
+                    house: $campaign['is_house'],
                     url: $creative['url'],
                     label: $creative['label'],
                     // Issued per decision, so a token is worth exactly one

@@ -105,7 +105,11 @@ class PlacementSetting extends AbstractModel
         return [
             'enabled' => $overrides->enabled ?? true,
             'maxFill' => $overrides->max_fill ?? $placement->maxFill,
-            'fallback' => $overrides->fallback ?? self::FALLBACK_HOUSE,
+            // The engine has always fallen from one tier to the next, and
+            // that is what a forum owner wants by default: a lower-tier
+            // campaign is still somebody paying. `house` and `collapse` are
+            // the opt-ins for a slot that was sold to its top tier.
+            'fallback' => $overrides->fallback ?? self::FALLBACK_NEXT_TIER,
             'passbackCreativeId' => $overrides->passback_creative_id ?? null,
             'labelMode' => $overrides->label_mode ?? self::LABEL_INHERIT,
             'rotation' => $overrides->rotation ?? self::ROTATION_RANDOM,

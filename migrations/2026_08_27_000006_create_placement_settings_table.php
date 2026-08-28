@@ -40,7 +40,7 @@ return Migration::createTable('placement_settings', function (Blueprint $table) 
     // next_tier | house | passback | collapse. Roughly 30% of impressions
     // never render, so what happens when a slot cannot fill is a first-class
     // setting rather than an afterthought.
-    $table->string('fallback', 12)->default('house');
+    $table->string('fallback', 12)->default('next_tier');
     $table->integer('passback_creative_id')->unsigned()->nullable();
 
     // inherit | always | never. The visible "Advertisement" label satisfies

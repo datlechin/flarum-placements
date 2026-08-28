@@ -45,6 +45,10 @@ final readonly class Candidate
         public ?array $token = null,
         public ?int $frequencyCap = null,
         public string $frequencyWindow = 'day',
+        /** Whether the campaign behind it is a house campaign. */
+        public bool $house = false,
+        /** Whether this is a slot's nominated fallback rather than inventory. */
+        public bool $passback = false,
     ) {
     }
 
@@ -60,7 +64,9 @@ final readonly class Candidate
      *     label: string|null,
      *     token: string|null,
      *     nonce: string|null,
-     *     issued: int|null
+     *     issued: int|null,
+     *     house: bool,
+     *     passback: bool
      * }
      */
     public function toArray(): array
@@ -82,6 +88,12 @@ final readonly class Candidate
             // only knowable there.
             'cap' => $this->frequencyCap,
             'window' => $this->frequencyWindow,
+            // Both are decisions the client has to make and cannot infer.
+            // House cannot be read off the tier -- a campaign may sit at the
+            // house tier without being one -- and a passback is deliberately
+            // outside the draw until everything else has failed.
+            'house' => $this->house,
+            'passback' => $this->passback,
         ];
     }
 }

@@ -29,7 +29,9 @@ function slot(candidates: Candidate[], overrides: Partial<SlotConfig> = {}): Slo
     repeating: false,
     recommendedSize: null,
     reserve: {},
-    fallback: 'house',
+    // `next_tier`, which is the shipped default and the behaviour these tests
+    // describe. `house` would stop the fallthrough they are about.
+    fallback: 'next_tier',
     passbackCreativeId: null,
     labelMode: 'inherit',
     everyN: null,

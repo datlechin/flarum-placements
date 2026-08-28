@@ -75,6 +75,8 @@ Note that this is an explicit grant and nothing else. Administrators are *not* a
 
 **Frequency capping** is counted in the reader's browser, per campaign rather than per creative — an advertiser who supplied four variations has still shown you their advert four times. It is best effort and the admin panel says so: a private window, cleared site data or a second device all start the count again. It stops somebody seeing the same advert forty times in an afternoon; it is not a guarantee to quote to an advertiser.
 
+**When nothing matched** is per slot, and the four answers are genuinely different. `next_tier` falls from one tier to the next and is the default, because a lower-tier campaign is still somebody paying. `collapse` shows nothing rather than falling: a sponsorship position that quietly fills with remnant is worth less than an empty one, and the sponsor notices. `house` falls straight past the paid tiers to your own adverts, which is `collapse` with something in the hole. `passback` shows one creative you nominate — it still has to be approved, so nominating one is not a way around review.
+
 **Rotation** is per slot. `random` draws again on every page; `sticky` holds the choice for the visit, because a sponsor whose advert flickers between three others as a reader moves through the forum looks like a forum with a fault — and because holding it makes one creative's click-through rate mean something rather than being an average of whatever was drawn.
 
 ## Measurement
@@ -95,7 +97,8 @@ That identifies nobody. It is also the only affordable shape — a row per event
 
 ```sh
 php flarum placements:flush            # write buffered counts (scheduled every minute)
-php flarum placements:prune --days=90  # drop buckets past the retention window
+php flarum placements:prune            # drop old buckets and uploaded images nothing refers to
+php flarum placements:prune --dry-run  # say what would go, delete nothing
 ```
 
 The flush also runs opportunistically on about one beacon request in fifty, because a large share of self-hosted Flarum installs never added `schedule:run` and statistics that simply never appear are a worse failure than an occasional small write.

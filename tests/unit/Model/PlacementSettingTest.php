@@ -42,7 +42,10 @@ class PlacementSettingTest extends TestCase
         $this->assertSame([
             'enabled' => true,
             'maxFill' => 2,
-            'fallback' => PlacementSetting::FALLBACK_HOUSE,
+            // The engine has always fallen from one tier to the next, and a
+            // lower-tier campaign is still somebody paying. `house` and
+            // `collapse` are the opt-ins for a slot sold to its top tier.
+            'fallback' => PlacementSetting::FALLBACK_NEXT_TIER,
             'passbackCreativeId' => null,
             'labelMode' => PlacementSetting::LABEL_INHERIT,
             'rotation' => PlacementSetting::ROTATION_RANDOM,
