@@ -73,6 +73,17 @@ export default function registerCreatives(): void {
         height={size(candidate.payload, 'height')}
         loading="lazy"
         decoding="async"
+        // A dead asset otherwise draws the browser's broken-image glyph under
+        // a label reading "Advertisement", which looks like the forum is
+        // broken rather than like the advertiser's CDN is. The impression is
+        // already counted by the time this fires -- the slot cannot know an
+        // image will fail before it renders -- so this only stops the reader
+        // seeing it.
+        onerror={(e: Event) => {
+          const image = e.target as HTMLImageElement;
+
+          image.style.display = 'none';
+        }}
       />
     );
   });

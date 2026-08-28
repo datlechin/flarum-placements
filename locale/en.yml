@@ -172,6 +172,29 @@ datlechin-placements:
       columns: Columns
       columns_help: How many logos sit side by side before the row wraps.
 
+      element: Container element
+      element_help: >
+        Whatever the network's snippet asks for. AdSense uses ins; most others
+        use div.
+      attributes: Attributes
+      attributes_help: >
+        Copied from the network's own snippet, one per row. Only data-*, class,
+        id and style are kept; anything else is dropped on save.
+      add_attribute: Add an attribute
+      remove_attribute: Remove this attribute
+      network_height_help: >
+        Holds the space open while the network loads, so the page does not jump.
+      requires_consent: Wait for consent
+      requires_consent_help: >
+        Nothing is loaded until your forum's consent banner calls
+        flarumPlacement.setConsent(true). Leave this on unless you have
+        established the network needs no consent.
+      refresh_on_navigate: Reload on every page change
+      refresh_on_navigate_help: >
+        Off unless you have read your network's policy on re-requesting an
+        advert the reader did not ask for. Flarum is a single-page application,
+        so a route change would otherwise count as a new page view.
+
       types:
         image: Image
         text: Text

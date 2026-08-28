@@ -14,6 +14,21 @@ import { watchViewability } from '../viewability';
 import PlacementState from '../states/PlacementState';
 import type { Candidate, SlotConfig } from '../types';
 
+/**
+ * Whether a renderer produced nothing worth wrapping.
+ *
+ * `null` is what a renderer returns when it declines -- no consent yet, a
+ * payload it cannot use, no logos in the list. Mithril also treats `undefined`,
+ * `false` and `''` as nothing, and an empty array renders no elements, so all
+ * of them have to count as nothing here too, or the slot draws a labelled
+ * empty box and books an impression for it.
+ */
+function isEmpty(content: Mithril.Children): boolean {
+  if (Array.isArray(content)) return content.every(isEmpty);
+
+  return content === null || content === undefined || content === false || content === '';
+}
+
 export interface PlacementSlotAttrs extends ComponentAttrs {
   className?: string;
   /** The placement key this slot renders. */
@@ -46,6 +61,15 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
   protected picked: Candidate[] = [];
 
   /**
+   * The subset of `picked` that actually drew something, filled in by
+   * `contentItems()` during `view()` and read by `oncreate()` afterwards.
+   *
+   * These are two different lists and the difference is what gets counted: a
+   * candidate can be chosen and then render nothing.
+   */
+  protected drawn: Candidate[] = [];
+
+  /**
    * Stops the viewability observers when this slot goes away. A discussion
    * page creates and destroys dozens of these as the reader scrolls.
    */
@@ -72,9 +96,10 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
 
     const state = placements();
 
-    if (state.demo || !this.picked.length) return;
+    // `drawn`, not `picked`: only what reached the page is an impression.
+    if (state.demo || !this.drawn.length) return;
 
-    this.picked.forEach((candidate) => {
+    this.drawn.forEach((candidate) => {
       report('impression', candidate, this.attrs.name);
       recordSeen(candidate);
 
@@ -130,15 +155,30 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
       return items;
     }
 
-    const creatives = this.picked.map((candidate) => this.creative(candidate)).filter(Boolean);
+    // Drawn first, then filtered on what actually produced something. A
+    // renderer that returns nothing -- a network container waiting on consent,
+    // a payload the type could not use -- must not leave a labelled empty box
+    // holding the reserve open, and must not be counted as an impression.
+    const drawn = this.picked
+      .map((candidate) => ({ candidate, content: this.creative(candidate) }))
+      .filter((entry): entry is { candidate: Candidate; content: Mithril.Children } => !isEmpty(entry.content));
 
-    if (!creatives.length) return items;
+    // Read by `oncreate`, which runs after the first `view()`. Reporting from
+    // `this.picked` instead is how an empty slot came to book an impression
+    // and a viewable impression on the one number worth quoting to a sponsor.
+    this.drawn = drawn.map((entry) => entry.candidate);
+
+    if (!drawn.length) return items;
 
     if (slot.labelMode !== 'never') {
-      items.add('label', this.label(this.picked[0]), 100);
+      items.add('label', this.label(drawn[0].candidate), 100);
     }
 
-    items.add('creatives', creatives, 50);
+    items.add(
+      'creatives',
+      drawn.map((entry) => entry.content),
+      50
+    );
 
     return items;
   }
@@ -163,6 +203,13 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
     // forum whose administrator disabled the extension that owned the type.
     if (!renderer) return null;
 
+    const content = renderer(candidate);
+
+    // The wrapper is only worth having around something. Returning it
+    // regardless is what made an empty creative indistinguishable from a
+    // drawn one to everything downstream, including the counters.
+    if (isEmpty(content)) return null;
+
     // `mousedown` and `auxclick` rather than `click`: a middle click and a
     // ctrl-click open the destination in a new tab without ever firing a
     // click event on the link, and those are real readers going to a real
@@ -171,7 +218,7 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
 
     return (
       <div className="Placement-creative" onmousedown={count} onauxclick={count}>
-        {renderer(candidate)}
+        {content}
       </div>
     );
   }

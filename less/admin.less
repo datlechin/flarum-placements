@@ -306,6 +306,30 @@
   margin-block: 8px;
 }
 
+.PlacementPairs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-block: 8px;
+}
+
+.PlacementPairs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+
+  // The name is the shorter half in practice and the value can be a long
+  // publisher id, so the value takes the slack.
+  > .FormControl:first-child {
+    flex: 1 1 160px;
+  }
+
+  > .FormControl {
+    flex: 2 1 200px;
+  }
+}
+
 .PlacementLogos-row {
   display: flex;
   flex-wrap: wrap;

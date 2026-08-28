@@ -32,6 +32,12 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
   protected payload!: Stream<Record<string, unknown>>;
   protected placements!: Stream<Record<string, number | null>>;
 
+  /**
+   * A network container's attributes, held as ordered pairs while they are
+   * being typed. See `attributePairs()`.
+   */
+  protected attributes!: Stream<Array<[string, string]>>;
+
   oninit(vnode: Mithril.Vnode<CreativeModalAttrs, this>) {
     super.oninit(vnode);
 
@@ -43,14 +49,28 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
     this.status = Stream(creative?.status() ?? 'approved');
     this.weight = Stream(String(creative?.weight() ?? 10));
     this.url = Stream(creative?.destinationUrl() ?? '');
-    // Scalars become strings for the inputs to bind to; anything structured is
-    // kept as it is, because stringifying a list of logos loses it.
+    // Scalars become strings for the inputs to bind to. Two exceptions:
+    // anything structured, because stringifying a list of logos loses it, and
+    // booleans, because `String(false)` is `'false'` and every non-empty
+    // string is truthy -- a switch reading it back would show "on" for a flag
+    // that was saved off.
     this.payload = Stream(
       Object.fromEntries(
-        Object.entries(payload).map(([key, value]) => [key, value !== null && typeof value === 'object' ? value : String(value ?? '')])
+        Object.entries(payload).map(([key, value]) => [
+          key,
+          value !== null && (typeof value === 'object' || typeof value === 'boolean') ? value : String(value ?? ''),
+        ])
       )
     );
     this.placements = Stream(creative?.placements() ?? {});
+
+    const stored = payload.attributes;
+
+    this.attributes = Stream(
+      typeof stored === 'object' && stored !== null && !Array.isArray(stored)
+        ? Object.entries(stored as Record<string, unknown>).map(([name, value]): [string, string] => [name, value == null ? '' : String(value)])
+        : []
+    );
   }
 
   className(): string {
@@ -125,6 +145,7 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
     if (this.type() === 'text') return this.textFields();
     if (this.type() === 'rich_text') return this.richTextFields();
     if (this.type() === 'logo_wall') return this.logoWallFields();
+    if (this.type() === 'network') return this.networkFields();
     if (this.type() === 'raw_html') return this.rawHtmlFields();
 
     return this.group('payload', <textarea className="FormControl" rows="6" value={JSON.stringify(this.payload(), null, 2)} disabled />);
@@ -244,6 +265,108 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
   }
 
   /**
+   * A container an external network fills.
+   *
+   * The attributes are typed in as name/value pairs rather than pasted as a
+   * snippet, because that is how they are stored and how they are rendered:
+   * as real attributes on a real element, never through `innerHTML`. The
+   * server keeps only `data-*`, `class`, `id` and `style`, which is said here
+   * rather than discovered by having a save silently drop half the form.
+   */
+  protected networkFields(): Mithril.Children {
+    const attributes = this.attributePairs();
+
+    return [
+      this.group(
+        'element',
+        <Select
+          value={this.field('element') || 'div'}
+          options={{ div: 'div', ins: 'ins' }}
+          onchange={(value: string) => this.payload({ ...this.payload(), element: value })}
+        />,
+        trans('creatives.element_help')
+      ),
+
+      <div className="Form-group">
+        <label>{trans('creatives.attributes')}</label>
+        <div className="helpText">{trans('creatives.attributes_help')}</div>
+
+        <div className="PlacementPairs">
+          {attributes.map(([name, value], index) => (
+            <div className="PlacementPairs-row" key={index}>
+              <input
+                className="FormControl"
+                value={name}
+                placeholder="data-ad-client"
+                oninput={(e: InputEvent) => this.setAttributeAt(index, (e.target as HTMLInputElement).value, value)}
+              />
+              <input
+                className="FormControl"
+                value={value}
+                oninput={(e: InputEvent) => this.setAttributeAt(index, name, (e.target as HTMLInputElement).value)}
+              />
+              <Button
+                className="Button Button--icon"
+                icon="fas fa-times"
+                type="button"
+                title={extractText(trans('creatives.remove_attribute'))}
+                onclick={() => this.setAttributes(attributes.filter((_, i) => i !== index))}
+              />
+            </div>
+          ))}
+        </div>
+
+        <Button className="Button" type="button" onclick={() => this.setAttributes([...attributes, ['', '']])}>
+          {trans('creatives.add_attribute')}
+        </Button>
+      </div>,
+
+      this.group(
+        'frame_height',
+        <input className="FormControl" type="number" min="1" value={this.field('height')} oninput={this.payloadInput('height')} />,
+        trans('creatives.network_height_help')
+      ),
+
+      <div className="Form-group">
+        <Switch state={this.payload().requiresConsent !== false} onchange={(on: boolean) => this.payload({ ...this.payload(), requiresConsent: on })}>
+          {trans('creatives.requires_consent')}
+        </Switch>
+        <div className="helpText">{trans('creatives.requires_consent_help')}</div>
+      </div>,
+
+      <div className="Form-group">
+        <Switch
+          state={this.payload().refreshOnNavigate === true}
+          onchange={(on: boolean) => this.payload({ ...this.payload(), refreshOnNavigate: on })}
+        >
+          {trans('creatives.refresh_on_navigate')}
+        </Switch>
+        <div className="helpText">{trans('creatives.refresh_on_navigate_help')}</div>
+      </div>,
+    ];
+  }
+
+  /**
+   * The attributes being edited, as an ordered list of pairs.
+   *
+   * A map cannot be edited in place. Renaming a key means deleting one and
+   * adding another, so the row would jump or vanish under the cursor as it was
+   * typed, and two rows briefly sharing a blank name would collapse into one.
+   * The list is turned back into a map on save, and only then.
+   */
+  protected attributePairs(): Array<[string, string]> {
+    return this.attributes();
+  }
+
+  protected setAttributes(pairs: Array<[string, string]>): void {
+    this.attributes(pairs);
+  }
+
+  protected setAttributeAt(index: number, name: string, value: string): void {
+    this.setAttributes(this.attributes().map((pair: [string, string], i: number): [string, string] => (i === index ? [name, value] : pair)));
+  }
+
+  /**
    * @return The logo rows currently being edited, always a real array so that
    *         the form works the same on a new creative and an existing one.
    */
@@ -353,6 +476,13 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
 
       clean[key] = ['width', 'height', 'columns'].includes(key) ? Number(value) : value;
     });
+
+    // The pairs become a map here and nowhere earlier, so a half-typed name
+    // never has to be a valid key. A row with no name is a row the author
+    // started and abandoned.
+    if (this.type() === 'network') {
+      clean.attributes = Object.fromEntries(this.attributes().filter(([name]: [string, string]) => name.trim() !== ''));
+    }
 
     return clean;
   }
