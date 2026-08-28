@@ -21,6 +21,8 @@ use Flarum\Extend;
 // namespace a bare `Flarum\Search\...` resolves to
 // `Datlechin\Placements\Flarum\Search\...`, and the failure is a 500 from
 // the search manager rather than anything that names the mistake.
+use Flarum\Foundation\Paths;
+use Flarum\Http\UrlGenerator;
 use Flarum\Search\Database\DatabaseSearchDriver;
 use Illuminate\Console\Scheduling\Event;
 
@@ -106,7 +108,23 @@ return [
     // a token this server signed.
     (new Extend\Routes('api'))
         ->post('/placements/events', 'datlechin-placements.events', Api\Controller\RecordEventsController::class)
-        ->get('/placements/report', 'datlechin-placements.report', Api\Controller\ReportController::class),
+        ->get('/placements/report', 'datlechin-placements.report', Api\Controller\ReportController::class)
+        // Somewhere to put the banner a sponsor emailed you. Without it every
+        // image creative needs a URL hosted elsewhere, and a member submitting
+        // an advert has to solve image hosting first.
+        ->post('/placements/uploads', 'datlechin-placements.uploads', Api\Controller\UploadCreativeImageController::class),
+
+    // The path deliberately says `placements` and not anything containing
+    // `ad`, `ads`, `banner` or `sponsor`: those are the tokens EasyList matches
+    // on, and a blocked upload path would take the images down on the readers
+    // who see adverts at all. Same reasoning as D1's choice of name.
+    (new Extend\Filesystem())
+        ->disk(Upload\CreativeImageUploader::DISK, function (Paths $paths, UrlGenerator $url): array {
+            return [
+                'root' => "$paths->public/assets/placements",
+                'url' => $url->to('forum')->path('assets/placements'),
+            ];
+        }),
 
     // Generous enough to survive a household, an office or a university behind
     // one address, and low enough that nobody floods the buffer from a laptop.

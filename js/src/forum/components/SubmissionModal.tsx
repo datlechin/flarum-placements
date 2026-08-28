@@ -6,6 +6,7 @@ import Select from 'flarum/common/components/Select';
 import Stream from 'flarum/common/utils/Stream';
 import type Mithril from 'mithril';
 
+import ImageUploadField from '../../common/components/ImageUploadField';
 import { SUBMISSION_RESOURCE, submittableTypes, trans } from '../submissions';
 import type Submission from '../models/Submission';
 
@@ -85,7 +86,10 @@ export default class SubmissionModal extends FormModal<SubmissionModalAttrs> {
   protected typeFields(): Mithril.Children {
     if (this.type() === 'image') {
       return [
-        this.group('asset', <input className="FormControl" type="url" value={this.field('asset')} oninput={this.input('asset')} required />),
+        this.group(
+          'asset',
+          <ImageUploadField value={this.field('asset')} onchange={(url: string) => this.payload({ ...this.payload(), asset: url })} required />
+        ),
         this.group('alt', <input className="FormControl" value={this.field('alt')} oninput={this.input('alt')} />, trans('alt_help')),
       ];
     }

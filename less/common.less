@@ -202,3 +202,46 @@
     gap: 4px;
   }
 }
+
+// The address field and its upload button, used by the admin panel and by the
+// member submission form.
+.ImageUploadField-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+
+  > .FormControl {
+    flex: 1 1 220px;
+  }
+}
+
+// A label rather than a button, wrapping a hidden file input: the native
+// control cannot be styled and its own text cannot be translated.
+.ImageUploadField-choose {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  cursor: pointer;
+
+  input[type='file'] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.ImageUploadField-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 120px;
+  margin-block-start: 8px;
+  border-radius: var(--border-radius);
+}
+
+.ImageUploadField-error {
+  margin-block-start: 6px;
+  color: var(--alert-error-color, var(--muted-color));
+  font-size: 13px;
+}

@@ -8,6 +8,7 @@ import Stream from 'flarum/common/utils/Stream';
 import extractText from 'flarum/common/utils/extractText';
 import type Mithril from 'mithril';
 
+import ImageUploadField from '../../common/components/ImageUploadField';
 import { RESOURCE, creativeTypes, slots, trans } from '../config';
 import type Campaign from '../models/Campaign';
 import type Creative from '../models/Creative';
@@ -172,7 +173,10 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
 
   protected imageFields(): Mithril.Children {
     return [
-      this.group('asset', <input className="FormControl" type="url" value={this.field('asset')} oninput={this.payloadInput('asset')} required />),
+      this.group(
+        'asset',
+        <ImageUploadField value={this.field('asset')} onchange={(url: string) => this.payload({ ...this.payload(), asset: url })} required />
+      ),
       this.group('alt', <input className="FormControl" value={this.field('alt')} oninput={this.payloadInput('alt')} />, trans('creatives.alt_help')),
       <div className="Form-group PlacementSize">
         {this.group('width', <input className="FormControl" type="number" value={this.field('width')} oninput={this.payloadInput('width')} />)}
@@ -219,12 +223,10 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
         <div className="PlacementLogos">
           {logos.map((logo, index) => (
             <div className="PlacementLogos-row" key={index}>
-              <input
-                className="FormControl"
-                type="url"
+              <ImageUploadField
                 value={logo.asset ?? ''}
                 placeholder={extractText(trans('creatives.asset'))}
-                oninput={this.logoInput(index, 'asset')}
+                onchange={(url: string) => this.setLogos(logos.map((l, i) => (i === index ? { ...l, asset: url } : l)))}
                 required
               />
               <input

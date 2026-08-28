@@ -104,7 +104,9 @@ The flush also runs opportunistically on about one beacon request in fifty, beca
 
 Six types ship, and a seventh can be registered by any extension.
 
-**Image** is a picture with a link. **Text** is a headline, some words and a call to action, stored and rendered as text so there is nothing to escape.
+**Image** is a picture with a link. Paste an address, or upload the file a sponsor emailed you: uploads land in `assets/placements`, are renamed by the forum rather than keeping the name they arrived with, and are checked by decoding them rather than by trusting the extension. SVG is refused — it is a document that can carry script, and it would be served from your own origin. Members with **Submit adverts for review** can upload too, which is the difference between a submission portal somebody can use and one where they have to solve image hosting first.
+
+**Text** is a headline, some words and a call to action, stored and rendered as text so there is nothing to escape.
 
 **Formatted text** sits between them and HTML: copy with a bold word and a link in it, written the same way a post on this forum is written and rendered through the same formatter. Whatever markdown or BBCode the forum has enabled works here, the output is safe because it comes from a parse tree rather than from filtering, and links are marked `rel="sponsored"` — a pattern of paid links passing PageRank earns an unnatural-outbound-links action against the whole forum.
 

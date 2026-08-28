@@ -445,4 +445,7 @@ datlechin-placements:
         approved: Approved
         rejected: Not accepted
 
-  lib: {}
+  lib:
+    upload: Upload
+    clear: Clear
+    upload_failed: The upload did not work. Try again, or paste an address instead.
