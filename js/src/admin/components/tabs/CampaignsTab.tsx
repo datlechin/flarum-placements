@@ -3,7 +3,6 @@ import Component from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import Link from 'flarum/common/components/Link';
 import Tooltip from 'flarum/common/components/Tooltip';
-import humanTime from 'flarum/common/helpers/humanTime';
 import extractText from 'flarum/common/utils/extractText';
 import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
@@ -17,6 +16,7 @@ import ListToolbar from '../ListToolbar';
 import RecordsTable from '../RecordsTable';
 import type { Column } from '../RecordsTable';
 import StatusPill, { campaignTone } from '../../../common/components/StatusPill';
+import flightDate from '../../utils/flightDate';
 
 /**
  * The campaign list, and the page of whichever campaign is open.
@@ -287,6 +287,6 @@ export default class CampaignsTab extends Component {
 
     if (!starts && !ends) return <span className="PlacementTable-muted">{trans('campaigns.always')}</span>;
 
-    return [starts ? humanTime(starts) : '…', ' – ', ends ? humanTime(ends) : '…'];
+    return [starts ? flightDate(starts) : '…', ' – ', ends ? flightDate(ends) : '…'];
   }
 }

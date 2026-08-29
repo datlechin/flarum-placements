@@ -5,7 +5,6 @@ import Button from 'flarum/common/components/Button';
 import Link from 'flarum/common/components/Link';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Placeholder from 'flarum/common/components/Placeholder';
-import humanTime from 'flarum/common/helpers/humanTime';
 import extractText from 'flarum/common/utils/extractText';
 import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
@@ -18,6 +17,7 @@ import CreativeModal from '../CreativeModal';
 import CreativePreviewModal from '../CreativePreviewModal';
 import DiagnoseModal from '../DiagnoseModal';
 import Figures, { rate } from '../Figures';
+import flightDate from '../../utils/flightDate';
 import RecordsTable from '../RecordsTable';
 import type { Column } from '../RecordsTable';
 import StatusPill, { campaignTone, creativeTone } from '../../../common/components/StatusPill';
@@ -203,7 +203,7 @@ export default class CampaignDetail extends Component<CampaignDetailAttrs> {
     if (starts || ends) {
       rows.add('flight', {
         label: trans('campaigns.flight_label'),
-        value: [starts ? humanTime(starts) : '…', ' – ', ends ? humanTime(ends) : '…'],
+        value: [starts ? flightDate(starts) : '…', ' – ', ends ? flightDate(ends) : '…'],
       });
     }
 
