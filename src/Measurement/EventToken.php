@@ -37,6 +37,17 @@ final class EventToken
      */
     public const LIFETIME = 1800;
 
+    /**
+     * How long a token may be exchanged for a fresh one.
+     *
+     * Longer than `LIFETIME` because a reading session outlives a token. The
+     * two windows do different jobs: `LIFETIME` bounds how long a *report* is
+     * accepted, and this bounds how long the browser may keep asking for
+     * another chance to report. A token older than this is simply a session
+     * that ended.
+     */
+    public const REFRESH_WINDOW = 86400;
+
     public const NONCE_BYTES = 8;
 
     public function __construct(private readonly string $key)
@@ -90,6 +101,42 @@ final class EventToken
             'issued' => $issued,
             'nonce' => $nonce,
         ];
+    }
+
+    /**
+     * Exchange a token this server issued for a fresh one for the same advert.
+     *
+     * A plan is minted once per page load, so in a single-page application one
+     * nonce has to cover an entire reading session -- and both the browser and
+     * the server refuse a nonce twice. A reader who visits sixty pages was
+     * therefore worth one impression per creative, and after half an hour the
+     * token expired and every further event was dropped while the adverts kept
+     * appearing. The central number was wrong by an order of magnitude.
+     *
+     * What makes this safe is that nothing is re-decided. The triple is read
+     * out of the signature, never out of the request, so a browser can only
+     * ever get another token for an advert this server already chose to serve
+     * it -- it cannot name a different creative, a different campaign or a
+     * different slot. No targeting is re-evaluated, so nothing here can be
+     * talked into serving somewhere it should not.
+     *
+     * @return array{token: string, nonce: string, issued: int}|null
+     */
+    public function refresh(string $token, int $creativeId, int $campaignId, string $placementKey, string $nonce, int $issued, ?int $now = null): ?array
+    {
+        $now ??= time();
+
+        if ($issued > $now + 60 || $now - $issued > self::REFRESH_WINDOW) {
+            return null;
+        }
+
+        $expected = $this->sign($this->payload($creativeId, $campaignId, $placementKey, $issued, $nonce));
+
+        if (! hash_equals($expected, $token)) {
+            return null;
+        }
+
+        return $this->issue($creativeId, $campaignId, $placementKey, $now);
     }
 
     private function payload(int $creativeId, int $campaignId, string $placementKey, int $issued, string $nonce): string

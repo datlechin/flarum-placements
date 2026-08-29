@@ -135,7 +135,11 @@ return [
         // Somewhere to put the banner a sponsor emailed you. Without it every
         // image creative needs a URL hosted elsewhere, and a member submitting
         // an advert has to solve image hosting first.
-        ->post('/placements/uploads', 'datlechin-placements.uploads', Api\Controller\UploadCreativeImageController::class),
+        ->post('/placements/uploads', 'datlechin-placements.uploads', Api\Controller\UploadCreativeImageController::class)
+        // Fresh proof for adverts already served. A plan is minted once per
+        // page load, so without this one nonce has to cover a whole reading
+        // session -- and a nonce is refused twice by both ends.
+        ->post('/placements/tokens', 'datlechin-placements.tokens', Api\Controller\RefreshTokensController::class),
 
     // The path deliberately says `placements` and not anything containing
     // `ad`, `ads`, `banner` or `sponsor`: those are the tokens EasyList matches
@@ -152,7 +156,8 @@ return [
     // Generous enough to survive a household, an office or a university behind
     // one address, and low enough that nobody floods the buffer from a laptop.
     (new Extend\ThrottleApi())
-        ->set('datlechin-placements.events', Api\Throttler\EventThrottler::class),
+        ->set('datlechin-placements.events', Api\Throttler\EventThrottler::class)
+        ->set('datlechin-placements.tokens', Api\Throttler\EventThrottler::class),
 
     // The beacon is fired with `navigator.sendBeacon`, which cannot set a
     // header, so a CSRF token could never reach this route.
@@ -164,7 +169,8 @@ return [
     // affected — a count — is already gated by a token this server signed for
     // one creative in one slot for one moment.
     (new Extend\Csrf())
-        ->exemptRoute('datlechin-placements.events'),
+        ->exemptRoute('datlechin-placements.events')
+        ->exemptRoute('datlechin-placements.tokens'),
 
     // Alerts only, and not email by default: a campaign reaching its cap is
     // useful to know and not worth waking somebody up for.

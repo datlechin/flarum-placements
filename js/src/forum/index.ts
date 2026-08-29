@@ -1,8 +1,11 @@
 import app from 'flarum/forum/app';
+import { extend } from 'flarum/common/extend';
+import Page from 'flarum/common/components/Page';
 
 import { consentGranted, setConsent } from '../common/consent';
 import registerCreatives from '../common/creatives';
 import placements from '../common/placements';
+import { refreshTokens } from '../common/refresh';
 import registerSlots, { registerTagSlots } from './slots';
 import addSubmissionsTab from './addSubmissionsTab';
 
@@ -17,6 +20,7 @@ export { watchViewability, requiredRatio } from '../common/viewability';
 export { withinCap, timesSeen, recordSeen } from '../common/frequency';
 export { stickyChoice, remember } from '../common/sticky';
 export { setConsent, consentGranted, mayLoadWithConsent, whenConsented } from '../common/consent';
+export { refreshTokens, resetRefresh } from '../common/refresh';
 
 app.initializers.add('datlechin-placements', () => {
   // Before the guard below, deliberately. Somebody who submits adverts may
@@ -38,4 +42,15 @@ app.initializers.add('datlechin-placements', () => {
   (window as unknown as Record<string, unknown>).flarumPlacement = { setConsent, consentGranted };
   registerSlots();
   registerTagSlots();
+
+  // Every navigation asks for fresh proof. `Page.oninit` is what fires once
+  // per page in a Flarum frontend -- it is where core swaps `app.current` --
+  // and a plan minted at boot otherwise has to cover the whole session, which
+  // meant sixty pages produced one impression per creative.
+  //
+  // The request is throttled inside `refreshTokens`, so a reader clicking
+  // through a thread does not make one per click.
+  extend(Page.prototype, 'oninit', () => {
+    refreshTokens();
+  });
 });
