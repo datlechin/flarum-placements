@@ -40,10 +40,10 @@ export interface RecordsTableAttrs<T extends Model> extends ComponentAttrs {
 /**
  * A table of records, with the three states a table has to have.
  *
- * Nothing here is invented: it is core's own arrangement -- `Table-container`
- * around a `table.Table`, `loading-container` for a refresh that keeps the old
- * rows visible, `Placeholder` for genuinely empty, and `Pagination` underneath
- * -- assembled once instead of three times.
+ * The look is core's, but `.Table()` and `.loading-container()` are parametric
+ * LESS mixins -- the parentheses mean Less emits no class of that name -- so
+ * `less/admin.less` calls them into `.PlacementTable` rather than the markup
+ * naming them. `Placeholder` and `Pagination` are real components.
  *
  * Columns arrive as an `ItemList` so that each list declares what it shows and
  * in what order, and so another extension can add a column to any of these
@@ -76,14 +76,14 @@ export default class RecordsTable<T extends Model> extends Component<RecordsTabl
 
     return (
       <div
-        className={classList('Table-container', {
+        className={classList('PlacementTable-container', {
           // Keeps the rows on screen and dims them while the next page
           // arrives, rather than blanking the table and losing the reader's
           // place for the length of a request.
-          'loading-container': state.isLoading(),
+          'PlacementTable-container--loading': state.isLoading(),
         })}
       >
-        <table className="Table PlacementTable">
+        <table className="PlacementTable">
           <thead>
             <tr>
               {items.map((column, index) => (

@@ -212,8 +212,8 @@ export default class ReportsTab extends Component {
       <div className="PlacementDetail-section" key={breakdown}>
         <h4>{trans(`reports.by_${breakdown}`)}</h4>
 
-        <div className="Table-container">
-          <table className="Table PlacementTable">
+        <div className="PlacementTable-container">
+          <table className="PlacementTable">
             <thead>
               <tr>
                 {columns.map((column) => (

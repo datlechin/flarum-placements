@@ -142,7 +142,25 @@
 // opinion about.
 // -------------------------------------------------------------------------
 
+// `.Table()` and `.loading-container()` are parametric mixins in core: the
+// parentheses mean Less emits no class of those names, so markup that says
+// `class="Table"` gets a bare browser table on an otherwise themed page. They
+// have to be called into a selector of our own.
+.PlacementTable-container {
+  // A table of campaigns is wider than a phone. It scrolls inside its own box
+  // rather than making the page scroll sideways.
+  overflow-x: auto;
+
+  // Dims the rows and floats a spinner over them while the next page arrives,
+  // instead of blanking the table and losing the reader's place.
+  &--loading {
+    .loading-container();
+  }
+}
+
 .PlacementTable {
+  .Table();
+
   // Digits line up in a column so two figures can be compared by their length
   // as well as read.
   &-number {

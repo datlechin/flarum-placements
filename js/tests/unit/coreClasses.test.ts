@@ -29,6 +29,21 @@ const FORBIDDEN = [
     why: '`Badge--important` is not defined anywhere in flarum/core.',
   },
   {
+    // `.Table()` and `.loading-container()` are parametric mixins: the
+    // parentheses mean Less emits no class of that name. Markup saying
+    // `class="Table"` therefore gets a bare browser table on a themed page,
+    // and nothing about it looks wrong until you open the panel. Every admin
+    // table here shipped that way once. `Table-container` is worse -- core
+    // does not define it in any form.
+    //
+    // Matched as a class token inside any string literal rather than after
+    // `className=`, because these names reach the DOM through `classList()`
+    // and through column descriptors too -- an earlier version of this test
+    // required the attribute and so caught none of them.
+    pattern: /["'`][^"'`]*\b(?:Table|Table-container|Table-controls|Table-controls-item|loading-container)\b[^"'`]*["'`]/,
+    why: '`Table`, `Table-container`, `Table-controls` and `loading-container` emit no CSS: call the `.Table()` / `.loading-container()` mixins from `less/admin.less` instead.',
+  },
+  {
     pattern: /Badge--warning/,
     why: '`Badge--warning` is only defined nested inside .AdminNav and .ExtensionWidget, so it styles nothing elsewhere.',
   },
@@ -78,5 +93,17 @@ describe('core class names', () => {
     const offenders = files.filter((file) => pattern.test(code(file))).map((file) => path.relative(root, file));
 
     expect(offenders).toEqual([]);
+  });
+
+  /**
+   * The other half of the trap: having stopped naming the mixins in markup,
+   * the stylesheet has to actually call them, or the tables are unstyled in a
+   * different way.
+   */
+  it('calls the table mixins from the stylesheet', () => {
+    const less = fs.readFileSync(path.join(root, 'less/admin.less'), 'utf8');
+
+    expect(less).toMatch(/^\s*\.Table\(\);/m);
+    expect(less).toMatch(/^\s*\.loading-container\(\);/m);
   });
 });

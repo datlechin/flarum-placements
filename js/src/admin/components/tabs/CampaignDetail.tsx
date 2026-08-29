@@ -295,22 +295,22 @@ export default class CampaignDetail extends Component<CampaignDetailAttrs> {
       'controls',
       {
         label: <span className="visually-hidden">{trans('lists.actions')}</span>,
-        className: 'Table-controls',
+        className: 'PlacementTable-controls',
         content: (creative) => [
           <Button
-            className="Button Button--icon Table-controls-item"
+            className="Button Button--icon PlacementTable-controls-item"
             icon="fas fa-eye"
             aria-label={extractText(trans('creatives.preview'))}
             onclick={() => app.modal.show(CreativePreviewModal, { creative })}
           />,
           <Button
-            className="Button Button--icon Table-controls-item"
+            className="Button Button--icon PlacementTable-controls-item"
             icon="fas fa-pencil-alt"
             aria-label={extractText(trans('creatives.edit'))}
             onclick={() => this.edit(campaign, creative)}
           />,
           <Button
-            className="Button Button--icon Table-controls-item"
+            className="Button Button--icon PlacementTable-controls-item"
             icon="fas fa-trash-alt"
             aria-label={extractText(trans('creatives.delete'))}
             onclick={() => this.removeCreative(creative)}

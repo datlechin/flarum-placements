@@ -116,16 +116,16 @@ export default class AdvertisersTab extends Component {
       'controls',
       {
         label: <span className="visually-hidden">{trans('lists.actions')}</span>,
-        className: 'Table-controls',
+        className: 'PlacementTable-controls',
         content: (advertiser) => [
           <Button
-            className="Button Button--icon Table-controls-item"
+            className="Button Button--icon PlacementTable-controls-item"
             icon="fas fa-pencil-alt"
             aria-label={extractText(trans('advertisers.edit'))}
             onclick={() => app.modal.show(AdvertiserModal, { advertiser, onsaved: () => app.placements.advertisers.reload() })}
           />,
           <Button
-            className="Button Button--icon Table-controls-item"
+            className="Button Button--icon PlacementTable-controls-item"
             icon="fas fa-trash-alt"
             aria-label={extractText(trans('advertisers.delete'))}
             onclick={() => this.remove(advertiser)}

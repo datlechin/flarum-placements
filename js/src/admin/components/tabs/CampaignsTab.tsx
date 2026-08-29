@@ -214,10 +214,10 @@ export default class CampaignsTab extends Component {
       'controls',
       {
         label: <span className="visually-hidden">{trans('lists.actions')}</span>,
-        className: 'Table-controls',
+        className: 'PlacementTable-controls',
         content: (campaign) => (
           <Button
-            className="Button Button--icon Table-controls-item"
+            className="Button Button--icon PlacementTable-controls-item"
             icon="fas fa-pencil-alt"
             aria-label={extractText(trans('campaigns.edit'))}
             onclick={() => app.modal.show(CampaignModal, { campaign, onsaved: () => app.placements.campaigns.reload() })}
