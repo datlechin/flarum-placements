@@ -32,7 +32,18 @@ export default class Campaign extends Model {
      * which is the moment worth showing them.
      */
     isLive: () => boolean;
+    /**
+     * Whether this campaign exists because a member submitted an advert rather
+     * than because somebody sold one.
+     *
+     * A member submitting gets an advertiser and a campaign provisioned for them,
+     * both named after them. Without this the two kinds sit in the same list
+     * looking identical, and the only way to tell them apart is to already know
+     * that mechanism exists.
+     */
+    isMemberSubmitted: () => boolean;
     createdAt: () => Date | null;
+    updatedAt: () => Date | null;
     rules: () => TargetingRule[];
     advertiser: () => false | Advertiser | null;
     creatives: () => false | (Creative | undefined)[];

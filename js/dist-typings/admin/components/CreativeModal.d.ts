@@ -1,15 +1,17 @@
-import FormModal from 'flarum/common/components/FormModal';
 import type { IFormModalAttrs } from 'flarum/common/components/FormModal';
+import ItemList from 'flarum/common/utils/ItemList';
 import Stream from 'flarum/common/utils/Stream';
 import type Mithril from 'mithril';
 import type Campaign from '../models/Campaign';
 import type Creative from '../models/Creative';
+import TabbedFormModal from './TabbedFormModal';
+import type { ModalTab } from './TabbedFormModal';
 export interface CreativeModalAttrs extends IFormModalAttrs {
     campaign: Campaign;
     creative?: Creative;
     onsaved?: () => void;
 }
-export default class CreativeModal extends FormModal<CreativeModalAttrs> {
+export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
     protected name: Stream<string>;
     protected type: Stream<string>;
     protected status: Stream<string>;
@@ -27,10 +29,43 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
      * being typed. See `attributePairs()`.
      */
     protected attributes: Stream<Array<[string, string]>>;
+    /**
+     * Both writable over the API from the start, with no control anywhere.
+     *
+     * `labelOverride` replaces the "Advertisement" wording for one creative --
+     * some sponsors contract for specific disclosure text. `variantGroup` marks
+     * creatives as variants of one another.
+     */
+    protected labelOverride: Stream<string>;
+    protected variantGroup: Stream<string>;
     oninit(vnode: Mithril.Vnode<CreativeModalAttrs, this>): void;
     className(): string;
     title(): Mithril.Children;
     content(): Mithril.Children;
+    /**
+     * Anything the server rejected that no tab claims came from the payload, and
+     * the payload is edited here.
+     *
+     * Each creative type validates its own payload with its own rule names, so a
+     * rejection arrives as `/data/attributes/html` or `/data/attributes/asset` --
+     * the name of a field inside the payload, never `payload` itself. Listing
+     * them would mean this file knowing every field of every type, including the
+     * ones another extension registers.
+     */
+    protected fallbackTab(): string | null;
+    tabs(): ItemList<ModalTab>;
+    protected detailsTab(): Mithril.Children;
+    protected contentTab(): Mithril.Children;
+    protected slotsTab(): Mithril.Children;
+    /**
+     * The two fields that were writable over the API and had no control.
+     */
+    protected advancedTab(): Mithril.Children;
+    /**
+     * What a reader would see, drawn from the form as it currently stands rather
+     * than from what was last saved.
+     */
+    protected previewTab(): Mithril.Children;
     /**
      * The fields belonging to the chosen type.
      *
@@ -74,6 +109,13 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
      * The list is turned back into a map on save, and only then.
      */
     protected attributePairs(): Array<[string, string]>;
+    /**
+     * Whether the server would keep an attribute by this name.
+     *
+     * A blank name is allowed: it is a row somebody has started, not a mistake,
+     * and `cleanPayload` drops it on save anyway.
+     */
+    protected attributeAllowed(name: string): boolean;
     protected setAttributes(pairs: Array<[string, string]>): void;
     protected setAttributeAt(index: number, name: string, value: string): void;
     /**
