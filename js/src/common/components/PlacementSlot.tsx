@@ -76,6 +76,28 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
    */
   protected watchers: Array<() => void> = [];
 
+  /**
+   * Whether what was drawn here turned out to render nothing at all.
+   *
+   * A network container is an empty element the network's own script is meant
+   * to fill. When that script never arrives -- blocked, or simply down -- the
+   * element stays empty, and nothing tells this component so: the reserved
+   * height holds the space open and the disclosure label sits above it, so
+   * every page carries a labelled blank rectangle. A large minority of readers
+   * see that on every page of the forum.
+   */
+  protected collapsed: boolean = false;
+
+  protected collapseTimer?: ReturnType<typeof setTimeout>;
+
+  /**
+   * How long to give an external script before deciding it is not coming.
+   *
+   * Long enough for a slow network to win, short enough that the hole is not
+   * part of the reading experience.
+   */
+  protected static readonly FILL_TIMEOUT = 2500;
+
   oninit(vnode: Mithril.Vnode<CustomAttrs, this>) {
     super.oninit(vnode);
 
@@ -105,11 +127,47 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
 
       this.watchers.push(watchViewability(vnode.dom, candidate, () => report('viewable', candidate, this.attrs.name)));
     });
+
+    this.watchForAnEmptyContainer(vnode.dom);
+  }
+
+  /**
+   * Collapse the slot when nothing ever appeared in it.
+   *
+   * Only for creatives whose content arrives from outside: everything this
+   * extension renders itself is on the page by the time `oncreate` runs, so a
+   * check would either be pointless or, worse, race a first paint and hide
+   * something that was about to appear.
+   *
+   * The impression has already been reported by this point and is left alone.
+   * It was served: the server chose it, the element reached the page, and the
+   * reader's blocker is not something the publisher can attest to either way.
+   * What the collapse fixes is the hole, not the accounting -- and viewability,
+   * which is measured separately and will never fire for an element with no
+   * height, is what stops an empty container looking like a seen one.
+   */
+  protected watchForAnEmptyContainer(dom: Element): void {
+    if (!this.drawn.some((candidate) => candidate.type === 'network')) return;
+
+    this.collapseTimer = setTimeout(() => {
+      const creative = dom.querySelector('.Placement-creative');
+
+      // `scrollHeight` rather than `children.length`: a network that injected
+      // an iframe of zero height has filled the element in the DOM sense and
+      // left the same hole on screen.
+      if (creative && creative.scrollHeight > 0) return;
+
+      this.collapsed = true;
+
+      m.redraw();
+    }, PlacementSlot.FILL_TIMEOUT);
   }
 
   onremove(vnode: Mithril.VnodeDOM<CustomAttrs, this>) {
     this.watchers.forEach((stop) => stop());
     this.watchers = [];
+
+    clearTimeout(this.collapseTimer);
 
     super.onremove(vnode);
   }
@@ -123,6 +181,10 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
     const content = this.contentItems(state, slot).toArray();
 
     if (!content.length) return null;
+
+    // Nothing ever arrived, so the label and the reserved height are
+    // describing an empty rectangle.
+    if (this.collapsed) return null;
 
     return (
       <aside
