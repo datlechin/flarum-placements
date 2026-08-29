@@ -46,18 +46,49 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
      * page creates and destroys dozens of these as the reader scrolls.
      */
     protected watchers: Array<() => void>;
+    /**
+     * Whether what was drawn here turned out to render nothing at all.
+     *
+     * A network container is an empty element the network's own script is meant
+     * to fill. When that script never arrives -- blocked, or simply down -- the
+     * element stays empty, and nothing tells this component so: the reserved
+     * height holds the space open and the disclosure label sits above it, so
+     * every page carries a labelled blank rectangle. A large minority of readers
+     * see that on every page of the forum.
+     */
+    protected collapsed: boolean;
+    protected collapseTimer?: ReturnType<typeof setTimeout>;
+    /**
+     * How long to give an external script before deciding it is not coming.
+     *
+     * Long enough for a slow network to win, short enough that the hole is not
+     * part of the reading experience.
+     */
+    protected static readonly FILL_TIMEOUT = 2500;
     oninit(vnode: Mithril.Vnode<CustomAttrs, this>): void;
     /**
      * Reported from `oncreate` rather than from `view()`, so it fires once per
-     * mounted element rather than once per redraw — and flarum/realtime redraws
-     * an open discussion every time anybody posts to it.
+     * mounted element rather than once per redraw.
      */
     oncreate(vnode: Mithril.VnodeDOM<CustomAttrs, this>): void;
+    /**
+     * Collapse the slot when nothing ever appeared in it.
+     *
+     * Only for creatives whose content arrives from outside: everything this
+     * extension renders itself is on the page by the time `oncreate` runs, so a
+     * check would either be pointless or, worse, race a first paint and hide
+     * something that was about to appear.
+     *
+     * The impression has already been reported by this point and is left alone.
+     * It was served: the server chose it, the element reached the page, and the
+     * reader's blocker is not something the publisher can attest to either way.
+     * What the collapse fixes is the hole, not the accounting -- and viewability,
+     * which is measured separately and will never fire for an element with no
+     * height, is what stops an empty container looking like a seen one.
+     */
+    protected watchForAnEmptyContainer(dom: Element): void;
     onremove(vnode: Mithril.VnodeDOM<CustomAttrs, this>): void;
     view(): Mithril.Children;
-    /**
-     * Whether a repeating slot belongs at the position it was handed.
-     */
     protected rendersHere(state: PlacementState, slot: SlotConfig): boolean;
     /**
      * Extension point for the parts of a slot. A theme adds a "why this?" link

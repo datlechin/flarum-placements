@@ -17,6 +17,5 @@ export default class SubmissionsUserPage extends UserPage {
     content(): Mithril.Children;
     protected list(): Mithril.Children;
     protected row(submission: Submission): Mithril.Children;
-    protected badge(status: string): string;
     protected remove(submission: Submission): void;
 }

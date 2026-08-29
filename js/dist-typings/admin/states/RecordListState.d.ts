@@ -9,10 +9,6 @@ import type { PaginatedListParams } from 'flarum/common/states/PaginatedListStat
  * what the admin tables need on top: a public accessor for the rows, the page
  * size the server actually pages at, and a search that waits for somebody to
  * stop typing.
- *
- * The lists used to be plain arrays fetched once with no page parameter. The
- * server pages at fifty, so the fifty-first campaign and everything after it
- * was unreachable and nothing on screen said so.
  */
 export default abstract class RecordListState<T extends Model> extends PaginatedListState<T> {
     /**
@@ -54,6 +50,29 @@ export default abstract class RecordListState<T extends Model> extends Paginated
      */
     items(): T[];
     currentPage(): number;
+    /**
+     * The page a request is in flight for, or undefined when none is.
+     *
+     * Core's `Pagination` uses it to show the page being fetched in its input
+     * rather than the one still on screen, which is the difference between a
+     * pager that feels responsive and one that appears to ignore a click.
+     *
+     * Not `loadingPage`: the base class already has a boolean field by that
+     * name, and shadowing it with a method breaks its own paging.
+     */
+    pageBeingLoaded(): number | undefined;
+    /**
+     * Change what is being asked for without taking the rows off screen.
+     *
+     * The base class routes this through `refresh()`, which calls `clear()` and
+     * raises `initialLoading` before it asks the server for anything. That is
+     * right when the reader has navigated somewhere new, and wrong for every use
+     * here: a search filters as you type, so `refresh()` blanks the table on
+     * each keystroke and replaces it with a spinner. `goto()` keeps the rows and
+     * swaps them when the answer arrives -- which is what the loading overlay on
+     * the table was written for.
+     */
+    refreshParams(newParams: PaginatedListParams, page: number): Promise<void>;
     total(): number;
     /**
      * Filters that are part of what this list *is*, rather than something

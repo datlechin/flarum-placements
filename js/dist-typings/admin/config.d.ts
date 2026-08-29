@@ -23,10 +23,8 @@ export declare const SETTING: {
 /**
  * The tabs the admin screen is divided into.
  *
- * One job each. They used to be seven sections stacked on a single scroll, in a
- * fixed order, with no way to link to one: reading a report meant scrolling
- * past the whole review queue and the whole campaign list, and telling somebody
- * else where to look meant describing it.
+ * One job each, and each one addressable: a report is a link somebody can
+ * send rather than a place described over somebody's shoulder.
  */
 export declare const TABS: {
     readonly campaigns: "campaigns";
@@ -45,6 +43,16 @@ export declare const CAMPAIGN_STATUS: {
     readonly paused: "paused";
     readonly archived: "archived";
 };
+/**
+ * The status a pause or resume control would move a campaign to, or null when
+ * neither applies.
+ *
+ * Stopping a running campaign is what a sponsor asks for by email in the
+ * middle of a week, and it was five interactions through a modal to change one
+ * field. Draft, scheduled and archived campaigns get no control: pausing
+ * something that is not running says nothing.
+ */
+export declare function toggledStatus(status: string): string | null;
 export declare const CREATIVE_STATUS: {
     readonly draft: "draft";
     readonly pending: "pending";

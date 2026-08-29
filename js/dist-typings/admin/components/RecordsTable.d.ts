@@ -28,18 +28,18 @@ export interface RecordsTableAttrs<T extends Model> extends ComponentAttrs {
 /**
  * A table of records, with the three states a table has to have.
  *
- * Nothing here is invented: it is core's own arrangement -- `Table-container`
- * around a `table.Table`, `loading-container` for a refresh that keeps the old
- * rows visible, `Placeholder` for genuinely empty, and `Pagination` underneath
- * -- assembled once instead of three times.
+ * The look is core's, but `.Table()` and `.loading-container()` are parametric
+ * LESS mixins -- the parentheses mean Less emits no class of that name -- so
+ * `less/admin.less` calls them into `.PlacementTable` rather than the markup
+ * naming them. `Placeholder` and `Pagination` are real components.
  *
  * Columns arrive as an `ItemList` so that each list declares what it shows and
  * in what order, and so another extension can add a column to any of these
  * tables without this file knowing about it.
  *
- * The states are the point. Every list on the old page reinvented them and one
- * of them collapsed "still loading" into "none": a slow request looked exactly
- * like an empty forum, which reads as a failed save.
+ * The three states are the point, and "still loading" must never collapse
+ * into "none": a slow request would then look exactly like an empty forum,
+ * which reads as a failed save.
  */
 export default class RecordsTable<T extends Model> extends Component<RecordsTableAttrs<T>> {
     view(): Mithril.Children;

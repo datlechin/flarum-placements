@@ -12,3 +12,14 @@ export default function placements(): PlacementState;
  * render slots against a payload the server did not send.
  */
 export declare function setPlacements(next: PlacementState | null): void;
+/**
+ * Demo mode, as the server names it.
+ *
+ * Kept beside the client rather than typed into a link, so the way out cannot
+ * drift from the way in.
+ *
+ * @see \Datlechin\Placements\Support\DemoMode
+ */
+export declare const DemoMode: {
+    readonly PARAM: "placement_demo";
+};

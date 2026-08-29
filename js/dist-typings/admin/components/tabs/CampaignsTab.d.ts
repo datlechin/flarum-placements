@@ -22,6 +22,10 @@ export default class CampaignsTab extends Component {
     protected advertiserNotice(): Mithril.Children;
     columns(): ItemList<Column<Campaign>>;
     /**
+     * Pause a running campaign, or start a paused one, from the row.
+     */
+    protected pauseButton(campaign: Campaign): Mithril.Children;
+    /**
      * The status somebody set, and -- when they disagree -- the fact that the
      * campaign is not actually running.
      *

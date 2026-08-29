@@ -16,13 +16,9 @@ export default class AdvertisersTab extends Component {
     columns(): ItemList<Column<Advertiser>>;
     protected reportLink(advertiser: Advertiser): Mithril.Children;
     /**
-     * The API has always supported deleting an advertiser and the model has
-     * always had the cleanup for it -- campaigns are detached rather than
-     * removed -- but there was no way to ask for it from the interface.
-     *
-     * The confirmation says what happens to the campaigns, because "delete this
-     * advertiser?" does not tell somebody whether they are about to lose a year
-     * of campaigns with it.
+     * Campaigns are detached rather than removed -- the model does that -- and
+     * the confirmation says so, because "delete this advertiser?" does not tell
+     * somebody whether they are about to lose a year of campaigns with it.
      */
     protected remove(advertiser: Advertiser): void;
 }

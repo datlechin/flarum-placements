@@ -8,12 +8,6 @@ import type Creative from '../../models/Creative';
  * disappearing: a rejection is the start of a conversation with whoever
  * submitted it, and an administrator who cannot see what they turned down
  * cannot answer "why?" a week later.
- *
- * This is the one screen the rewrite left alone in substance. Its interaction
- * model was already right -- approve in one click, reject in two with a reason
- * that is kept -- and the only things changed are the ones that were wrong
- * everywhere: the status label is a pill rather than a misused `Badge`, and the
- * queue pages rather than silently stopping at fifty.
  */
 export default class ReviewTab extends Component {
     /**

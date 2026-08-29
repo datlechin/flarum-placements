@@ -38,12 +38,20 @@ export default class AdvertiserModal extends FormModal<AdvertiserModalAttrs> {
      */
     protected reportLink(): Mithril.Children;
     /**
+     * Put the link on the clipboard, and say so either way.
+     *
+     * `navigator.clipboard` is undefined on any origin the browser does not
+     * consider secure, so a forum served over plain HTTP got a button that did
+     * nothing at all and said nothing about it. The link is shown exactly once,
+     * so the cost of that silence is a revoke-and-reissue cycle that breaks the
+     * URL the advertiser is already holding.
+     */
+    protected copy(): void;
+    /**
      * `true` issues a link, invalidating any previous one; `false` revokes.
      *
-     * Both are confirmed first, and both used to fire the moment the button was
-     * pressed. Each destroys a URL that cannot be recovered -- the extension's
-     * own help text says so -- while deleting a campaign, which is recoverable
-     * from a backup, has always asked. That asymmetry was the wrong way round.
+     * Both are confirmed first. Each destroys a URL that cannot be recovered,
+     * which is a heavier thing than deleting a campaign a backup can restore.
      */
     protected issue(regenerate: boolean): void;
     onsubmit(e: SubmitEvent): void;

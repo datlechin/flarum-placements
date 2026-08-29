@@ -8,3 +8,4 @@ export { watchViewability, requiredRatio } from '../common/viewability';
 export { withinCap, timesSeen, recordSeen } from '../common/frequency';
 export { stickyChoice, remember } from '../common/sticky';
 export { setConsent, consentGranted, mayLoadWithConsent, whenConsented } from '../common/consent';
+export { refreshTokens, resetRefresh } from '../common/refresh';

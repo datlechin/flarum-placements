@@ -46,20 +46,13 @@ export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
      * Anything the server rejected that no tab claims came from the payload, and
      * the payload is edited here.
      *
-     * Each creative type validates its own payload with its own rule names, so a
-     * rejection arrives as `/data/attributes/html` or `/data/attributes/asset` --
-     * the name of a field inside the payload, never `payload` itself. Listing
-     * them would mean this file knowing every field of every type, including the
-     * ones another extension registers.
+     * @see TabbedFormModal.tabHolding for why a payload field cannot be listed.
      */
     protected fallbackTab(): string | null;
     tabs(): ItemList<ModalTab>;
     protected detailsTab(): Mithril.Children;
     protected contentTab(): Mithril.Children;
     protected slotsTab(): Mithril.Children;
-    /**
-     * The two fields that were writable over the API and had no control.
-     */
     protected advancedTab(): Mithril.Children;
     /**
      * What a reader would see, drawn from the form as it currently stands rather

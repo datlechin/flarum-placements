@@ -38,6 +38,14 @@ export default class PlacementsState {
     protected creativesFor: string | null;
     constructor();
     /**
+     * The setting streams the settings tab binds to.
+     *
+     * `AdminPage.setting()` memoises them on the page, and the page is rebuilt
+     * on every tab change -- so typing into `ads.txt` and then clicking another
+     * tab silently discarded the edit. They live here and the page adopts them.
+     */
+    readonly settingStreams: Record<string, Stream<string>>;
+    /**
      * What the settings tab reports next to the retention field. Null until it
      * has been asked for, which is when that tab is first opened.
      */
@@ -53,10 +61,6 @@ export default class PlacementsState {
      */
     pending: Stream<number | null>;
     countPending(): Promise<void>;
-    /**
-     * Point the creative list at a campaign, loading it if it is not already
-     * there.
-     */
     creativesOf(campaignId: string): CreativeListState;
     /**
      * Force the next `creativesOf` to re-fetch.

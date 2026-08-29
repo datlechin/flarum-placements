@@ -44,9 +44,6 @@ export default class PlacementState {
      * somebody replies.
      */
     occurrenceAt(slot: SlotConfig, position: number): number | null;
-    /**
-     * Whether a repeating slot renders at this position.
-     */
     repeatsAt(slot: SlotConfig, position: number): boolean;
     /**
      * The candidates in the best tier that has any.

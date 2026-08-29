@@ -8,11 +8,9 @@ export interface CreativePreviewModalAttrs extends IInternalModalAttrs {
 /**
  * What a reader would see, on its own.
  *
- * The preview used to open underneath a row in the creative list. That worked
- * while the list was a stack of `div`s; in a table a row cannot grow a second
- * body without the columns of every other row moving with it. A modal keeps the
- * table honest and gives the preview the width it needs -- an advert is
- * frequently wider than a table cell.
+ * A modal rather than an expanding row: a table row cannot grow a second body
+ * without moving the columns of every other row, and an advert is frequently
+ * wider than a table cell anyway.
  */
 export default class CreativePreviewModal extends Modal<CreativePreviewModalAttrs> {
     className(): string;

@@ -26,20 +26,19 @@ interface Report {
     campaigns: Row[];
     creatives: Row[];
     placements: Row[];
+    devices: Row[];
 }
-type Breakdown = 'campaigns' | 'creatives' | 'placements';
+type Breakdown = 'campaigns' | 'creatives' | 'placements' | 'devices';
 type SortKey = 'name' | 'impressions' | 'viewable' | 'clicks' | 'ctr';
 /**
  * What was delivered.
  *
  * The range is in the address, so "the last quarter" is a link somebody can
- * send. It used to reset to thirty days on every visit and lived a scroll
- * below the campaign list, which made it the hardest screen here to refer to.
+ * send.
  */
 export default class ReportsTab extends Component {
     protected report: Report | null;
     protected loading: boolean;
-    /** Which column each breakdown is ordered by, and which way. */
     protected sorts: Record<Breakdown, {
         key: SortKey;
         descending: boolean;
@@ -65,6 +64,15 @@ export default class ReportsTab extends Component {
      */
     protected sorted(breakdown: Breakdown, rows: Row[]): Row[];
     protected table(breakdown: Breakdown, rows: Row[]): Mithril.Children;
+    /**
+     * What a breakdown row is called.
+     *
+     * A slot's key is the thing an administrator recognises and is worth showing
+     * as code; a campaign or creative id is not, and printing `7` where a name
+     * belongs makes the table unreadable. A device is neither -- it is one of a
+     * handful of words the browser reported, and the empty one means it did not.
+     */
+    protected rowName(breakdown: Breakdown, row: Row): Mithril.Children;
     protected sortBy(breakdown: Breakdown, key: SortKey): void;
     protected sortIcon(breakdown: Breakdown, key: SortKey): string;
     protected ariaSort(breakdown: Breakdown, key: SortKey): string;

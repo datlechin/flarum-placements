@@ -11,12 +11,8 @@ import type PlacementSetting from '../../models/PlacementSetting';
  * unconfigured, it is default-configured, which is why saving writes a row
  * rather than the client creating one up front.
  *
- * The controls are behind a disclosure, one slot at a time. Every slot used to
- * render every control it had, always: eight to eleven inputs across sixteen
- * slots, so opening this screen meant meeting something like a hundred and
- * thirty form controls at once, all in identically-styled rows with nothing but
- * the inline label of each saying which cluster it belonged to. Finding one
- * setting meant reading all of them.
+ * The controls are behind a disclosure, one slot at a time: rendering every
+ * control of every slot at once is well over a hundred inputs on this screen.
  *
  * Collapsed, a slot still says what it is set to. That matters more than the
  * controls: the common question is "what is this slot doing?", not "let me
@@ -41,9 +37,6 @@ export default class SlotsTab extends Component {
      * noise that hides the one slot somebody actually changed.
      */
     protected summary(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children;
-    /**
-     * How much this slot holds and what it says about itself.
-     */
     protected deliveryControls(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children;
     /**
      * What the slot does when nothing matched.

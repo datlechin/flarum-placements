@@ -9,13 +9,8 @@ export interface CampaignDetailAttrs extends ComponentAttrs {
     campaignId: string;
 }
 /**
- * One campaign, and the creatives that belong to it.
- *
- * There was no such screen. A campaign existed only as a row that expanded, so
- * anything about it that did not fit on that row -- what it has delivered, what
- * was contracted, why it is not running -- had to be opened in the edit form to
- * be read at all. Diagnosing "why is nothing showing" meant cross-referencing
- * three unlinked lists on the same long page.
+ * One campaign, and the creatives that belong to it: what it has delivered,
+ * what was contracted, and why it is not running.
  *
  * It has its own address, so it can be linked to.
  */
@@ -30,14 +25,14 @@ export default class CampaignDetail extends Component<CampaignDetailAttrs> {
      */
     protected find(): void;
     view(): Mithril.Children;
+    protected pauseButton(campaign: Campaign): Mithril.Children;
     protected backLink(): Mithril.Children;
     /**
      * What was agreed, and when it runs.
      *
-     * The commercial fields were writable over the API and had no form at all, so
-     * recording a contracted rate meant hand-crafting a request. They are shown
-     * here only when something has been entered, because a forum running its own
-     * house adverts has no use for a row of empty contract fields.
+     * Each row is shown only when something has been entered, because a forum
+     * running its own house adverts has no use for a column of empty contract
+     * fields.
      */
     protected summary(campaign: Campaign): Mithril.Children;
     protected creativeColumns(campaign: Campaign): ItemList<Column<Creative>>;
