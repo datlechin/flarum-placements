@@ -161,8 +161,17 @@ export default abstract class RecordListState<T extends Model> extends Paginated
    * After a save or a delete, and deliberately not `refresh()`: refresh returns
    * to page one, which would move somebody editing a campaign on page three
    * back to the top of the list.
+   *
+   * Deleting the last row on the last page is the case that needs the second
+   * request. The page number is still valid arithmetic but now sits past the
+   * end of a shorter list, so the server answers with nothing -- and because
+   * the total has dropped too, the pager hides itself and the table shows its
+   * empty state. The result is a screen saying there are no campaigns while
+   * fifty sit on the page before, with no control on it to get back to them.
    */
   public reload(): Promise<void> {
-    return this.goto(this.currentPage());
+    const page = this.currentPage();
+
+    return this.goto(page).then(() => (page > 1 && !this.hasItems() ? this.goto(page - 1) : undefined));
   }
 }

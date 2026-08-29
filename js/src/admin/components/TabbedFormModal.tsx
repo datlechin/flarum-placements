@@ -111,11 +111,30 @@ export default abstract class TabbedFormModal<ModalAttrs extends IFormModalAttrs
     return pointer.replace('/data/attributes/', '') || null;
   }
 
+  /**
+   * The tab a field the server rejected is edited on.
+   *
+   * Falls back to `fallbackTab()` for a name no tab claims, and that fallback
+   * is what makes this work at all for a form whose fields are not fixed. The
+   * creative types validate their own payloads, so the server answers with the
+   * name from the type's own rules -- `/data/attributes/html`,
+   * `/data/attributes/asset`, `/data/attributes/logos.0.asset` -- never
+   * `/data/attributes/payload`. Listing those names here would mean this file
+   * knowing every field of every creative type, including ones another
+   * extension registers, which it cannot.
+   */
   protected tabHolding(field: string): string | null {
-    return (
-      this.tabs()
-        .toArray()
-        .find((tab) => tab.fields.includes(field))?.itemName ?? null
-    );
+    const claimed = this.tabs()
+      .toArray()
+      .find((tab) => tab.fields.includes(field))?.itemName;
+
+    return claimed ?? this.fallbackTab();
+  }
+
+  /**
+   * Where to go for a rejected field no tab claims. Null to stay put.
+   */
+  protected fallbackTab(): string | null {
+    return null;
   }
 }

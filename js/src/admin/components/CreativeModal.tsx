@@ -121,6 +121,20 @@ export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
     );
   }
 
+  /**
+   * Anything the server rejected that no tab claims came from the payload, and
+   * the payload is edited here.
+   *
+   * Each creative type validates its own payload with its own rule names, so a
+   * rejection arrives as `/data/attributes/html` or `/data/attributes/asset` --
+   * the name of a field inside the payload, never `payload` itself. Listing
+   * them would mean this file knowing every field of every type, including the
+   * ones another extension registers.
+   */
+  protected fallbackTab(): string | null {
+    return 'content';
+  }
+
   tabs(): ItemList<ModalTab> {
     const items = new ItemList<ModalTab>();
 

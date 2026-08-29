@@ -363,6 +363,21 @@ export default class SlotsTab extends Component {
   /**
    * The endpoint takes the placement key as its id and writes the row if there
    * is not one yet, so there is nothing to create here.
+   *
+   * `exists` has to be set by hand, and that is the whole reason first-time
+   * configuration never worked. `createRecord` leaves it false, `pushData` sets
+   * the id but not `exists`, and core's `Model.save()` chooses its method from
+   * `exists` while building the URL from the id -- so a slot with no row yet
+   * was sent as `POST /placement-settings/{key}`. That is not a route: the
+   * resource registers Show, Index and Update and deliberately no Create,
+   * because an administrator configures a slot and never invents one. The
+   * request failed, the `catch` below swallowed it, and the switch sprang back
+   * with nothing said.
+   *
+   * Saying the record exists is the truthful thing to say here rather than a
+   * trick: every placement key is addressable whether or not a row has been
+   * written for it, which is exactly what `PlacementSettingResource::find()`
+   * implements.
    */
   protected save(slot: SlotConfig, data: Record<string, unknown>): void {
     this.saving = slot.key;
@@ -370,6 +385,7 @@ export default class SlotsTab extends Component {
     const record = this.settings[slot.key] ?? app.store.createRecord<PlacementSetting>(RESOURCE.settings);
 
     record.pushData({ id: slot.key, type: RESOURCE.settings });
+    record.exists = true;
 
     record
       .save(data)
