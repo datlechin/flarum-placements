@@ -280,10 +280,16 @@
   &-sort {
     display: inline-flex;
     align-items: center;
-    padding: 0;
     font-weight: inherit;
     font-size: inherit;
     color: inherit;
+
+    // Padded to a target somebody can hit, then pulled back by the same
+    // amount so nothing moves. The heading is only 20px of text, which is
+    // fine to click and small to tap, and the cell's own padding around it
+    // was not part of the control.
+    padding: 6px 0;
+    margin: -6px 0;
   }
 
   &-sortIcon {
@@ -473,6 +479,11 @@
 
 .PlacementSlots-disclosure {
   flex: 0 0 auto;
+
+  // A standalone control at the end of the row, rather than a link inside a
+  // sentence, so it gets a target rather than the 20px line box of its own
+  // label.
+  padding-block: 6px;
 }
 
 .PlacementSlots-description {
@@ -583,6 +594,19 @@
 
 .PlacementModal-tabs {
   margin-inline: -14px;
+
+  // Five tabs across a modal on a phone are wider than the modal, and core's
+  // `.Tabs-nav` neither wraps nor scrolls, so the last of them sat outside the
+  // dialog with nothing to reach it by. Same treatment as the page's own tab
+  // bar: one row, scrolled.
+  > .Tabs-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
 .PlacementModal-tabContent {
@@ -852,11 +876,40 @@
 }
 
 @media @phone {
+  // Six tabs do not fit a phone. Core's `.Tabs-nav` is a plain flex row with
+  // no wrap and no overflow -- its only consumer in core is the search modal,
+  // which has three -- so "Advertisers" and "Settings" sat past the right edge
+  // of a 345px viewport with no way to reach either of them. Scrolled rather
+  // than wrapped, so the row and its active underline stay one line.
+  .PlacementsPage-tabs > .Tabs-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
   // The toolbar's search and its primary action stack rather than squeezing.
   .PlacementToolbar,
   .PlacementToolbar-filters {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  // `flex-basis` is a height once the container is a column, so the search
+  // box's `flex: 1 1 220px` -- written for the row it is in on a desktop --
+  // asked for a field 220 pixels tall, and grew it from there. It rendered as
+  // an empty slab with its own magnifying glass floating in the middle of it.
+  .PlacementToolbar-search {
+    flex: 0 0 auto;
+  }
+
+  // Each select otherwise sizes to its own longest option, so a column of
+  // three filters ends up with three different right edges and three
+  // different tap targets.
+  .PlacementToolbar-choice .Select {
+    width: 100%;
   }
 
   .PlacementDetail-summary {
