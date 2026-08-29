@@ -12,6 +12,7 @@
 namespace Datlechin\Placements\Console;
 
 use Carbon\Carbon;
+use Datlechin\Placements\Measurement\Recorder;
 use Datlechin\Placements\Model\Stat;
 use Datlechin\Placements\Support\Settings;
 use Datlechin\Placements\Upload\OrphanCollector;
@@ -42,6 +43,7 @@ class PruneStatsCommand extends AbstractCommand
     public function __construct(
         protected SettingsRepositoryInterface $settings,
         protected OrphanCollector $orphans,
+        protected Recorder $recorder,
     ) {
         parent::__construct();
     }
@@ -90,6 +92,17 @@ class PruneStatsCommand extends AbstractCommand
             $this->info("Would delete $deleted bucket(s) older than {$cutoff->toDateString()}.");
         } else {
             $this->info("Deleted $deleted bucket(s) older than {$cutoff->toDateString()}.");
+        }
+
+        // Buffer keys whose hour has long passed. They are tiny and bounded,
+        // but nothing else would ever remove them on a forum that stopped
+        // serving with a buffer part-full.
+        if (! $dryRun) {
+            $swept = $this->recorder->sweepKeys();
+
+            if ($swept > 0) {
+                $this->info("Removed $swept stale buffer key(s).");
+            }
         }
 
         if (! $this->input->getOption('keep-images')) {

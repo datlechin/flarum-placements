@@ -37,8 +37,13 @@ use Illuminate\Database\ConnectionInterface;
 class Recorder
 {
     public const BUFFER_PREFIX = 'datlechin-placements.buf.';
-    public const BUFFER_INDEX = 'datlechin-placements.buf.index';
     public const NONCE_PREFIX = 'datlechin-placements.nonce.';
+
+    /**
+     * Marks a buffer key as already listed, so the list is written to once per
+     * bucket rather than once per event.
+     */
+    public const LISTED_PREFIX = 'datlechin-placements.listed.';
 
     public function __construct(
         protected Cache $cache,
@@ -78,8 +83,9 @@ class Recorder
         $bucket = Stat::bucketFor($now)->format('Y-m-d H:00:00');
         $key = implode('|', [$bucket, $event['campaign'], $event['creative'], $event['placement'], $event['device'], $type]);
 
-        // The index is what makes a flush possible at all: a cache has no way
-        // to enumerate its own keys.
+        // The list is what makes a flush possible at all: a cache cannot be
+        // enumerated. It has to be written before the counter, or a flush
+        // arriving in between would leave a counter nothing points at.
         $this->remember($key);
 
         $this->cache->add(self::BUFFER_PREFIX.$key, 0, self::bufferLifetime());
@@ -104,7 +110,17 @@ class Recorder
             return 0;
         }
 
-        $this->cache->forget(self::BUFFER_INDEX);
+        // Deliberately nothing is deleted here. Removing a key at flush time
+        // opens a window the cache flag cannot close: the flag lives for the
+        // buffer lifetime, so an event arriving for the same key just after
+        // the row went would skip the insert and leave its counter with
+        // nothing pointing at it.
+        //
+        // Instead the row is left and swept by age. That is safe because the
+        // key names an hour: once that hour has passed no further event can
+        // carry the key, so a swept row can never be needed again. A key whose
+        // counter has already been taken simply contributes nothing to the
+        // next flush, which costs one cache miss.
 
         $written = 0;
 
@@ -285,26 +301,56 @@ class Recorder
     }
 
     /**
+     * The buffer keys waiting to be flushed.
+     *
      * @return list<string>
      */
     protected function index(): array
     {
-        $index = $this->cache->get(self::BUFFER_INDEX);
+        /** @var list<string> $keys */
+        $keys = $this->db->table('placement_stat_keys')->pluck('key')->all();
 
-        return is_array($index) ? array_values(array_unique(array_filter($index, 'is_string'))) : [];
+        return $keys;
     }
 
+    /**
+     * List a buffer key, once.
+     *
+     * The cache flag is an optimisation and never a correctness guard: `add()`
+     * answers true for exactly one caller on a driver that is atomic, and on
+     * one that is not the worst case is a second `insertOrIgnore` for a row
+     * that already exists. Being wrong here costs a redundant insert; being
+     * wrong the other way -- skipping the insert -- would lose the counter, so
+     * the flag is only ever allowed to *cause* work.
+     */
     protected function remember(string $key): void
     {
-        $index = $this->index();
-
-        if (in_array($key, $index, true)) {
+        if (! $this->cache->add(self::LISTED_PREFIX.$key, 1, self::bufferLifetime())) {
             return;
         }
 
-        $index[] = $key;
+        $this->db->table('placement_stat_keys')->insertOrIgnore([
+            'key' => $key,
+            'created_at' => Carbon::now()->toDateTimeString(),
+        ]);
+    }
 
-        $this->cache->put(self::BUFFER_INDEX, $index, self::bufferLifetime());
+    /**
+     * Drop buffer keys whose hour is long past.
+     *
+     * Safe by construction: a key names the hour it belongs to, so once that
+     * hour is further behind than the buffer could possibly hold, no event can
+     * ever carry it again.
+     *
+     * @return int Rows removed.
+     */
+    public function sweepKeys(?Carbon $now = null): int
+    {
+        $cutoff = ($now ?? Carbon::now())->copy()->subSeconds(self::bufferLifetime() * 2);
+
+        return $this->db->table('placement_stat_keys')
+            ->where('created_at', '<', $cutoff->toDateTimeString())
+            ->delete();
     }
 
     /**

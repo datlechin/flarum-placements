@@ -53,6 +53,15 @@ class RecorderTest extends TestCase
             $table->unique(['bucket_start', 'campaign_id', 'creative_id', 'placement_key', 'device']);
         });
 
+        // Which counters are waiting. It is a table rather than a cache entry
+        // because a cache cannot be enumerated, and the array that stood in
+        // for it lost keys to concurrent writes and to the flush that deleted
+        // it after reading.
+        $this->capsule->getConnection()->getSchemaBuilder()->create('placement_stat_keys', function ($table) {
+            $table->string('key', 191)->primary();
+            $table->dateTime('created_at')->nullable();
+        });
+
         $this->cache = new Repository(new ArrayStore());
 
         // The running totals live on models this test has no tables for, so
