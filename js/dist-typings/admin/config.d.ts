@@ -44,6 +44,40 @@ export declare const CAMPAIGN_STATUS: {
     readonly archived: "archived";
 };
 /**
+ * A slot's own settings, as the server defines them.
+ *
+ * Named here rather than spelled out at each `<Select>` because three
+ * different things have to agree on them: the control that offers the
+ * choices, the summary that turns a stored value into a label, and the test
+ * that checks every one of those labels exists. When the summary interpolated
+ * a bare column value into a translation key with nothing tying it to this
+ * list, a value the UI never offered rendered its key on screen.
+ */
+export declare const FALLBACK: {
+    readonly next_tier: "next_tier";
+    readonly house: "house";
+    readonly passback: "passback";
+    readonly collapse: "collapse";
+};
+export declare const ROTATION: {
+    readonly random: "random";
+    readonly sticky: "sticky";
+};
+export declare const LABEL_MODE: {
+    readonly inherit: "inherit";
+    readonly always: "always";
+    readonly never: "never";
+};
+/**
+ * Whether a value stored against a slot is one this build knows how to name.
+ *
+ * A row can hold anything the database accepted: a configuration imported from
+ * a newer version, or a column written by hand. Naming only what is known
+ * keeps an unrecognised value out of the summary rather than printing a
+ * translation key where a label should be.
+ */
+export declare function isKnown<T extends Record<string, string>>(set: T, value: string | null): value is T[keyof T];
+/**
  * The status a pause or resume control would move a campaign to, or null when
  * neither applies.
  *
