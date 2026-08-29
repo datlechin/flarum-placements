@@ -69,6 +69,7 @@ class ReportController implements RequestHandlerInterface
             'campaigns' => $this->groupedBy($since, 'campaign_id'),
             'creatives' => $this->groupedBy($since, 'creative_id'),
             'placements' => $this->groupedBy($since, 'placement_key'),
+            'devices' => $this->groupedBy($since, 'device'),
         ]);
     }
 
@@ -88,7 +89,7 @@ class ReportController implements RequestHandlerInterface
             $lines[] = implode(',', ['day', $row['day'], '', $row['impressions'], $row['viewable'], $row['clicks']]);
         }
 
-        foreach (['campaign' => 'campaign_id', 'creative' => 'creative_id', 'slot' => 'placement_key'] as $section => $column) {
+        foreach (['campaign' => 'campaign_id', 'creative' => 'creative_id', 'slot' => 'placement_key', 'device' => 'device'] as $section => $column) {
             foreach ($this->groupedBy($since, $column) as $row) {
                 $lines[] = implode(',', [
                     $section,

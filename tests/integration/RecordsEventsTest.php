@@ -91,8 +91,17 @@ class RecordsEventsTest extends TestCase
         $row = $this->database()->table('placement_stats')->first();
 
         return $row === null
-            ? ['impressions' => 0, 'clicks' => 0]
-            : ['impressions' => (int) $row->impressions, 'clicks' => (int) $row->clicks];
+            ? ['impressions' => 0, 'clicks' => 0, 'filtered' => 0]
+            : [
+                'impressions' => (int) $row->impressions,
+                'clicks' => (int) $row->clicks,
+                'filtered' => (int) $row->filtered,
+            ];
+    }
+
+    protected function filteredRows(): int
+    {
+        return (int) $this->database()->table('placement_stats')->sum('filtered');
     }
 
     #[Test]
@@ -123,7 +132,7 @@ class RecordsEventsTest extends TestCase
         $this->report($candidate, Stat::IMPRESSION);
         $this->report($candidate, Stat::CLICK);
 
-        $this->assertSame(['impressions' => 1, 'clicks' => 1], $this->counts());
+        $this->assertSame(['impressions' => 1, 'clicks' => 1, 'filtered' => 0], $this->counts());
     }
 
     #[Test]
@@ -136,6 +145,43 @@ class RecordsEventsTest extends TestCase
         $this->report($candidate);
 
         $this->assertSame(1, $this->counts()['impressions']);
+    }
+
+    /**
+     * The `filtered` figure on the report promises to explain a drop, and was
+     * permanently zero because every rejection was a silent `return`.
+     */
+    #[Test]
+    public function a_replayed_event_is_counted_as_filtered(): void
+    {
+        $candidate = $this->served();
+
+        $this->report($candidate);
+        $this->report($candidate);
+        $this->report($candidate);
+
+        $counts = $this->counts();
+
+        $this->assertSame(1, $counts['impressions']);
+        $this->assertSame(2, $counts['filtered'], 'the two replays should be recorded as discarded');
+    }
+
+    /**
+     * The rejection that must NOT be attributed.
+     *
+     * A token that does not verify carries no signed claim about which
+     * creative it concerned, and the client chooses the ids it sends. Counting
+     * it against the named creative would let anybody inflate a competitor's
+     * discard rate from a browser console.
+     */
+    #[Test]
+    public function an_event_the_server_never_signed_is_attributed_to_nobody(): void
+    {
+        $this->served();
+
+        $this->report($this->served(), Stat::IMPRESSION, ['token' => 'not-a-real-token']);
+
+        $this->assertSame(0, $this->filteredRows());
     }
 
     #[Test]

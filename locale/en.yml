@@ -476,6 +476,13 @@ datlechin-placements:
       by_placements: By slot
       by_creatives: By creative
       by_campaigns: By campaign
+      by_devices: By device
+      device: Device
+      devices:
+        phone: Phone
+        tablet: Tablet
+        desktop: Desktop
+        unknown: Not reported
       campaign: Campaign
       slot: Slot
       creative: Creative

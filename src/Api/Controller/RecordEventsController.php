@@ -100,6 +100,25 @@ class RecordEventsController implements RequestHandlerInterface
         // token — the click has to prove the impression was served — so they
         // are claimed separately.
         if (! $this->recorder->claim($claims['nonce'], $type)) {
+            // A repeat of something already counted: a re-fired beacon, a back
+            // button, a duplicated tab. Recorded rather than dropped in
+            // silence, because "reports discarded as invalid" is exactly what
+            // the report's `filtered` figure promises to explain, and it has
+            // been permanently zero.
+            //
+            // Only this rejection is attributed. Everything above it — an
+            // unknown type, a malformed event, a token that does not verify —
+            // is refused before the server has any signed claim about which
+            // creative it concerned, and the client chooses the ids it sends.
+            // Counting those against the creative named in the request would
+            // let anybody inflate a competitor's discard rate.
+            $this->recorder->record([
+                'creative' => $claims['creative'],
+                'campaign' => $claims['campaign'],
+                'placement' => $claims['placement'],
+                'device' => $this->device($event),
+            ], Stat::FILTERED);
+
             return;
         }
 

@@ -58,14 +58,14 @@ class ReportsDeliveryTest extends TestCase
         $rows = [];
         $id = 0;
 
-        foreach ([[0, 9, 'index_above_list', 5], [0, 9, 'index_sidebar', 3], [0, 14, 'index_above_list', 2], [1, 11, 'index_above_list', 7]] as [$offset, $hour, $key, $impressions]) {
+        foreach ([[0, 9, 'index_above_list', 5, 'desktop'], [0, 9, 'index_sidebar', 3, 'phone'], [0, 14, 'index_above_list', 2, 'phone'], [1, 11, 'index_above_list', 7, 'desktop']] as [$offset, $hour, $key, $impressions, $device]) {
             $rows[] = [
                 'id' => ++$id,
                 'bucket_start' => $day->copy()->addDays($offset)->addHours($hour)->format('Y-m-d H:i:s'),
                 'campaign_id' => 1,
                 'creative_id' => 1,
                 'placement_key' => $key,
-                'device' => 'desktop',
+                'device' => $device,
                 'impressions' => $impressions,
                 'viewable_impressions' => 1,
                 'clicks' => 1,
@@ -166,6 +166,27 @@ class ReportsDeliveryTest extends TestCase
     /**
      * @return list<string>
      */
+    /**
+     * Device is signed into every bucket key and part of the unique index, and
+     * was collected from the first migration while nothing read it back. It is
+     * the breakdown that changes what a publisher sells.
+     */
+    #[Test]
+    public function grouping_by_device_sums_across_slots_and_hours(): void
+    {
+        $this->seedBuckets();
+
+        $devices = [];
+
+        foreach ($this->report()['devices'] as $row) {
+            $devices[$row['key']] = $row['impressions'];
+        }
+
+        ksort($devices);
+
+        $this->assertSame(['desktop' => 12, 'phone' => 5], $devices);
+    }
+
     private function csv(): array
     {
         $response = $this->send($this->request('GET', '/api/placements/report', [

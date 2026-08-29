@@ -29,9 +29,10 @@ interface Report {
   campaigns: Row[];
   creatives: Row[];
   placements: Row[];
+  devices: Row[];
 }
 
-type Breakdown = 'campaigns' | 'creatives' | 'placements';
+type Breakdown = 'campaigns' | 'creatives' | 'placements' | 'devices';
 
 type SortKey = 'name' | 'impressions' | 'viewable' | 'clicks' | 'ctr';
 
@@ -51,6 +52,7 @@ export default class ReportsTab extends Component {
     campaigns: { key: 'impressions', descending: true },
     creatives: { key: 'impressions', descending: true },
     placements: { key: 'impressions', descending: true },
+    devices: { key: 'impressions', descending: true },
   };
 
   oninit(vnode: Mithril.Vnode<{}, this>) {
@@ -157,6 +159,11 @@ export default class ReportsTab extends Component {
       this.table('campaigns', this.report.campaigns),
       this.table('creatives', this.report.creatives),
       this.table('placements', this.report.placements),
+      // Device was signed into every bucket key and part of the unique index
+      // from the first migration, and nothing ever read it back. It is the
+      // breakdown that changes what a publisher sells: this slot is mostly
+      // phones.
+      this.table('devices', this.report.devices),
     ];
   }
 
@@ -207,7 +214,7 @@ export default class ReportsTab extends Component {
   protected table(breakdown: Breakdown, rows: Row[]): Mithril.Children {
     if (!rows.length) return null;
 
-    const nameHeading = breakdown === 'placements' ? 'slot' : breakdown === 'campaigns' ? 'campaign' : 'creative';
+    const nameHeading = { placements: 'slot', campaigns: 'campaign', creatives: 'creative', devices: 'device' }[breakdown];
 
     const columns: Array<{ key: SortKey; label: Mithril.Children; number: boolean }> = [
       { key: 'name', label: trans(`reports.${nameHeading}`), number: false },
@@ -246,17 +253,7 @@ export default class ReportsTab extends Component {
             <tbody>
               {this.sorted(breakdown, rows).map((row) => (
                 <tr key={row.key}>
-                  <td>
-                    {/* A slot's key is the thing an administrator recognises
-                        and is worth showing as code; a campaign or creative id
-                        is not, and printing `7` where a name belongs is what
-                        made this table unreadable. */}
-                    {breakdown === 'placements' ? (
-                      <code className="PlacementTable-code">{row.key}</code>
-                    ) : (
-                      row.name || <code className="PlacementTable-code">{row.key}</code>
-                    )}
-                  </td>
+                  <td>{this.rowName(breakdown, row)}</td>
                   <td className="PlacementTable-number">{row.impressions.toLocaleString()}</td>
                   <td className="PlacementTable-number">{this.rate(row.viewable, row.impressions)}</td>
                   <td className="PlacementTable-number">{row.clicks.toLocaleString()}</td>
@@ -268,6 +265,26 @@ export default class ReportsTab extends Component {
         </div>
       </div>
     );
+  }
+
+  /**
+   * What a breakdown row is called.
+   *
+   * A slot's key is the thing an administrator recognises and is worth showing
+   * as code; a campaign or creative id is not, and printing `7` where a name
+   * belongs makes the table unreadable. A device is neither -- it is one of a
+   * handful of words the browser reported, and the empty one means it did not.
+   */
+  protected rowName(breakdown: Breakdown, row: Row): Mithril.Children {
+    if (breakdown === 'devices') {
+      return trans(`reports.devices.${row.key || 'unknown'}`);
+    }
+
+    if (breakdown === 'placements') {
+      return <code className="PlacementTable-code">{row.key}</code>;
+    }
+
+    return row.name || <code className="PlacementTable-code">{row.key}</code>;
   }
 
   protected sortBy(breakdown: Breakdown, key: SortKey): void {
