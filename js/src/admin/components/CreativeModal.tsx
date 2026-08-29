@@ -1,17 +1,20 @@
 import app from 'flarum/admin/app';
-import FormModal from 'flarum/common/components/FormModal';
 import type { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Select from 'flarum/common/components/Select';
 import Switch from 'flarum/common/components/Switch';
+import ItemList from 'flarum/common/utils/ItemList';
 import Stream from 'flarum/common/utils/Stream';
 import extractText from 'flarum/common/utils/extractText';
 import type Mithril from 'mithril';
 
 import ImageUploadField from '../../common/components/ImageUploadField';
-import { RESOURCE, creativeTypes, slots, trans } from '../config';
+import { CREATIVE_STATUS, RESOURCE, creativeTypes, slots, trans } from '../config';
 import type Campaign from '../models/Campaign';
 import type Creative from '../models/Creative';
+import CreativePreview from './CreativePreview';
+import TabbedFormModal from './TabbedFormModal';
+import type { ModalTab } from './TabbedFormModal';
 
 export interface CreativeModalAttrs extends IFormModalAttrs {
   campaign: Campaign;
@@ -19,7 +22,16 @@ export interface CreativeModalAttrs extends IFormModalAttrs {
   onsaved?: () => void;
 }
 
-export default class CreativeModal extends FormModal<CreativeModalAttrs> {
+/**
+ * Exactly what `NetworkType::normalize` keeps.
+ *
+ * Mirrored here so a name the server would drop is refused while it is being
+ * typed. It used to be dropped silently: the form saved, the attribute was
+ * gone, and the only symptom was a container the network never filled.
+ */
+const ALLOWED_ATTRIBUTE = /^(data-[a-z0-9-]+|class|id|style)$/i;
+
+export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
   protected name!: Stream<string>;
   protected type!: Stream<string>;
   protected status!: Stream<string>;
@@ -38,6 +50,16 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
    * being typed. See `attributePairs()`.
    */
   protected attributes!: Stream<Array<[string, string]>>;
+
+  /**
+   * Both writable over the API from the start, with no control anywhere.
+   *
+   * `labelOverride` replaces the "Advertisement" wording for one creative --
+   * some sponsors contract for specific disclosure text. `variantGroup` marks
+   * creatives as variants of one another.
+   */
+  protected labelOverride!: Stream<string>;
+  protected variantGroup!: Stream<string>;
 
   oninit(vnode: Mithril.Vnode<CreativeModalAttrs, this>) {
     super.oninit(vnode);
@@ -64,6 +86,8 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
       )
     );
     this.placements = Stream(creative?.placements() ?? {});
+    this.labelOverride = Stream(creative?.labelOverride() ?? '');
+    this.variantGroup = Stream(creative?.variantGroup() ?? '');
 
     const stored = payload.attributes;
 
@@ -75,7 +99,7 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
   }
 
   className(): string {
-    return 'CreativeModal Modal--medium';
+    return 'CreativeModal Modal--large';
   }
 
   title(): Mithril.Children {
@@ -85,51 +109,138 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
   content(): Mithril.Children {
     return (
       <div className="Modal-body">
-        <div className="Form">
-          {this.group('name', <input className="FormControl" bidi={this.name} required />)}
+        {this.tabbedContent()}
 
-          {this.group(
-            'type',
-            <Select
-              value={this.type()}
-              options={Object.fromEntries(creativeTypes().map((type) => [type.key, app.translator.trans(type.label)]))}
-              onchange={this.type}
-            />
-          )}
-
-          {this.typeFields()}
-
-          {this.group(
-            'destination_url',
-            <input className="FormControl" type="url" bidi={this.url} placeholder="https://" />,
-            trans('creatives.destination_url_help')
-          )}
-
-          {this.group('weight', <input className="FormControl" type="number" min="1" max="100" bidi={this.weight} />, trans('creatives.weight_help'))}
-
-          {this.group(
-            'status',
-            <Select
-              value={this.status()}
-              options={Object.fromEntries(['draft', 'pending', 'approved', 'rejected'].map((s) => [s, trans(`creatives.statuses.${s}`)]))}
-              onchange={this.status}
-            />,
-            trans('creatives.status_help')
-          )}
-
-          <div className="Form-group">
-            <label>{trans('creatives.placements')}</label>
-            <div className="helpText">{trans('creatives.placements_help')}</div>
-            {this.slotPicker()}
-          </div>
-
-          <div className="Form-group">
-            <Button type="submit" className="Button Button--primary" loading={this.loading}>
-              {trans('save')}
-            </Button>
-          </div>
+        {/* Outside the tabs, so saving never depends on which tab is open. */}
+        <div className="Form-group Form-controls PlacementModal-controls">
+          <Button type="submit" className="Button Button--primary" loading={this.loading}>
+            {trans('save')}
+          </Button>
         </div>
       </div>
+    );
+  }
+
+  tabs(): ItemList<ModalTab> {
+    const items = new ItemList<ModalTab>();
+
+    items.add(
+      'details',
+      {
+        label: trans('creatives.tab_details'),
+        fields: ['name', 'type', 'destinationUrl', 'weight', 'status'],
+        content: () => this.detailsTab(),
+      },
+      100
+    );
+
+    // The type's own sub-form. Its fields live under `payload`, so the server
+    // points at `payload` when it rejects one and that is what maps here.
+    items.add('content', { label: trans('creatives.tab_content'), fields: ['payload'], content: () => this.contentTab() }, 90);
+
+    items.add('slots', { label: trans('creatives.tab_slots'), fields: ['placements'], content: () => this.slotsTab() }, 80);
+
+    items.add(
+      'advanced',
+      { label: trans('creatives.tab_advanced'), fields: ['labelOverride', 'variantGroup'], content: () => this.advancedTab() },
+      70
+    );
+
+    items.add('preview', { label: trans('creatives.tab_preview'), fields: [], content: () => this.previewTab() }, 60);
+
+    return items;
+  }
+
+  protected detailsTab(): Mithril.Children {
+    return (
+      <div className="Form">
+        {this.group('name', <input className="FormControl" name="name" bidi={this.name} required />)}
+
+        {this.group(
+          'type',
+          <Select
+            value={this.type()}
+            options={Object.fromEntries(creativeTypes().map((type) => [type.key, extractText(app.translator.trans(type.label))]))}
+            onchange={this.type}
+            name="type"
+          />
+        )}
+
+        {this.group(
+          'destination_url',
+          <input className="FormControl" type="url" name="destinationUrl" bidi={this.url} placeholder="https://" />,
+          trans('creatives.destination_url_help')
+        )}
+
+        {this.group(
+          'weight',
+          <input className="FormControl" type="number" min="1" max="100" name="weight" bidi={this.weight} />,
+          trans('creatives.weight_help')
+        )}
+
+        {this.group(
+          'status',
+          <Select
+            value={this.status()}
+            options={Object.fromEntries(Object.values(CREATIVE_STATUS).map((s) => [s, extractText(trans(`creatives.statuses.${s}`))]))}
+            onchange={this.status}
+            name="status"
+          />,
+          trans('creatives.status_help')
+        )}
+      </div>
+    );
+  }
+
+  protected contentTab(): Mithril.Children {
+    return <div className="Form">{this.typeFields()}</div>;
+  }
+
+  protected slotsTab(): Mithril.Children {
+    return (
+      <div className="Form">
+        <div className="Form-group">
+          <label>{trans('creatives.placements')}</label>
+          <div className="helpText">{trans('creatives.placements_help')}</div>
+          {this.slotPicker()}
+        </div>
+      </div>
+    );
+  }
+
+  /**
+   * The two fields that were writable over the API and had no control.
+   */
+  protected advancedTab(): Mithril.Children {
+    return (
+      <div className="Form">
+        {this.group(
+          'label_override',
+          <input
+            className="FormControl"
+            name="labelOverride"
+            bidi={this.labelOverride}
+            placeholder={extractText(trans('creatives.label_override_placeholder'))}
+          />,
+          trans('creatives.label_override_help')
+        )}
+
+        {this.group(
+          'variant_group',
+          <input className="FormControl" name="variantGroup" bidi={this.variantGroup} />,
+          trans('creatives.variant_group_help')
+        )}
+      </div>
+    );
+  }
+
+  /**
+   * What a reader would see, drawn from the form as it currently stands rather
+   * than from what was last saved.
+   */
+  protected previewTab(): Mithril.Children {
+    return (
+      <CreativePreview type={this.type()} payload={this.cleanPayload()} destinationUrl={this.url() || null} label={this.labelOverride() || null} />
     );
   }
 
@@ -296,12 +407,20 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
         <div className="PlacementPairs">
           {attributes.map(([name, value], index) => (
             <div className="PlacementPairs-row" key={index}>
-              <input
-                className="FormControl"
-                value={name}
-                placeholder="data-ad-client"
-                oninput={(e: InputEvent) => this.setAttributeAt(index, (e.target as HTMLInputElement).value, value)}
-              />
+              <div className="PlacementPairs-name">
+                <input
+                  className="FormControl"
+                  value={name}
+                  placeholder="data-ad-client"
+                  aria-invalid={this.attributeAllowed(name) ? undefined : 'true'}
+                  oninput={(e: InputEvent) => this.setAttributeAt(index, (e.target as HTMLInputElement).value, value)}
+                />
+                {/* Said while it is being typed rather than discovered by
+                    having the save quietly drop it. The server keeps only
+                    `data-*`, `class`, `id` and `style`, and until now a name
+                    outside that set vanished with no message anywhere. */}
+                {!this.attributeAllowed(name) && <div className="PlacementPairs-warning">{trans('creatives.attribute_not_allowed')}</div>}
+              </div>
               <input
                 className="FormControl"
                 value={value}
@@ -358,6 +477,18 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
    */
   protected attributePairs(): Array<[string, string]> {
     return this.attributes();
+  }
+
+  /**
+   * Whether the server would keep an attribute by this name.
+   *
+   * A blank name is allowed: it is a row somebody has started, not a mistake,
+   * and `cleanPayload` drops it on save anyway.
+   */
+  protected attributeAllowed(name: string): boolean {
+    const trimmed = name.trim();
+
+    return trimmed === '' || ALLOWED_ATTRIBUTE.test(trimmed);
   }
 
   protected setAttributes(pairs: Array<[string, string]>): void {
@@ -494,19 +625,26 @@ export default class CreativeModal extends FormModal<CreativeModalAttrs> {
 
     this.loading = true;
 
-    const record = this.attrs.creative ?? app.store.createRecord(RESOURCE.creatives);
+    const record = this.attrs.creative ?? app.store.createRecord<Creative>(RESOURCE.creatives);
 
     record
-      .save({
-        name: this.name(),
-        type: this.type(),
-        status: this.status(),
-        weight: Number(this.weight()),
-        destinationUrl: this.url() || null,
-        payload: this.cleanPayload(),
-        placements: this.placements(),
-        relationships: { campaign: this.attrs.campaign },
-      })
+      .save(
+        {
+          name: this.name(),
+          type: this.type(),
+          status: this.status(),
+          weight: Number(this.weight()),
+          destinationUrl: this.url() || null,
+          labelOverride: this.labelOverride() || null,
+          variantGroup: this.variantGroup() || null,
+          payload: this.cleanPayload(),
+          placements: this.placements(),
+          relationships: { campaign: this.attrs.campaign },
+        },
+        // Routes a rejection into this modal's alert and on to the tab holding
+        // the rejected field, instead of Flarum's global error dialogue.
+        { errorHandler: this.onerror.bind(this) }
+      )
       .then(() => {
         this.attrs.onsaved?.();
         this.hide();

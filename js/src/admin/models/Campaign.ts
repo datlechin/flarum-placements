@@ -42,7 +42,19 @@ export default class Campaign extends Model {
    */
   isLive = Model.attribute<boolean>('isLive');
 
+  /**
+   * Whether this campaign exists because a member submitted an advert rather
+   * than because somebody sold one.
+   *
+   * A member submitting gets an advertiser and a campaign provisioned for them,
+   * both named after them. Without this the two kinds sit in the same list
+   * looking identical, and the only way to tell them apart is to already know
+   * that mechanism exists.
+   */
+  isMemberSubmitted = Model.attribute<boolean>('isMemberSubmitted');
+
   createdAt = Model.attribute<Date | null, string>('createdAt', Model.transformDate);
+  updatedAt = Model.attribute<Date | null, string>('updatedAt', Model.transformDate);
 
   rules = Model.attribute<TargetingRule[]>('rules');
 

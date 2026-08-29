@@ -1,4 +1,5 @@
 import Model from 'flarum/common/Model';
+import type User from 'flarum/common/models/User';
 
 import type Campaign from './Campaign';
 
@@ -14,6 +15,15 @@ export default class Advertiser extends Model {
    */
   hasReportToken = Model.attribute<boolean>('hasReportToken');
   reportTokenExpiresAt = Model.attribute<Date | null, string | null>('reportTokenExpiresAt', Model.transformDate);
+
+  /**
+   * The forum account this advertiser is, when it is one.
+   *
+   * Set automatically when a member submits an advert -- that is what makes the
+   * record exist at all -- and settable by hand, so an advertiser who already
+   * has a login can be connected to it and see their own submissions.
+   */
+  user = Model.hasOne<User | null>('user');
 
   campaigns = Model.hasMany<Campaign>('campaigns');
 }

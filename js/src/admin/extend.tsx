@@ -1,14 +1,14 @@
 import Extend from 'flarum/common/extenders';
 import extractText from 'flarum/common/utils/extractText';
 
-import PlacementPage from './components/PlacementPage';
+import PlacementsPage from './components/PlacementsPage';
 import { PERMISSIONS, trans } from './config';
 
 export default [
   new Extend.Admin()
     // A custom page rather than a settings list: campaigns are records, and a
     // settings list has nowhere to put them.
-    .page(PlacementPage)
+    .page(PlacementsPage)
 
     .permission(
       () => ({

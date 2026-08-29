@@ -4,6 +4,22 @@ datlechin-placements:
 
     save: Save
 
+    # The tabs the screen is divided into. One job each.
+    tabs:
+      campaigns: Campaigns
+      review: Review
+      slots: Slots
+      reports: Reports
+      advertisers: Advertisers
+      settings: Settings
+
+    # Shared by every list: the search box, the filters and the tables.
+    lists:
+      any: Any
+      actions: Actions
+      sort_by: Sort by {column}
+      no_matches: Nothing matches that.
+
     permissions:
       view_without_ads: Browse without advertising
       manage: Manage advertising
@@ -40,7 +56,65 @@ datlechin-placements:
       delete_confirm: Delete this campaign, along with its creatives and targeting?
       none: No campaigns yet.
       always: No end date
-      not_running: not running
+      not_running: Not running
+      not_running_help: >
+        This campaign is marked active but nothing is being served from it. Its
+        flight has ended, or a cap has been reached. Liveness is worked out from
+        the dates and the counters every time a page is served, so it stops on
+        time even on a forum with no scheduler.
+      search: Search campaigns
+      back: All campaigns
+      gone: That campaign no longer exists.
+      house: House
+      show_all: Show all campaigns
+      filtered_to_advertiser: "Showing campaigns for {name}."
+
+      # A member submitting an advert has an advertiser and a campaign
+      # provisioned for them, both named after them. Without a word saying so
+      # they sit among the sold ones and read as sold ones.
+      member_submitted: Member
+      member_submitted_help: >
+        Created automatically when a member submitted an advert, rather than by
+        somebody selling one.
+      source_label: Source
+      sources:
+        direct: Sold directly
+        member: Submitted by a member
+
+      # Column headings. Separate from the field labels above them: a column is
+      # read at a glance and wants a word, a form field is read once and can
+      # afford a sentence.
+      name_label: Name
+      status_label: Status
+      advertiser_label: Advertiser
+      tier_label: Priority
+      flight_label: Runs
+      impressions_label: Impressions
+      clicks_label: Clicks
+
+      tab_identity: Identity
+      tab_schedule: Schedule
+      tab_delivery: Delivery
+      tab_targeting: Targeting
+      tab_commercial: Commercial
+
+      # Recorded so a report can state what was agreed. Nothing in this
+      # extension ever charges, invoices or converts a currency.
+      commercial_help: >
+        Somewhere to write down what was agreed, so a report can state it.
+        Nothing here charges anybody, sends an invoice, or converts a currency.
+      rate_label: Rate
+      rate_type: Rate type
+      rate_type_none: Not recorded
+      rate_types:
+        cpm: Cost per thousand impressions
+        cpc: Cost per click
+        flat: Flat fee
+        barter: Barter
+      rate_amount: Amount
+      rate_amount_help: The figure and the currency it was agreed in, as you would write them on an invoice.
+      rate_currency: CUR
+      contract_notes: Contract notes
 
       name: Name
       status: Status
@@ -106,11 +180,34 @@ datlechin-placements:
         list.
       create: New advertiser
       edit: Edit advertiser
+      delete: Delete advertiser
+      delete_confirm: >
+        Delete {name}? Their campaigns are kept and simply stop being attributed
+        to anybody. Any report link they hold stops working.
       none: No advertisers yet.
+      search: Search advertisers
       name: Name
       contact_email: Contact email
       notes: Notes
       has_link: Has a link
+
+      # Column headings.
+      name_label: Name
+      contact_label: Contact
+      link_label: Report link
+      campaigns_label: Campaigns
+      no_contact: "&mdash;"
+      no_link: "&mdash;"
+      view_campaigns: View campaigns
+
+      user: Forum account
+      user_help: >
+        Set automatically when a member submits an advert. Link one by hand if
+        an advertiser already has an account, so their own submissions are
+        filed against this record.
+      link_user: Link an account
+      unlink_user: Unlink the account
+      copy_link: Copy
       report_link: Report link
       report_link_help: >
         What an advertiser gets instead of a login. Unguessable, revocable, and
@@ -120,6 +217,13 @@ datlechin-placements:
       create_link: Create a link
       replace_link: Replace the link
       revoke_link: Revoke
+      # Both destroy a URL that cannot be recovered, so both ask first.
+      replace_link_confirm: >
+        Replace the report link for {name}? The link they hold now stops working
+        immediately, and the new one is shown once.
+      revoke_link_confirm: >
+        Revoke the report link for {name}? It stops working immediately and
+        cannot be brought back — you would have to issue a new one.
 
     creatives:
       title: Creatives
@@ -134,6 +238,32 @@ datlechin-placements:
         This renders nothing at the moment. A network container is waiting for
         consent; anything else means the payload is not one its type can draw.
       preview_unknown_type: No renderer is registered for the type {type}.
+
+      # Column headings.
+      name_label: Name
+      type_label: Type
+      status_label: Status
+      slots_label: Slots
+
+      tab_details: Details
+      tab_content: Content
+      tab_slots: Slots
+      tab_advanced: Advanced
+      tab_preview: Preview
+
+      attribute_not_allowed: >
+        Only data-*, class, id and style are kept. Anything else is discarded
+        when this is saved.
+
+      label_override: Disclosure label
+      label_override_placeholder: Advertisement
+      label_override_help: >
+        Replaces the wording shown above this creative. Some sponsors contract
+        for specific disclosure text; leave it empty to use the forum's.
+      variant_group: Variant group
+      variant_group_help: >
+        A name shared by creatives that are variants of one another, so they can
+        be told apart in a report.
 
       name: Name
       type: Type
@@ -218,6 +348,9 @@ datlechin-placements:
 
     daypart:
       label: Schedule
+      help: >
+        Drag across the grid to choose the hours this campaign may run. Leave it
+        untouched to run at any hour.
       always: Every hour
       office_hours: Weekdays, 9 to 5
       timezone_note: Hours are the forum's, not the reader's. Set the forum's timezone below.
@@ -232,10 +365,28 @@ datlechin-placements:
 
     settings:
       title: Settings
+
+      group_serving: Serving
+      group_serving_help: How adverts are chosen and when.
+      group_retention: Stored data
+      group_publisher: Publisher files
+      group_publisher_help: What networks and crawlers read from this forum.
+
       timezone: Forum timezone
       timezone_help: Which clock scheduled hours are read against.
       retention_days: Keep statistics for
       retention_days_help: Hourly detail older than this is deleted. Running totals are unaffected.
+
+      # The field on its own is a number nobody can judge, and it does nothing
+      # by itself: the scheduled prune is what acts on it.
+      storage_empty: Nothing has been recorded yet.
+      storage_summary: "{buckets} hourly buckets stored, going back to {since}."
+      storage_expiring: "{count} of them are older than {days} days and would go on the next prune."
+      storage_orphans: "{count} uploaded images are no longer referred to by any creative."
+      storage_prune_help: >
+        Deleting is done by the scheduled task, not by this page. If the
+        forum's scheduler has never run, nothing above will ever be removed
+        however this field is set.
       network_scripts: Network loader scripts
       network_scripts_help: >
         One URL per line, loaded asynchronously in the head, and only for
@@ -299,7 +450,11 @@ datlechin-placements:
     reports:
       title: Delivery
       last_days: "Last {count} days"
+      range_label: Period
       download: Download CSV
+      ctr_help: >
+        Clicks as a share of impressions. Not reported below a thousand
+        impressions: one click on eight is not a twelve per cent rate.
       none: Nothing has been delivered yet.
       unavailable: Statistics could not be loaded.
       impressions: Impressions
@@ -318,15 +473,44 @@ datlechin-placements:
 
     slots:
       title: Slots
+      configure: Configure
+      done: Done
+      summary_max_fill: "Up to {count}"
+
+      # The controls are grouped rather than run together: every slot used to
+      # show all of them at once, so this screen met you with well over a
+      # hundred inputs whose only labels were inline.
+      group_delivery: Delivery
+      group_fallback: When nothing matched
+      group_reserve: Reserved height
+      group_rotation: Rotation
+      group_repeat: Repeating
+
       rotation: Rotation
       max_fill: Creatives at once
       fallback: When nothing matched
       fallback_next_tier: Fall to the next tier
+      fallback_next_tier_help: >
+        Try the next-most-important tier, and the one after that. A lower tier
+        is still somebody paying.
       fallback_house: Fall to a house advert
+      fallback_house_help: >
+        Skip the paid tiers entirely and show one of the forum's own adverts.
+        For a slot sold to its top tier, where filling it with remnant would be
+        worth less than not filling it.
       fallback_passback: Show a chosen advert
+      fallback_passback_help: >
+        Show one nominated creative, held out of the draw until everything else
+        has failed.
       fallback_collapse: Show nothing
+      fallback_collapse_help: >
+        Leave the slot empty. A sponsorship position that quietly fills with
+        filler is worth less than an empty one.
       passback_creative: Advert to fall back to
       passback_none: None chosen
+      passback_help: >
+        Only approved creatives can be nominated: choosing one here is not a way
+        around review.
       label_mode: Disclosure label
       label_inherit: Follow the forum default
       label_always: Always show

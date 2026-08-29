@@ -3,151 +3,623 @@
 // The admin panel renders the same slot markup when previewing a creative, so
 // it needs the rules in `common.less` too. Everything below is admin-only.
 //
-// Every colour is a core token and every inline direction is a logical
-// property, for the same reasons as on the forum side.
+// Nothing here declares a colour of its own. Every one is a core custom
+// property, so the panel follows whatever theme is active -- including the
+// dark and high-contrast schemes -- without this file knowing they exist.
+// Inline directions are logical properties, for right-to-left.
+//
+// This file is not much shorter than the one it replaces -- 69 top-level
+// selectors against 60 -- and it would be dishonest to present it as a purge.
+// The interface it dresses is simply larger: there was no tab strip, no search
+// and filter bar, no campaign page and no pager before.
+//
+// What changed is what the selectors are for. The old file hand-built a
+// section header, a records list, a status pill, a stat tile and a data table,
+// all of which core already ships -- `FormSection`, `Table`, `Pill`,
+// `InfoTile`, `Pagination` -- and it drew a status pill by misusing `Badge`,
+// which is a 22-pixel circle whose label is `display: none`. Those are gone.
+// The admin screens imported seven core components; they now import eighteen.
+//
+// What is left is layout glue, plus the three things core genuinely has no
+// equivalent for: a paintable schedule grid, a dependency-free delivery chart,
+// and a preview frame.
 
-.PlacementSection {
-  margin-block: 30px;
-
-  > h2 {
-    margin-block-end: 5px;
-    font-size: 18px;
-  }
-
-  > .helpText {
-    max-width: 65ch;
-    margin-block-end: 15px;
-  }
-}
-
-.PlacementSection-header {
+// A row of controls that sit side by side and wrap on a narrow panel.
+//
+// Defined once. There were four near-identical copies of this: a flight's two
+// dates, a frequency cap's number and window, an image's width and height, and
+// the repeatable rows of the pair editors -- the same idea written out each
+// time somebody needed it.
+.placement-row() {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-  margin-block-end: 10px;
+  align-items: flex-start;
 
-  h2,
-  h3 {
+  > * {
+    flex: 1 1 140px;
     margin: 0;
   }
 }
 
-// Campaigns and their creatives. Modelled on core's dropdown lists: padding
-// and hover, and no rule between rows — in Flarum a line separates groups, not
-// items.
-.PlacementList {
+// -------------------------------------------------------------------------
+// The page and its tabs
+// -------------------------------------------------------------------------
+
+.PlacementsPage-tabs {
+  margin-block-start: 20px;
+}
+
+.PlacementsPage-content {
+  padding-block-start: 20px;
+}
+
+// The count of what is waiting, on the tab that decides it.
+.PlacementsPage-count {
+  display: inline-block;
+  min-width: 18px;
+  margin-inline-start: 6px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--control-danger-bg);
+  color: var(--control-danger-color);
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.PlacementsTab {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// -------------------------------------------------------------------------
+// The row above a table
+// -------------------------------------------------------------------------
+
+.PlacementToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  &-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  &-search {
+    flex: 1 1 220px;
+    min-width: 180px;
+  }
+
+  &-choice {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    font-weight: normal;
+  }
+
+  &-choiceLabel {
+    color: var(--muted-color);
+    font-size: 12px;
+  }
+
+  &-help {
+    flex: 1 1 300px;
+    margin: 0;
+  }
+
+  &-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+}
+
+.PlacementNotice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 15px;
+  border-radius: var(--border-radius);
+  background: var(--control-bg);
+  color: var(--control-color);
+}
+
+// -------------------------------------------------------------------------
+// Tables
+//
+// The element is core's `.Table`; these are the cell treatments it has no
+// opinion about.
+// -------------------------------------------------------------------------
+
+.PlacementTable {
+  // Digits line up in a column so two figures can be compared by their length
+  // as well as read.
+  &-number {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  &-primary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  &-strong {
+    font-weight: 600;
+  }
+
+  &-muted {
+    color: var(--muted-color);
+  }
+
+  &-warning {
+    color: var(--control-warning-color, var(--muted-color));
+  }
+
+  &-code {
+    padding: 1px 5px;
+    border-radius: var(--border-radius);
+    background: var(--code-bg);
+    color: var(--code-color);
+    font-size: 12px;
+  }
+
+  &-link {
+    font-weight: 600;
+  }
+
+  // The heading is a button so it can be reached from the keyboard; it should
+  // still read as a heading.
+  &-sort {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    padding: 0;
+    font-weight: inherit;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  &-sortIcon {
+    color: var(--muted-color);
+    font-size: 11px;
+  }
+}
+
+// -------------------------------------------------------------------------
+// Status pills
+//
+// `Pill` is core's; these only set the two custom properties it reads, from
+// core's own semantic tokens. Nothing here is a literal colour, so each tone
+// follows the active theme.
+// -------------------------------------------------------------------------
+
+.PlacementPill {
+  font-size: 12px;
+  white-space: nowrap;
+
+  &--neutral {
+    --pill-bg: var(--control-bg);
+    --pill-color: var(--control-color);
+  }
+
+  &--success {
+    --pill-bg: var(--control-success-bg);
+    --pill-color: var(--control-success-color);
+  }
+
+  &--warning {
+    --pill-bg: var(--control-warning-bg);
+    --pill-color: var(--control-warning-color);
+  }
+
+  &--danger {
+    --pill-bg: var(--control-danger-bg);
+    --pill-color: var(--control-danger-color);
+  }
+
+  &-icon {
+    font-size: 10px;
+  }
+}
+
+// -------------------------------------------------------------------------
+// Headline figures
+// -------------------------------------------------------------------------
+
+.PlacementFigures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  padding: 15px 20px;
+  border-radius: var(--border-radius);
+  background: var(--control-bg);
+}
+
+.PlacementFigure {
+  &-value {
+    color: var(--heading-color);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &-label {
+    color: var(--muted-color);
+    font-size: 12px;
+  }
+}
+
+// -------------------------------------------------------------------------
+// One campaign's page
+// -------------------------------------------------------------------------
+
+.PlacementDetail {
+  &-back {
+    align-self: flex-start;
+    padding-inline: 0;
+  }
+
+  &-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 15px;
+    align-items: center;
+  }
+
+  &-title {
+    flex: 1 1 auto;
+    margin: 0;
+  }
+
+  &-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  &-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  &-note {
+    margin: 0;
+  }
+
+  &-summary {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 20px;
+    margin: 0;
+
+    dt {
+      color: var(--muted-color);
+      font-weight: normal;
+    }
+
+    dd {
+      margin: 0;
+    }
+  }
+
+  &-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    h4 {
+      margin: 0;
+    }
+  }
+
+  &-sectionHeader {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+// -------------------------------------------------------------------------
+// Slots
+// -------------------------------------------------------------------------
+
+.PlacementSlots-group {
+  margin-block-end: 25px;
+}
+
+.PlacementSlots-heading {
+  margin: 0 0 10px;
+  color: var(--muted-color);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.PlacementSlots {
   margin: 0;
   padding: 0;
   list-style: none;
   border: 1px solid var(--control-bg);
   border-radius: var(--border-radius);
-  overflow: hidden;
-}
 
-.PlacementList--nested {
-  margin-block-start: 10px;
-  border-color: transparent;
-}
-
-.PlacementList-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  padding: 8px 15px;
-
-  &:hover {
-    background: var(--control-bg);
+  > li + li {
+    border-block-start: 1px solid var(--control-bg);
   }
 }
 
-.PlacementList-toggle,
-.PlacementList-name {
-  flex: 1 1 200px;
-  padding: 0;
-  font-weight: 600;
-  text-align: start;
+.PlacementSlots-item {
+  padding: 12px 15px;
 }
 
-.PlacementList-meta {
+.PlacementSlots-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 15px;
+  align-items: center;
+}
+
+.PlacementSlots-switch {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.PlacementSlots-facts {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.PlacementSlots-key {
+  padding: 1px 5px;
+  border-radius: var(--border-radius);
+  background: var(--code-bg);
+  color: var(--code-color);
+  font-size: 12px;
+}
+
+.PlacementSlots-size {
   color: var(--muted-color);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
-.PlacementList-type {
-  padding: 1px 6px;
-  border-radius: var(--border-radius);
-  background: var(--code-bg);
-  color: var(--code-color);
-  font-size: 11px;
-}
-
-.PlacementList-detail {
-  padding: 5px 15px 15px;
-  border-top: 1px solid var(--control-bg);
-  background: var(--body-bg);
-}
-
-// An administrator's stated status, and — when the two disagree — the fact
-// that the campaign is not actually running. That gap is the whole point of
-// showing it.
-.PlacementBadge {
-  display: inline-flex;
-  gap: 6px;
-  align-items: baseline;
-  padding: 2px 8px;
-  border-radius: var(--border-radius);
-  background: var(--control-bg);
-  color: var(--control-color);
-  font-size: 11px;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.PlacementBadge--live {
-  background: var(--control-success-bg);
-  color: var(--control-success-color);
-}
-
-.PlacementBadge-note {
-  color: var(--control-warning-color);
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-// The targeting editor. One row per stored rule, so what an administrator sees
-// and what the evaluator reads are the same shape.
-.PlacementRules-row {
+.PlacementSlots-summary {
   display: flex;
   flex-wrap: wrap;
+  gap: 6px;
+}
+
+.PlacementSlots-disclosure {
+  flex: 0 0 auto;
+}
+
+.PlacementSlots-description {
+  margin: 4px 0 0;
+}
+
+.PlacementSlots-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-block-start: 15px;
+  padding-block-start: 15px;
+  border-block-start: 1px solid var(--control-bg);
+
+  .FieldSet {
+    flex: 1 1 240px;
+  }
+}
+
+.PlacementSlots-fieldset--inline .FieldSet-items {
+  .placement-row();
+}
+
+// -------------------------------------------------------------------------
+// The review queue
+// -------------------------------------------------------------------------
+
+.PlacementReview {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.PlacementReview-item {
+  padding: 15px;
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+}
+
+.PlacementReview-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+
+.PlacementReview-name {
+  padding: 0;
+  font-weight: 600;
+}
+
+.PlacementReview-meta {
+  color: var(--muted-color);
+  font-size: 12px;
+}
+
+.PlacementReview-reason {
+  margin-block-start: 8px;
+  padding: 8px 12px;
+  border-inline-start: 3px solid var(--control-danger-bg);
+  background: var(--body-bg-shaded, var(--control-bg));
+  border-radius: var(--border-radius);
+}
+
+.PlacementReview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-block-start: 12px;
+}
+
+.PlacementReview-rejection {
+  margin-block-start: 12px;
+}
+
+// -------------------------------------------------------------------------
+// Modals
+// -------------------------------------------------------------------------
+
+.PlacementModal-tabs {
+  margin-inline: -14px;
+}
+
+.PlacementModal-tabContent {
+  padding: 20px 14px 0;
+  // Long forms scroll inside the modal rather than growing it past the
+  // viewport, so the save button below is always reachable.
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.PlacementModal-controls {
+  margin-block-start: 20px;
+}
+
+// -------------------------------------------------------------------------
+// Form groupings
+// -------------------------------------------------------------------------
+
+.PlacementFlight,
+.PlacementFrequency,
+.PlacementSize {
+  .placement-row();
+}
+
+.PlacementPairs,
+.PlacementLogos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-block-end: 10px;
+}
+
+.PlacementPairs-row,
+.PlacementLogos-row {
+  .placement-row();
+
+  .Button--icon {
+    flex: 0 0 auto;
+  }
+}
+
+.PlacementPairs-name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.PlacementPairs-warning {
+  color: var(--validation-error-color, var(--control-danger-color));
+  font-size: 12px;
+}
+
+.PlacementPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.PlacementPicker-slot .helpText {
+  margin: 2px 0 0;
+}
+
+.PlacementRules-row {
+  .placement-row();
+
+  .Button--icon {
+    flex: 0 0 auto;
+  }
+}
+
+.PlacementUserField-chosen {
+  display: flex;
   gap: 8px;
   align-items: center;
-  margin-block-end: 8px;
+}
 
-  .Select,
-  .FormControl {
-    flex: 1 1 140px;
-    min-width: 0;
+.PlacementUserField-avatar {
+  --size: 24px;
+}
+
+// The report link, shown once and never again -- so it is selected on sight
+// and there is a button that copies it.
+.PlacementReportUrl {
+  .placement-row();
+
+  margin-block-end: 10px;
+
+  input {
+    flex: 1 1 240px;
   }
 }
 
-.PlacementPicker-slot {
-  padding: 8px 0;
+.PlacementReportActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 
-  + .PlacementPicker-slot {
-    border-top: 1px solid var(--control-bg);
-  }
+// -------------------------------------------------------------------------
+// Settings
+// -------------------------------------------------------------------------
 
-  .helpText {
-    margin-block-start: 2px;
-    margin-inline-start: 30px;
+.PlacementSettings {
+  .FieldSet + .FieldSet {
+    margin-block-start: 25px;
   }
 }
 
-// The seven-by-twenty-four schedule grid.
+.PlacementSettings-storage {
+  margin-block-start: 10px;
+
+  p {
+    margin: 0 0 4px;
+  }
+
+  p:last-child {
+    margin-block-end: 0;
+  }
+}
+
+// -------------------------------------------------------------------------
+// The three things core has no equivalent for
+// -------------------------------------------------------------------------
+
 .DaypartGrid {
   // Painting a schedule means dragging across cells, and a text selection
   // following the pointer makes that unusable.
@@ -205,203 +677,6 @@
     flex: 1 1 200px;
     margin: 0;
   }
-}
-
-// The report link, shown once and never again.
-.PlacementReportUrl {
-  margin-block: 8px;
-  font-family: var(--code-font, monospace);
-  font-size: 12px;
-}
-
-.PlacementReportActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  margin-block-start: 8px;
-}
-
-.PlacementFrequency {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-
-  .FormControl {
-    flex: 0 1 120px;
-  }
-}
-
-.PlacementFlight,
-.PlacementSize {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-
-  > .Form-group {
-    flex: 1 1 160px;
-    margin: 0;
-  }
-}
-
-.PlacementReview {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.PlacementReview-item {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px 15px;
-  border: 1px solid var(--control-bg);
-  border-radius: var(--border-radius);
-}
-
-.PlacementReview-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.PlacementReview-name {
-  padding: 0;
-  font-weight: 600;
-}
-
-.PlacementReview-meta {
-  color: var(--muted-color);
-  font-size: 12px;
-}
-
-.PlacementReview-reason {
-  padding: 8px 12px;
-  border-inline-start: 3px solid var(--control-danger-color, var(--muted-color));
-  background: var(--control-bg);
-  color: var(--muted-color);
-  font-size: 13px;
-}
-
-.PlacementReview-rejection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.PlacementReview-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.PlacementLogos {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-block: 8px;
-}
-
-.CreativePreview {
-  margin-block-start: 10px;
-  padding: 12px 15px;
-  border: 1px dashed var(--control-bg);
-  border-radius: var(--border-radius);
-}
-
-.CreativePreview-caption {
-  display: block;
-  margin-block-end: 8px;
-  color: var(--muted-color);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-// Bounded, because a creative is sized for a forum slot and the panel is
-// wider than any of them -- an unbounded leaderboard would misrepresent what
-// a reader sees.
-.CreativePreview-slot {
-  max-width: 728px;
-  margin: 0;
-}
-
-.PlacementPairs {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-block: 8px;
-}
-
-.PlacementPairs-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-
-  // The name is the shorter half in practice and the value can be a long
-  // publisher id, so the value takes the slack.
-  > .FormControl:first-child {
-    flex: 1 1 160px;
-  }
-
-  > .FormControl {
-    flex: 2 1 200px;
-  }
-}
-
-.PlacementLogos-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-
-  // The address is the row: it gets the space, and the other two take what is
-  // left rather than each claiming a third of a line that then wraps.
-  > .FormControl:first-child {
-    flex: 2 1 220px;
-  }
-
-  > .FormControl {
-    flex: 1 1 140px;
-  }
-}
-
-// Headline figures, on the pattern core uses for its own.
-.PlacementFigures {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1px;
-  margin: 0 0 20px;
-  padding: 0;
-  list-style: none;
-  border: 1px solid var(--control-bg);
-  background: var(--control-bg);
-}
-
-.PlacementFigure {
-  flex: 1 1 140px;
-  padding: 12px 15px;
-  background: var(--body-bg);
-}
-
-.PlacementFigure-value {
-  display: block;
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
-}
-
-.PlacementFigure-label {
-  display: block;
-  margin-block-start: 3px;
-  color: var(--muted-color);
-  font-size: 12px;
 }
 
 .DeliveryChart {
@@ -465,129 +740,44 @@
   border-radius: 2px;
 }
 
-.PlacementReportTable {
-  margin-block-end: 25px;
-
-  h3 {
-    margin-block-end: 8px;
-    font-size: 15px;
-  }
-
-  // Wide content scrolls inside its own box rather than pushing the page
-  // sideways.
-  &-scroll {
-    overflow-x: auto;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  th,
-  td {
-    padding: 7px 12px;
-    border-bottom: 1px solid var(--control-bg);
-    text-align: start;
-  }
-
-  th {
-    color: var(--muted-color);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  .num {
-    text-align: end;
-    font-variant-numeric: tabular-nums;
-  }
+.CreativePreview {
+  margin-block-start: 10px;
+  padding: 12px 15px;
+  border: 1px dashed var(--control-bg);
+  border-radius: var(--border-radius);
 }
 
-.PlacementSlots {
-  margin: 0 0 20px;
-  padding: 0;
-  list-style: none;
-}
-
-.PlacementSlots-heading {
-  margin-block: 15px 8px;
+.CreativePreview-caption {
+  display: block;
+  margin-block-end: 8px;
   color: var(--muted-color);
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.PlacementSlots-item {
-  padding: 10px 0;
-
-  + .PlacementSlots-item {
-    border-top: 1px solid var(--control-bg);
-  }
+// Bounded, because a creative is sized for a forum slot and the panel is
+// wider than any of them -- an unbounded leaderboard would misrepresent what
+// a reader sees.
+.CreativePreview-slot {
+  max-width: 728px;
+  margin: 0;
 }
 
-.PlacementSlots-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-
-  // The switch carries the slot's name, so it takes the room and the rest
-  // trails after it.
-  .Switch {
-    flex: 1 1 220px;
-    margin: 0;
-  }
-}
-
-.PlacementSlots-description {
-  margin-block-start: 2px;
-  // Lines up under the switch's label rather than under its control.
-  margin-inline-start: 30px;
-}
-
-.PlacementSlots-repeat {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-block-start: 8px;
-  margin-inline-start: 30px;
-
-  label {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin: 0;
-    font-weight: normal;
-    color: var(--muted-color);
-    font-size: 13px;
+@media @phone {
+  // The toolbar's search and its primary action stack rather than squeezing.
+  .PlacementToolbar,
+  .PlacementToolbar-filters {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .FormControl {
-    width: 90px;
+  .PlacementDetail-summary {
+    grid-template-columns: 1fr;
+    gap: 2px 0;
+
+    dd {
+      margin-block-end: 8px;
+    }
   }
-}
-
-.PlacementSlots-name {
-  font-weight: 600;
-  margin-inline-end: 8px;
-}
-
-.PlacementSlots-key {
-  padding: 1px 6px;
-  border-radius: var(--border-radius);
-  background: var(--code-bg);
-  color: var(--code-color);
-  font-size: 11px;
-}
-
-.PlacementSlots-size {
-  margin-inline-start: 8px;
-  color: var(--muted-more-color);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
 }

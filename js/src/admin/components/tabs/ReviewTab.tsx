@@ -1,23 +1,19 @@
 import app from 'flarum/admin/app';
 import Component from 'flarum/common/Component';
-import type { ComponentAttrs } from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
+import Pagination from 'flarum/common/components/Pagination';
 import Placeholder from 'flarum/common/components/Placeholder';
 import Stream from 'flarum/common/utils/Stream';
 import humanTime from 'flarum/common/helpers/humanTime';
 import extractText from 'flarum/common/utils/extractText';
 import type Mithril from 'mithril';
 
-import { RESOURCE, trans } from '../config';
-import type Creative from '../models/Creative';
-import CreativeModal from './CreativeModal';
-import CreativePreview from './CreativePreview';
-
-export interface ReviewSectionAttrs extends ComponentAttrs {
-  /** Called after a decision, so the page can reload what it lists. */
-  ondecided?: () => void;
-}
+import { CREATIVE_STATUS, trans } from '../../config';
+import type Creative from '../../models/Creative';
+import CreativeModal from '../CreativeModal';
+import CreativePreview from '../CreativePreview';
+import StatusPill, { creativeTone } from '../StatusPill';
 
 /**
  * What is waiting on somebody, and what was turned down.
@@ -26,10 +22,14 @@ export interface ReviewSectionAttrs extends ComponentAttrs {
  * disappearing: a rejection is the start of a conversation with whoever
  * submitted it, and an administrator who cannot see what they turned down
  * cannot answer "why?" a week later.
+ *
+ * This is the one screen the rewrite left alone in substance. Its interaction
+ * model was already right -- approve in one click, reject in two with a reason
+ * that is kept -- and the only things changed are the ones that were wrong
+ * everywhere: the status label is a pill rather than a misused `Badge`, and the
+ * queue pages rather than silently stopping at fifty.
  */
-export default class ReviewSection extends Component<ReviewSectionAttrs> {
-  protected creatives: Creative[] | null = null;
-
+export default class ReviewTab extends Component {
   /**
    * The creative whose rejection reason is being written, and the reason.
    *
@@ -42,60 +42,48 @@ export default class ReviewSection extends Component<ReviewSectionAttrs> {
   /** Ids currently being saved, so a row cannot be decided twice. */
   protected saving = new Set<string>();
 
-  oninit(vnode: Mithril.Vnode<ReviewSectionAttrs, this>) {
+  oninit(vnode: Mithril.Vnode<{}, this>) {
     super.oninit(vnode);
 
-    this.load();
-  }
-
-  protected load(): void {
-    app.store
-      // Both statuses in one request. The server takes a list, so a queue
-      // showing waiting and turned-down together costs one round trip.
-      .find<Creative[]>(RESOURCE.creatives, { filter: { status: ['pending', 'rejected'] }, include: 'campaign,reviewer' })
-      .then((creatives) => {
-        this.creatives = creatives;
-        m.redraw();
-      })
-      .catch(() => {
-        this.creatives = [];
-        m.redraw();
-      });
+    app.placements.review.ensureLoaded();
   }
 
   view(): Mithril.Children {
+    const state = app.placements.review;
+
     return (
-      <section className="PlacementSection container">
-        <div className="PlacementSection-header">
-          <h2>{trans('review.title')}</h2>
-          {this.pendingCount() > 0 && <span className="Badge Badge--important">{this.pendingCount()}</span>}
-        </div>
+      <div className="PlacementsTab">
         <p className="helpText">{trans('review.help')}</p>
 
-        {this.creatives === null ? <LoadingIndicator /> : this.list()}
-      </section>
+        {state.isInitialLoading() ? <LoadingIndicator /> : this.list()}
+      </div>
     );
   }
 
-  protected pendingCount(): number {
-    return (this.creatives ?? []).filter((creative) => creative.status() === 'pending').length;
-  }
-
   protected list(): Mithril.Children {
-    if (!this.creatives?.length) {
+    const state = app.placements.review;
+
+    if (state.isEmpty()) {
       return <Placeholder text={trans('review.none')} />;
     }
 
     // Oldest first: a queue is worked from the front, and the thing that has
-    // been waiting longest is the one somebody is waiting on.
-    const ordered = [...this.creatives].sort((a, b) => (a.createdAt()?.getTime() ?? 0) - (b.createdAt()?.getTime() ?? 0));
+    // been waiting longest is the one somebody is waiting on. The server is
+    // asked for this order too; sorting again here means a server that ignored
+    // the sort cannot quietly reorder the queue.
+    const ordered = [...state.items()].sort((a, b) => (a.createdAt()?.getTime() ?? 0) - (b.createdAt()?.getTime() ?? 0));
 
-    return <ul className="PlacementReview">{ordered.map((creative) => this.row(creative))}</ul>;
+    return [
+      <ul className="PlacementReview">{ordered.map((creative) => this.row(creative))}</ul>,
+      state.pageSize && state.total() > state.pageSize ? (
+        <Pagination total={state.total()} perPage={state.pageSize} currentPage={state.currentPage()} onChange={(page: number) => state.goto(page)} />
+      ) : null,
+    ];
   }
 
   protected row(creative: Creative): Mithril.Children {
     const id = String(creative.id());
-    const rejected = creative.status() === 'rejected';
+    const rejected = creative.status() === CREATIVE_STATUS.rejected;
     // `hasOne` answers false, not undefined, when the relationship was not
     // loaded -- so this cannot be an optional chain.
     const campaign = creative.campaign();
@@ -107,7 +95,7 @@ export default class ReviewSection extends Component<ReviewSectionAttrs> {
             {creative.name()}
           </button>
 
-          <span className={`Badge Badge--${rejected ? 'danger' : 'warning'}`}>{trans(`creatives.statuses.${creative.status()}`)}</span>
+          <StatusPill tone={creativeTone(creative.status())}>{trans(`creatives.statuses.${creative.status()}`)}</StatusPill>
 
           <span className="PlacementReview-meta">
             {trans('review.from', {
@@ -123,7 +111,12 @@ export default class ReviewSection extends Component<ReviewSectionAttrs> {
 
         {/* The thing being judged. Approving an advert without looking at it
             is the one mistake this queue exists to prevent. */}
-        <CreativePreview type={creative.type()} payload={creative.payload()} destinationUrl={creative.destinationUrl()} />
+        <CreativePreview
+          type={creative.type()}
+          payload={creative.payload()}
+          destinationUrl={creative.destinationUrl()}
+          label={creative.labelOverride()}
+        />
 
         {this.rejecting === id ? this.rejectionForm(creative) : this.decisions(creative, rejected)}
       </li>
@@ -140,7 +133,7 @@ export default class ReviewSection extends Component<ReviewSectionAttrs> {
           icon="fas fa-check"
           loading={this.saving.has(id)}
           disabled={this.saving.has(id)}
-          onclick={() => this.decide(creative, 'approved')}
+          onclick={() => this.decide(creative, CREATIVE_STATUS.approved)}
         >
           {trans('review.approve')}
         </Button>
@@ -183,7 +176,7 @@ export default class ReviewSection extends Component<ReviewSectionAttrs> {
             // A rejection with no reason is one somebody resubmits unchanged,
             // so the button will not fire without one.
             disabled={!this.reason().trim() || this.saving.has(id)}
-            onclick={() => this.decide(creative, 'rejected', this.reason().trim())}
+            onclick={() => this.decide(creative, CREATIVE_STATUS.rejected, this.reason().trim())}
           >
             {trans('review.confirm_reject')}
           </Button>
@@ -201,10 +194,10 @@ export default class ReviewSection extends Component<ReviewSectionAttrs> {
 
     if (!campaign) return;
 
-    app.modal.show(CreativeModal, { campaign, creative, onsaved: () => this.load() });
+    app.modal.show(CreativeModal, { campaign, creative, onsaved: () => this.reload() });
   }
 
-  protected decide(creative: Creative, status: 'approved' | 'rejected', reason?: string): void {
+  protected decide(creative: Creative, status: string, reason?: string): void {
     const id = String(creative.id());
 
     this.saving.add(id);
@@ -213,17 +206,26 @@ export default class ReviewSection extends Component<ReviewSectionAttrs> {
     // anyway, but leaving it out means the store keeps showing the old reason
     // beside a creative that was accepted.
     creative
-      .save({ status, reviewReason: status === 'rejected' ? reason : null })
+      .save({ status, reviewReason: status === CREATIVE_STATUS.rejected ? reason : null })
       .then(() => {
         this.rejecting = null;
         this.reason('');
-        this.load();
-        this.attrs.ondecided?.();
+        this.reload();
       })
       .catch(() => m.redraw())
       .finally(() => {
         this.saving.delete(id);
         m.redraw();
       });
+  }
+
+  /**
+   * A decision changes both the queue and the count on the tab beside it, and
+   * it can change what a campaign is serving, so all three are refreshed.
+   */
+  protected reload(): void {
+    app.placements.review.reload();
+    app.placements.countPending();
+    app.placements.forgetCreatives();
   }
 }

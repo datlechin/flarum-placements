@@ -3,7 +3,8 @@ import app from 'flarum/admin/app';
 import mq from 'mithril-query';
 import m from 'mithril';
 
-import ReviewSection from '../../src/admin/components/ReviewSection';
+import ReviewTab from '../../src/admin/components/tabs/ReviewTab';
+import PlacementsState from '../../src/admin/states/PlacementsState';
 import Creative from '../../src/admin/models/Creative';
 import Campaign from '../../src/admin/models/Campaign';
 import { RESOURCE } from '../../src/admin/config';
@@ -60,18 +61,23 @@ function seed(rows: Array<{ id: number; name: string; status: string; createdAt:
 beforeEach(() => {
   saved = [];
   app.store.data = {};
+
+  // The queue now reads a state held on `app` rather than loading into itself,
+  // because the page is rebuilt on every tab change. A fresh one per test, so
+  // one test's queue is never another's.
+  app.placements = new PlacementsState();
 });
 
 /**
- * Waits for the `find` promise in `oninit` to settle, then redraws. Without it
- * every assertion runs against the loading indicator.
+ * Waits for the load in `oninit` to settle, then redraws. Without it every
+ * assertion runs against the loading indicator.
  *
- * A macrotask rather than `await Promise.resolve()`: the component's own
- * `.then()` is queued behind the one being awaited, so a single microtask tick
- * leaves it still loading.
+ * A macrotask rather than `await Promise.resolve()`: the state's own `.then()`
+ * is queued behind the one being awaited, so a single microtask tick leaves it
+ * still loading.
  */
 async function render() {
-  const rendered = mq(ReviewSection, {});
+  const rendered = mq(ReviewTab, {});
 
   await new Promise((resolve) => setTimeout(resolve, 0));
   rendered.redraw();
@@ -88,7 +94,9 @@ describe('the review queue', () => {
 
   /**
    * A queue is worked from the front, and the thing that has been waiting
-   * longest is the one somebody is waiting on.
+   * longest is the one somebody is waiting on. The server is asked for this
+   * order as well; sorting again in the browser means a server that ignored
+   * the sort cannot quietly reorder the queue.
    */
   it('lists the oldest first, whatever order the server sent', async () => {
     seed([
@@ -104,26 +112,41 @@ describe('the review queue', () => {
 
   /**
    * Rejected creatives stay in the list -- a rejection is the start of a
-   * conversation -- but only the pending ones are what anybody still has to
-   * decide, so only they are counted.
+   * conversation -- so the queue holds both.
    */
-  it('counts only the ones nobody has decided on', async () => {
+  it('keeps the ones that were turned down alongside the ones still waiting', async () => {
     seed([
       { id: 1, name: 'Waiting', status: 'pending', createdAt: '2026-01-01T00:00:00+00:00' },
       { id: 2, name: 'Also waiting', status: 'pending', createdAt: '2026-01-02T00:00:00+00:00' },
       { id: 3, name: 'Turned down', status: 'rejected', createdAt: '2026-01-03T00:00:00+00:00', reviewReason: 'Not for us.' },
     ]);
 
-    const rendered = await render();
-
-    expect(rendered.rootEl.querySelector('.Badge--important')!.textContent).toBe('2');
-    expect(rendered.find('.PlacementReview-item')).toHaveLength(3);
+    expect((await render()).find('.PlacementReview-item')).toHaveLength(3);
   });
 
   it('shows the reason a creative was turned down', async () => {
     seed([{ id: 1, name: 'Turned down', status: 'rejected', createdAt: '2026-01-01T00:00:00+00:00', reviewReason: 'Not for us.' }]);
 
     expect((await render()).rootEl.querySelector('.PlacementReview-reason')!.textContent).toBe('Not for us.');
+  });
+
+  /**
+   * The status is a `Pill`, not a `Badge`. A `Badge` is a fixed 22-pixel circle
+   * whose `.Badge-label` is `display: none` -- text in one spills out of it --
+   * and two of the modifiers this used to ask for (`Badge--important`,
+   * `Badge--warning`) do not exist in core at all, so the badges were
+   * uncoloured as well as misshapen.
+   */
+  it('draws the status as a pill rather than a badge', async () => {
+    seed([{ id: 1, name: 'Waiting', status: 'pending', createdAt: '2026-01-01T00:00:00+00:00' }]);
+
+    const rendered = await render();
+
+    expect(rendered).toHaveElement('.PlacementPill--warning');
+    // `find` rather than `querySelector`: this DOM shim answers `undefined`
+    // for no match, so a `toBeNull` would pass against a missing element and
+    // against a shim that never matched anything at all.
+    expect(rendered.find('.Badge')).toHaveLength(0);
   });
 
   it('approves without asking for anything', async () => {
@@ -168,5 +191,41 @@ describe('the review queue', () => {
     rendered.click('.PlacementReview-actions .Button--primary');
 
     expect(saved).toEqual([{ status: 'approved', reviewReason: null }]);
+  });
+});
+
+/**
+ * The count on the tab beside the queue.
+ *
+ * It used to be counted from the loaded rows, which was wrong twice over: the
+ * queue holds rejected creatives as well as pending ones, and it holds one page
+ * of them -- so the number under-reported exactly when the queue was long
+ * enough for it to matter.
+ */
+describe('the count of what is waiting', () => {
+  it('is the server total for pending alone, not the length of the queue', async () => {
+    let asked: any = null;
+
+    app.store.find = (type: string, params: any) => {
+      asked = params;
+
+      const results: any = [];
+      results.payload = { meta: { page: { total: 42 } } };
+
+      return Promise.resolve(results);
+    };
+
+    await app.placements.countPending();
+
+    expect(asked.filter).toEqual({ status: 'pending' });
+    expect(app.placements.pending()).toBe(42);
+  });
+
+  it('falls back to the rows it got when the server sends no total', async () => {
+    app.store.find = () => Promise.resolve([{}, {}] as any);
+
+    await app.placements.countPending();
+
+    expect(app.placements.pending()).toBe(2);
   });
 });
