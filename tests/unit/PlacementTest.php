@@ -77,8 +77,8 @@ class PlacementTest extends TestCase
     {
         $placement = new Placement(key: 'discussion_after_op');
 
-        $this->assertSame('datlechin-placements.admin.placements.discussion_after_op.label', $placement->labelKey());
-        $this->assertSame('datlechin-placements.admin.placements.discussion_after_op.description', $placement->descriptionKey());
+        $this->assertSame('datlechin-placements.lib.placements.discussion_after_op.label', $placement->labelKey());
+        $this->assertSame('datlechin-placements.lib.placements.discussion_after_op.description', $placement->descriptionKey());
     }
 
     #[Test]
@@ -88,12 +88,12 @@ class PlacementTest extends TestCase
         // which another extension cannot write to.
         $placement = new Placement(
             key: 'acme.profile_rail',
-            label: 'acme-widgets.admin.placements.profile_rail.label',
-            description: 'acme-widgets.admin.placements.profile_rail.description',
+            label: 'acme-widgets.lib.placements.profile_rail.label',
+            description: 'acme-widgets.lib.placements.profile_rail.description',
         );
 
-        $this->assertSame('acme-widgets.admin.placements.profile_rail.label', $placement->labelKey());
-        $this->assertSame('acme-widgets.admin.placements.profile_rail.description', $placement->descriptionKey());
+        $this->assertSame('acme-widgets.lib.placements.profile_rail.label', $placement->labelKey());
+        $this->assertSame('acme-widgets.lib.placements.profile_rail.description', $placement->descriptionKey());
     }
 
     #[Test]
@@ -150,8 +150,8 @@ class PlacementTest extends TestCase
         $this->assertSame([
             'key' => 'post_footer',
             'group' => 'discussion',
-            'label' => 'datlechin-placements.admin.placements.post_footer.label',
-            'description' => 'datlechin-placements.admin.placements.post_footer.description',
+            'label' => 'datlechin-placements.lib.placements.post_footer.label',
+            'description' => 'datlechin-placements.lib.placements.post_footer.description',
             'allowedTypes' => ['image'],
             'maxFill' => 2,
             'repeating' => true,

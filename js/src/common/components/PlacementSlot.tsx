@@ -190,7 +190,7 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
       <aside
         className={classList('Placement', `Placement--${PlacementState.modifier(slot.key)}`, state.demo && 'Placement--demo', this.attrs.className)}
         style={state.reserveVariables(slot)}
-        aria-label={extractText(app.translator.trans('datlechin-placements.forum.label'))}
+        aria-label={extractText(app.translator.trans('datlechin-placements.lib.label'))}
       >
         {content}
       </aside>
@@ -251,7 +251,7 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
    * cosmetic rules and reads in the forum's own language.
    */
   protected label(candidate: Candidate | undefined): Mithril.Children {
-    return <span className="Placement-label">{candidate?.label ?? app.translator.trans('datlechin-placements.forum.label')}</span>;
+    return <span className="Placement-label">{candidate?.label ?? app.translator.trans('datlechin-placements.lib.label')}</span>;
   }
 
   protected creative(candidate: Candidate): Mithril.Children {
@@ -303,7 +303,7 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
             type `?placement_demo=0` -- which nothing anywhere says. A way in
             with no way out is a trap, even a harmless one. */}
         <a className="Placement-demoExit" href={`${app.forum.attribute('baseUrl')}/?${DemoMode.PARAM}=0`}>
-          {app.translator.trans('datlechin-placements.forum.demo_exit')}
+          {app.translator.trans('datlechin-placements.lib.demo_exit')}
         </a>
       </div>
     );

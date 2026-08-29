@@ -112,7 +112,7 @@ export default function registerCreatives(): void {
         height={typeof height === 'number' && height > 0 ? height : 250}
         loading="lazy"
         referrerpolicy="no-referrer"
-        title={extractText(app.translator.trans('datlechin-placements.forum.label'))}
+        title={extractText(app.translator.trans('datlechin-placements.lib.label'))}
       />
     );
   });

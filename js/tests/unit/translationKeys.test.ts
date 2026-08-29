@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import { CAMPAIGN_STATUS, FALLBACK, LABEL_MODE, ROTATION } from '../../src/admin/config';
+
 /**
  * Every translation key the admin screens ask for has to exist.
  *
@@ -18,9 +20,32 @@ import path from 'path';
 // directory is the `js` folder, both locally and in CI.
 const root = path.resolve(process.cwd(), '..');
 const adminSrc = path.join(root, 'js/src/admin');
+const commonSrc = path.join(root, 'js/src/common');
+const forumSrc = path.join(root, 'js/src/forum');
 const localePath = path.join(root, 'locale/en.yml');
 
 const PREFIX = 'datlechin-placements.admin.';
+
+/**
+ * The namespaces each frontend is actually served.
+ *
+ * Flarum builds one locale bundle per frontend and filters it with
+ * `/^.+(?:\.|::)(?:<frontend>|lib)\./` -- see `Flarum\Frontend\AddTranslations`.
+ * So the admin bundle contains `…admin.` and `…lib.` keys and nothing else: a
+ * `forum.` key asked for in the admin panel is not merely untranslated, it was
+ * never sent, and Flarum renders the key itself on screen.
+ *
+ * That is what put `datlechin-placements.forum.label` into the creative
+ * preview and the review queue as literal text. It type-checked, it built, and
+ * every test passed, because the key does exist -- just not anywhere the admin
+ * frontend can see it.
+ */
+const REACHABLE: Record<string, string[]> = {
+  admin: ['admin', 'lib'],
+  forum: ['forum', 'lib'],
+  // Rendered by both, so only the shared namespace is safe.
+  common: ['lib'],
+};
 
 /**
  * Records a key the way the call site meant it.
@@ -92,7 +117,12 @@ function definedKeys(): Set<string> {
  * fails here.
  */
 const DYNAMIC: Record<string, string[]> = {
-  'campaigns.statuses': ['draft', 'scheduled', 'active', 'paused', 'archived'],
+  // Taken from the constant the screens themselves read, not written out
+  // again here. A hand-copied list is only ever checked against itself: this
+  // file claimed the label modes were `inherit`, `always` and `never`, the
+  // code agreed, and nothing connected either to the value a row could
+  // actually hold.
+  'campaigns.statuses': Object.values(CAMPAIGN_STATUS),
   'campaigns.tiers': ['sponsorship', 'guaranteed', 'standard', 'remnant', 'house'],
   'campaigns.frequency_windows': ['session', 'hour', 'day'],
   'campaigns.rate_types': ['cpm', 'cpc', 'flat', 'barter'],
@@ -118,17 +148,13 @@ const DYNAMIC: Record<string, string[]> = {
   'daypart.days': ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
   reports: ['by_campaigns', 'by_creatives', 'by_placements', 'campaign', 'creative', 'slot'],
   slots: [
-    'fallback_next_tier',
-    'fallback_house',
-    'fallback_passback',
-    'fallback_collapse',
-    'fallback_next_tier_help',
-    'fallback_house_help',
-    'fallback_passback_help',
-    'fallback_collapse_help',
-    'label_inherit',
-    'label_always',
-    'label_never',
+    // Every fallback needs both a label and the help text under the select,
+    // and every label mode and rotation needs a label. Derived so that adding
+    // one to the constant fails here until it has been named.
+    ...Object.values(FALLBACK).map((value) => `fallback_${value}`),
+    ...Object.values(FALLBACK).map((value) => `fallback_${value}_help`),
+    ...Object.values(LABEL_MODE).map((value) => `label_${value}`),
+    ...Object.values(ROTATION).map((value) => `rotation_${value}`),
     'reserve_phone',
     'reserve_tablet',
     'reserve_desktop',
@@ -148,7 +174,7 @@ describe('the admin translations', () => {
     // file said.
     expect(defined.has('datlechin-placements.admin.campaigns.title')).toBe(true);
     expect(defined.has('datlechin-placements.admin.tabs.campaigns')).toBe(true);
-    expect(defined.has('datlechin-placements.forum.label')).toBe(true);
+    expect(defined.has('datlechin-placements.lib.label')).toBe(true);
     expect(defined.has('datlechin-placements.admin.campaigns.no_such_key')).toBe(false);
     // A parent with children is not itself a translation.
     expect(defined.has('datlechin-placements.admin.campaigns')).toBe(false);
@@ -169,6 +195,42 @@ describe('the admin translations', () => {
     expect(used.size).toBeGreaterThan(100);
 
     expect([...used].filter((key) => !defined.has(key)).sort()).toEqual([]);
+  });
+
+  it('only asks each frontend for keys that frontend is served', () => {
+    const wrong: string[] = [];
+    let scanned = 0;
+
+    for (const [frontend, dir] of [
+      ['admin', adminSrc],
+      ['forum', forumSrc],
+      ['common', commonSrc],
+    ] as const) {
+      const allowed = REACHABLE[frontend];
+
+      for (const file of sources(dir)) {
+        const code = fs.readFileSync(file, 'utf8');
+
+        // Anchored on `trans(` rather than on the string alone: the extension
+        // prefix is also how storage keys and route names are namespaced
+        // (`datlechin-placements.seen`, `datlechin-placements.submissions`),
+        // and those are not translations to look up.
+        for (const match of code.matchAll(/\btrans\(\s*'(datlechin-placements\.[a-z0-9_.-]+)'/g)) {
+          scanned++;
+
+          const namespace = match[1].split('.')[1];
+
+          if (!allowed.includes(namespace)) {
+            wrong.push(`${path.relative(root, file)} asks for ${match[1]}, which the ${frontend} frontend is not served`);
+          }
+        }
+      }
+    }
+
+    // A scan that matched nothing would pass this without checking anything.
+    expect(scanned).toBeGreaterThan(5);
+
+    expect(wrong.sort()).toEqual([]);
   });
 
   it('defines every key the admin screens assemble at runtime', () => {

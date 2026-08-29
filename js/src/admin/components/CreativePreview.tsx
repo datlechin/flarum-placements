@@ -52,7 +52,7 @@ export default class CreativePreview extends Component<CreativePreviewAttrs> {
         {/* `.Placement` so the forum's own slot styles apply. `Placement--demo`
             is deliberately absent: this is the real thing, not the sample. */}
         <aside className="Placement CreativePreview-slot">
-          <span className="Placement-label">{this.attrs.label || app.translator.trans('datlechin-placements.forum.label')}</span>
+          <span className="Placement-label">{this.attrs.label || app.translator.trans('datlechin-placements.lib.label')}</span>
           <div className="Placement-creative">{content}</div>
         </aside>
       </div>

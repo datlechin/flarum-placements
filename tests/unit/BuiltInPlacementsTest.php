@@ -67,26 +67,69 @@ class BuiltInPlacementsTest extends TestCase
         $this->assertSame(['tags_page'], array_map(fn (Placement $p) => $p->key, BuiltInPlacements::tags()));
     }
 
+    /**
+     * Walks a dotted key into the parsed locale file.
+     *
+     * Follows the key the code actually builds rather than a path written out
+     * here: an earlier version of this test looked under `admin.placements`
+     * literally, so moving the block would have been reported as sixteen
+     * missing entries instead of as the rename it was.
+     */
+    private static function lookUp(string $key): mixed
+    {
+        $path = explode('.', $key);
+        array_shift($path);
+
+        $value = self::locale();
+
+        foreach ($path as $segment) {
+            if (! is_array($value) || ! array_key_exists($segment, $value)) {
+                return null;
+            }
+
+            $value = $value[$segment];
+        }
+
+        return $value;
+    }
+
     #[Test]
     #[DataProvider('placements')]
     public function every_placement_has_a_name_and_a_description_an_administrator_can_read(Placement $placement): void
     {
         // Without this, adding a placement and forgetting the locale entry
-        // ships an admin panel row reading
-        // "datlechin-placements.admin.placements.foo.label".
-        $entry = self::locale()['admin']['placements'][$placement->key] ?? null;
+        // ships a row reading "datlechin-placements.lib.placements.foo.label".
+        $this->assertNotEmpty(
+            self::lookUp($placement->labelKey()),
+            "Placement [$placement->key] has no label at [{$placement->labelKey()}]."
+        );
 
-        $this->assertIsArray($entry, "No locale entry for placement [$placement->key].");
-        $this->assertNotEmpty($entry['label'] ?? '', "Placement [$placement->key] has no label.");
-        $this->assertNotEmpty($entry['description'] ?? '', "Placement [$placement->key] has no description.");
+        $this->assertNotEmpty(
+            self::lookUp($placement->descriptionKey()),
+            "Placement [$placement->key] has no description at [{$placement->descriptionKey()}]."
+        );
     }
 
     #[Test]
     #[DataProvider('placements')]
-    public function every_placement_uses_its_own_locale_namespace(Placement $placement): void
+    public function every_placement_is_named_in_a_namespace_both_frontends_are_served(Placement $placement): void
     {
-        $this->assertStringStartsWith('datlechin-placements.', $placement->labelKey());
-        $this->assertStringStartsWith('datlechin-placements.', $placement->descriptionKey());
+        // Flarum builds one locale bundle per frontend and keeps only the keys
+        // matching `<extension>.<frontend>.` or `<extension>.lib.` -- see
+        // Flarum\Frontend\AddTranslations. A slot's name is rendered in the
+        // admin panel *and* on the forum, by demo mode, so `lib` is the only
+        // namespace that reaches both.
+        //
+        // Under `admin` it was never sent to the forum at all, and demo mode
+        // -- the feature whose whole purpose is to show where each slot is --
+        // labelled all sixteen of them with their own translation keys.
+        foreach ([$placement->labelKey(), $placement->descriptionKey()] as $key) {
+            $this->assertStringStartsWith(
+                'datlechin-placements.lib.',
+                $key,
+                "Placement [$placement->key] names [$key], which the forum frontend is not served."
+            );
+        }
     }
 
     #[Test]

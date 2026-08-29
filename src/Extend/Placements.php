@@ -30,7 +30,7 @@ use Illuminate\Contracts\Container\Container;
  *         ->placement(new Datlechin\Placements\Placement(
  *             key: 'acme.profile_rail',
  *             group: 'user',
- *             label: 'acme-widgets.admin.placements.profile_rail.label',
+ *             label: 'acme-widgets.lib.placements.profile_rail.label',
  *             recommendedSize: [160, 600],
  *             reserveDesktop: 600,
  *         ))

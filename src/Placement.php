@@ -48,7 +48,7 @@ final class Placement
     /**
      * @param  string  $key  Stable identifier. Written into every assignment row and read by the frontend. Renaming it orphans existing assignments.
      * @param  string  $group  Which part of the forum this slot belongs to, used to group the admin list. One of the `GROUP_*` constants, or your own.
-     * @param  string|null  $label  Translation key for the name shown to administrators. Defaults to this extension's own namespace, so third parties must pass their own.
+     * @param  string|null  $label  Translation key for the name shown to administrators. Defaults to this extension's own `lib` namespace. Third parties must pass their own, and it has to be a `lib.` key: demo mode renders it on the forum, which is never served another frontend's translations.
      * @param  string|null  $description  Translation key for the sentence explaining where the slot actually appears. Worth writing: it is what stops "where is this?" tickets.
      * @param  list<string>  $allowedTypes  Creative type keys this slot accepts. Empty means all of them.
      * @param  int  $maxFill  How many creatives may be served here at once, before an administrator overrides it.
@@ -87,7 +87,7 @@ final class Placement
 
     public function labelKey(): string
     {
-        return $this->label ?? "datlechin-placements.admin.placements.$this->key.label";
+        return $this->label ?? "datlechin-placements.lib.placements.$this->key.label";
     }
 
     /**
@@ -95,7 +95,7 @@ final class Placement
      */
     public function descriptionKey(): string
     {
-        return $this->description ?? "datlechin-placements.admin.placements.$this->key.description";
+        return $this->description ?? "datlechin-placements.lib.placements.$this->key.description";
     }
 
     /**
