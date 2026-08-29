@@ -80,13 +80,30 @@ return [
     (new Extend\ApiResource(ForumResource::class))
         ->fields(Api\ForumFields::class),
 
-    // A searcher for a model nothing searches. Flarum routes every list filter
-    // through one — `AbstractDatabaseResource::filters()` is final and throws —
-    // so the review queue asking for `filter[status]=pending` needs this to
-    // exist before it can ask.
+    // Flarum routes every list filter, search term and sort through a searcher
+    // — `AbstractDatabaseResource::filters()` is final and throws — so each of
+    // the three administered lists needs one before it can be asked anything
+    // more specific than "all of them".
+    //
+    // Note that registering a searcher changes how the Index endpoint answers:
+    // it goes through the searcher *instead of* the resource, so the permission
+    // has to be re-checked there. See Search\AbstractManagedSearcher.
     (new Extend\SearchDriver(DatabaseSearchDriver::class))
         ->addSearcher(Model\Creative::class, Search\CreativeSearcher::class)
-        ->addFilter(Search\CreativeSearcher::class, Search\Filter\StatusFilter::class),
+        ->setFulltext(Search\CreativeSearcher::class, Search\Fulltext\CreativeTextFilter::class)
+        ->addFilter(Search\CreativeSearcher::class, Search\Filter\StatusFilter::class)
+        ->addFilter(Search\CreativeSearcher::class, Search\Filter\CampaignFilter::class)
+        ->addFilter(Search\CreativeSearcher::class, Search\Filter\TypeFilter::class)
+
+        ->addSearcher(Model\Campaign::class, Search\CampaignSearcher::class)
+        ->setFulltext(Search\CampaignSearcher::class, Search\Fulltext\CampaignTextFilter::class)
+        ->addFilter(Search\CampaignSearcher::class, Search\Filter\StatusFilter::class)
+        ->addFilter(Search\CampaignSearcher::class, Search\Filter\TierFilter::class)
+        ->addFilter(Search\CampaignSearcher::class, Search\Filter\AdvertiserFilter::class)
+        ->addFilter(Search\CampaignSearcher::class, Search\Filter\SourceFilter::class)
+
+        ->addSearcher(Model\Advertiser::class, Search\AdvertiserSearcher::class)
+        ->setFulltext(Search\AdvertiserSearcher::class, Search\Fulltext\AdvertiserTextFilter::class),
 
     (new Extend\ApiResource(Api\Resource\CampaignResource::class)),
     (new Extend\ApiResource(Api\Resource\CreativeResource::class)),
@@ -109,6 +126,9 @@ return [
     (new Extend\Routes('api'))
         ->post('/placements/events', 'datlechin-placements.events', Api\Controller\RecordEventsController::class)
         ->get('/placements/report', 'datlechin-placements.report', Api\Controller\ReportController::class)
+        // What the retention setting is holding, so that the field saying "90
+        // days" can say what 90 days currently amounts to.
+        ->get('/placements/storage', 'datlechin-placements.storage', Api\Controller\StorageController::class)
         // Somewhere to put the banner a sponsor emailed you. Without it every
         // image creative needs a URL hosted elsewhere, and a member submitting
         // an advert has to solve image hosting first.

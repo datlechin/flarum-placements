@@ -21,6 +21,7 @@ use Datlechin\Placements\Support\Permissions;
 use Flarum\Api\Endpoint;
 use Flarum\Api\Resource\AbstractDatabaseResource;
 use Flarum\Api\Schema;
+use Flarum\Api\Sort\SortColumn;
 use Illuminate\Contracts\Validation\Factory as Validation;
 use Tobyz\JsonApiServer\Context;
 use Tobyz\JsonApiServer\Exception\BadRequestException;
@@ -189,6 +190,22 @@ class CreativeResource extends AbstractDatabaseResource
      * @param  array<mixed>  $placements
      * @return array<string, int|null>
      */
+    /**
+     * `createdAt` ascending is what the review queue asks for: whoever has
+     * waited longest is served first.
+     */
+    public function sorts(): array
+    {
+        return [
+            SortColumn::make('name'),
+            SortColumn::make('weight'),
+            SortColumn::make('impressions'),
+            SortColumn::make('clicks'),
+            SortColumn::make('createdAt'),
+            SortColumn::make('updatedAt'),
+        ];
+    }
+
     protected function cleanPlacements(array $placements): array
     {
         $clean = [];

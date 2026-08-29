@@ -18,6 +18,7 @@ use Datlechin\Placements\Support\Permissions;
 use Flarum\Api\Endpoint;
 use Flarum\Api\Resource\AbstractDatabaseResource;
 use Flarum\Api\Schema;
+use Flarum\Api\Sort\SortColumn;
 use Tobyz\JsonApiServer\Context;
 
 /**
@@ -152,6 +153,19 @@ class CampaignResource extends AbstractDatabaseResource
             Schema\Boolean::make('isLive')
                 ->get(fn (Campaign $campaign) => $campaign->isLive()),
 
+            // Whether this campaign exists because a member submitted an
+            // advert rather than because somebody sold one.
+            //
+            // Computed from the advertiser being a forum account, which is the
+            // same fact `MemberInventory` writes when it provisions the pair,
+            // so nothing extra is stored to answer it. The advertiser is a
+            // default include, so this costs no query of its own.
+            //
+            // The admin list needs it: without it, campaigns named after
+            // members sit among paid ones and read as paid ones.
+            Schema\Boolean::make('isMemberSubmitted')
+                ->get(fn (Campaign $campaign) => $campaign->advertiser?->user_id !== null),
+
             Schema\DateTime::make('createdAt')->property('created_at'),
             Schema\DateTime::make('updatedAt')->property('updated_at'),
 
@@ -201,6 +215,28 @@ class CampaignResource extends AbstractDatabaseResource
 
                     $campaign->unsetRelation('rules');
                 }),
+        ];
+    }
+
+    /**
+     * What the campaign list may be ordered by.
+     *
+     * Deliberately not `status` or `pacing`: ordering by them sorts the words
+     * alphabetically, which puts "archived" first and means nothing to anyone.
+     * `tier` is offered instead, because a tier is a number chosen so that
+     * ordering it is the priority order the engine itself uses.
+     */
+    public function sorts(): array
+    {
+        return [
+            SortColumn::make('name'),
+            SortColumn::make('tier'),
+            SortColumn::make('impressions'),
+            SortColumn::make('clicks'),
+            SortColumn::make('startsAt'),
+            SortColumn::make('endsAt'),
+            SortColumn::make('createdAt'),
+            SortColumn::make('updatedAt'),
         ];
     }
 

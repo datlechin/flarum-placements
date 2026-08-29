@@ -21,6 +21,11 @@ use Flarum\Search\SearchState;
  * Several may be asked for at once, so that a queue can show what is waiting
  * alongside what was turned down and not yet resubmitted.
  *
+ * Registered against creatives and campaigns both. The two sets of values have
+ * nothing in common -- a creative is pending or approved, a campaign is draft
+ * or paused -- but the column is spelt the same and the question is the same,
+ * so one filter answers it for either.
+ *
  * @implements FilterInterface<DatabaseSearchState>
  */
 class StatusFilter implements FilterInterface

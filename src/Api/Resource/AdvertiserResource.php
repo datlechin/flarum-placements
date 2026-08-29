@@ -16,6 +16,7 @@ use Datlechin\Placements\Support\Permissions;
 use Flarum\Api\Endpoint;
 use Flarum\Api\Resource\AbstractDatabaseResource;
 use Flarum\Api\Schema;
+use Flarum\Api\Sort\SortColumn;
 use Flarum\Http\UrlGenerator;
 
 /**
@@ -103,6 +104,19 @@ class AdvertiserResource extends AbstractDatabaseResource
             Schema\Relationship\ToMany::make('campaigns')
                 ->type('placement-campaigns')
                 ->includable(),
+        ];
+    }
+
+    /**
+     * Not `contactEmail`: sorting people by their email domain is not a
+     * question anybody asks, and offering a control that sorts by something
+     * meaningless costs more attention than it saves.
+     */
+    public function sorts(): array
+    {
+        return [
+            SortColumn::make('name'),
+            SortColumn::make('createdAt'),
         ];
     }
 }

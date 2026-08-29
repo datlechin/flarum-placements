@@ -11,22 +11,22 @@
 
 namespace Datlechin\Placements\Search;
 
-use Datlechin\Placements\Model\Creative;
+use Datlechin\Placements\Model\Campaign;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Lets creatives be listed with a filter, a search term and a sort on them.
+ * Lets the campaign list be searched, filtered and sorted.
  *
- * This exists because `AbstractDatabaseResource::filters()` is final and
- * throws: Flarum routes every list filter through a searcher, so a review
- * queue asking for the pending ones needs one before it can ask.
+ * Until this existed the admin list asked for every campaign at once and drew
+ * the first fifty the server chose to send, so a forum that had sold more than
+ * fifty campaigns simply could not see the rest.
  *
  * @see AbstractManagedSearcher for why the permission is checked again here.
  */
-class CreativeSearcher extends AbstractManagedSearcher
+class CampaignSearcher extends AbstractManagedSearcher
 {
     protected function baseQuery(): Builder
     {
-        return Creative::query()->select('placement_creatives.*');
+        return Campaign::query()->select('placement_campaigns.*');
     }
 }

@@ -11,22 +11,22 @@
 
 namespace Datlechin\Placements\Search;
 
-use Datlechin\Placements\Model\Creative;
+use Datlechin\Placements\Model\Advertiser;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Lets creatives be listed with a filter, a search term and a sort on them.
+ * Lets the advertiser list be searched and sorted.
  *
- * This exists because `AbstractDatabaseResource::filters()` is final and
- * throws: Flarum routes every list filter through a searcher, so a review
- * queue asking for the pending ones needs one before it can ask.
+ * The list grows on its own: a member submitting an advert has an advertiser
+ * record created for them, so on a forum that accepts submissions this is the
+ * one list nobody chose the length of.
  *
  * @see AbstractManagedSearcher for why the permission is checked again here.
  */
-class CreativeSearcher extends AbstractManagedSearcher
+class AdvertiserSearcher extends AbstractManagedSearcher
 {
     protected function baseQuery(): Builder
     {
-        return Creative::query()->select('placement_creatives.*');
+        return Advertiser::query()->select('placement_advertisers.*');
     }
 }
