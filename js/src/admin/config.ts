@@ -55,6 +55,46 @@ export const CAMPAIGN_STATUS = {
 } as const;
 
 /**
+ * A slot's own settings, as the server defines them.
+ *
+ * Named here rather than spelled out at each `<Select>` because three
+ * different things have to agree on them: the control that offers the
+ * choices, the summary that turns a stored value into a label, and the test
+ * that checks every one of those labels exists. When the summary interpolated
+ * a bare column value into a translation key with nothing tying it to this
+ * list, a value the UI never offered rendered its key on screen.
+ */
+export const FALLBACK = {
+  next_tier: 'next_tier',
+  house: 'house',
+  passback: 'passback',
+  collapse: 'collapse',
+} as const;
+
+export const ROTATION = {
+  random: 'random',
+  sticky: 'sticky',
+} as const;
+
+export const LABEL_MODE = {
+  inherit: 'inherit',
+  always: 'always',
+  never: 'never',
+} as const;
+
+/**
+ * Whether a value stored against a slot is one this build knows how to name.
+ *
+ * A row can hold anything the database accepted: a configuration imported from
+ * a newer version, or a column written by hand. Naming only what is known
+ * keeps an unrecognised value out of the summary rather than printing a
+ * translation key where a label should be.
+ */
+export function isKnown<T extends Record<string, string>>(set: T, value: string | null): value is T[keyof T] {
+  return value !== null && Object.prototype.hasOwnProperty.call(set, value);
+}
+
+/**
  * The status a pause or resume control would move a campaign to, or null when
  * neither applies.
  *

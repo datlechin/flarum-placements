@@ -9,7 +9,7 @@ import extractText from 'flarum/common/utils/extractText';
 import type Mithril from 'mithril';
 
 import type { SlotConfig } from '../../../common/types';
-import { CREATIVE_STATUS, RESOURCE, slotsByGroup, trans } from '../../config';
+import { CREATIVE_STATUS, FALLBACK, LABEL_MODE, ROTATION, RESOURCE, isKnown, slotsByGroup, trans } from '../../config';
 import type Creative from '../../models/Creative';
 import type PlacementSetting from '../../models/PlacementSetting';
 import StatusPill from '../../../common/components/StatusPill';
@@ -183,16 +183,17 @@ export default class SlotsTab extends Component {
     }
 
     const fallback = setting.fallback();
-    if (fallback && fallback !== 'next_tier') {
+    if (isKnown(FALLBACK, fallback) && fallback !== FALLBACK.next_tier) {
       pills.push(<StatusPill tone="neutral">{trans(`slots.fallback_${fallback}`)}</StatusPill>);
     }
 
-    if (setting.rotation() === 'sticky') {
+    if (setting.rotation() === ROTATION.sticky) {
       pills.push(<StatusPill tone="neutral">{trans('slots.rotation_sticky')}</StatusPill>);
     }
 
-    if (setting.labelMode() && setting.labelMode() !== 'inherit') {
-      pills.push(<StatusPill tone="neutral">{trans(`slots.label_${setting.labelMode()}`)}</StatusPill>);
+    const labelMode = setting.labelMode();
+    if (isKnown(LABEL_MODE, labelMode) && labelMode !== LABEL_MODE.inherit) {
+      pills.push(<StatusPill tone="neutral">{trans(`slots.label_${labelMode}`)}</StatusPill>);
     }
 
     return pills.length ? <span className="PlacementSlots-summary">{pills}</span> : null;

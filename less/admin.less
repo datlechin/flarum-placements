@@ -83,15 +83,25 @@
 .PlacementToolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 12px 15px;
   align-items: flex-end;
-  justify-content: space-between;
 
   &-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     align-items: flex-end;
+
+    // Always a row of its own, below the primary action. Sharing one with that
+    // button meant the filters pushed it off the end onto a second line, so it
+    // moved every time a list gained a filter, and the last filter was left
+    // stranded beside it.
+    //
+    // Ordered from here rather than by pulling the action forward: this
+    // toolbar is also used with a description instead of filters, and moving
+    // the action would have put the button in front of its own explanation.
+    order: 1;
+    flex: 1 1 100%;
   }
 
   &-search {
@@ -121,6 +131,10 @@
     display: flex;
     gap: 10px;
     align-items: center;
+
+    // Against the end of its row, whether that row also holds a description
+    // or nothing at all.
+    margin-inline-start: auto;
   }
 }
 
@@ -161,12 +175,73 @@
 .PlacementTable {
   .Table();
 
+  // Fills its container rather than shrinking to its contents, so the table
+  // lines up with the toolbar and the figures above it.
+  width: 100%;
+
+  // Core's `.Table()` was written for the users page: a checkbox, an icon
+  // above each heading, and one dropdown per row. Two of its defaults are
+  // wrong for a data table and both were visible on every screen here.
+  //
+  // The first centres every heading, which puts each one over the middle of a
+  // column whose cells are aligned to the start (or, for figures, to the end).
+  thead th {
+    text-align: start;
+    padding: 12px 15px;
+
+    // The second turns any icon inside `thead` into a block with a margin
+    // under it. The sort arrow belongs to the heading's own button, so that
+    // rule broke every sortable heading onto two lines and made the header
+    // row half again as tall as it needed to be.
+    .icon {
+      display: inline-block;
+      width: auto;
+      margin-bottom: 0;
+    }
+  }
+
   // Digits line up in a column so two figures can be compared by their length
-  // as well as read.
-  &-number {
+  // as well as read. Stated for the heading too, and at the same specificity
+  // as the rule above, so the heading follows its column rather than fighting
+  // it.
+  thead th&-number,
+  tbody td&-number,
+  thead th&-controls,
+  tbody td&-controls {
     text-align: end;
+  }
+
+  &-number {
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+  }
+
+  // The row's own actions. Core gives this cell no width and no opinion about
+  // wrapping, so two icon buttons in a column the browser had sized at 93px
+  // stacked one above the other -- which is what made the rows ragged, since
+  // only the rows that could be paused had two.
+  &-controls {
+    width: 1%;
+    white-space: nowrap;
+    text-align: end;
+
+    &-item {
+      // Two of the mixin's defaults have to come back off here. It gives the
+      // item `padding: 10px 15px` and, further down, `width: 100%` -- correct
+      // for core, where a row's controls are the items of a dropdown menu and
+      // each one is a full-width strip. These are icon buttons in a cell, so
+      // full width meant every one of them was as wide as the whole column:
+      // four of them overflowed a 134px cell by three hundred pixels and were
+      // clipped by the container's own scroll.
+      width: auto;
+      min-width: 30px;
+      padding: 6px;
+      vertical-align: middle;
+    }
+
+    .Button + .Button {
+      margin-inline-start: 2px;
+    }
   }
 
   &-primary {
@@ -204,7 +279,6 @@
   // still read as a heading.
   &-sort {
     display: inline-flex;
-    gap: 6px;
     align-items: center;
     padding: 0;
     font-weight: inherit;
@@ -215,6 +289,12 @@
   &-sortIcon {
     color: var(--muted-color);
     font-size: 11px;
+
+    // Spaced from here rather than by a `gap` on the button. Core's `Button`
+    // wraps whatever it is given in `.Button-label > .Button-labelText`, so
+    // the heading and this icon are siblings inside that inner span and the
+    // button's own flex gap never falls between them.
+    margin-inline-start: 6px;
   }
 }
 

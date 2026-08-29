@@ -122,7 +122,15 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   align-items: center;
-  margin: 0;
+
+  // A wall has to read as one band of sponsors. Left to fill a slot as wide as
+  // the page -- the footer is the one it is usually sold in -- four equal
+  // columns put each logo in a different corner of the screen, and it stops
+  // looking like a single creative at all.
+  max-width: 760px;
+  margin-inline: auto;
+
+  margin-block: 0;
   padding: 0;
   list-style: none;
 }
