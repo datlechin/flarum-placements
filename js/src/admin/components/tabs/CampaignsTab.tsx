@@ -8,7 +8,7 @@ import extractText from 'flarum/common/utils/extractText';
 import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
-import { CAMPAIGN_STATUS, RESOURCE, TABS, TIERS, currentCampaignId, tabRoute, tierKey, trans } from '../../config';
+import { CAMPAIGN_STATUS, RESOURCE, TABS, TIERS, currentCampaignId, tabRoute, tierKey, toggledStatus, trans } from '../../config';
 import type Advertiser from '../../models/Advertiser';
 import type Campaign from '../../models/Campaign';
 import CampaignModal from '../CampaignModal';
@@ -215,19 +215,40 @@ export default class CampaignsTab extends Component {
       {
         label: <span className="visually-hidden">{trans('lists.actions')}</span>,
         className: 'PlacementTable-controls',
-        content: (campaign) => (
+        content: (campaign) => [
+          this.pauseButton(campaign),
           <Button
             className="Button Button--icon PlacementTable-controls-item"
             icon="fas fa-pencil-alt"
             aria-label={extractText(trans('campaigns.edit'))}
             onclick={() => app.modal.show(CampaignModal, { campaign, onsaved: () => app.placements.campaigns.reload() })}
-          />
-        ),
+          />,
+        ],
       },
       -10
     );
 
     return items;
+  }
+
+  /**
+   * Pause a running campaign, or start a paused one, from the row.
+   */
+  protected pauseButton(campaign: Campaign): Mithril.Children {
+    const next = toggledStatus(campaign.status());
+
+    if (next === null) return null;
+
+    const pausing = next === CAMPAIGN_STATUS.paused;
+
+    return (
+      <Button
+        className="Button Button--icon PlacementTable-controls-item"
+        icon={pausing ? 'fas fa-pause' : 'fas fa-play'}
+        aria-label={extractText(trans(pausing ? 'campaigns.pause' : 'campaigns.resume'))}
+        onclick={() => campaign.save({ status: next }).then(() => app.placements.campaigns.reload())}
+      />
+    );
   }
 
   /**

@@ -47,6 +47,10 @@ export default class PlacementsPage extends ExtensionPage<ExtensionPageAttrs> {
     // be discarded on every tab click.
     app.placements ||= new PlacementsState();
 
+    // Adopted rather than started fresh, so an unsaved edit on the settings
+    // tab survives a click on another tab and back.
+    this.settings = app.placements.settingStreams;
+
     // The queue count is shown on the nav from every tab, so it is asked for
     // once here rather than by the tab that happens to display the queue.
     if (app.placements.pending() === null) {

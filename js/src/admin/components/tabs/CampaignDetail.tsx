@@ -10,7 +10,7 @@ import extractText from 'flarum/common/utils/extractText';
 import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 
-import { RESOURCE, TABS, tabRoute, tierKey, trans } from '../../config';
+import { RESOURCE, TABS, tabRoute, tierKey, toggledStatus, trans } from '../../config';
 import type Campaign from '../../models/Campaign';
 import type Creative from '../../models/Creative';
 import CampaignModal from '../CampaignModal';
@@ -120,6 +120,7 @@ export default class CampaignDetail extends Component<CampaignDetailAttrs> {
             >
               {trans('campaigns.edit')}
             </Button>
+            {this.pauseButton(campaign)}
             <Button className="Button Button--danger" icon="fas fa-trash-alt" onclick={() => this.remove(campaign)}>
               {trans('campaigns.delete')}
             </Button>
@@ -151,6 +152,29 @@ export default class CampaignDetail extends Component<CampaignDetailAttrs> {
           <RecordsTable<Creative> state={app.placements.creatives} columns={this.creativeColumns(campaign)} empty={trans('creatives.none')} />
         </div>
       </div>
+    );
+  }
+
+  protected pauseButton(campaign: Campaign): Mithril.Children {
+    const next = toggledStatus(campaign.status());
+
+    if (next === null) return null;
+
+    const pausing = next === 'paused';
+
+    return (
+      <Button
+        className="Button"
+        icon={pausing ? 'fas fa-pause' : 'fas fa-play'}
+        onclick={() =>
+          campaign.save({ status: next }).then(() => {
+            app.placements.campaigns.reload();
+            m.redraw();
+          })
+        }
+      >
+        {trans(pausing ? 'campaigns.pause' : 'campaigns.resume')}
+      </Button>
     );
   }
 

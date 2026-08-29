@@ -54,6 +54,22 @@ export const CAMPAIGN_STATUS = {
   archived: 'archived',
 } as const;
 
+/**
+ * The status a pause or resume control would move a campaign to, or null when
+ * neither applies.
+ *
+ * Stopping a running campaign is what a sponsor asks for by email in the
+ * middle of a week, and it was five interactions through a modal to change one
+ * field. Draft, scheduled and archived campaigns get no control: pausing
+ * something that is not running says nothing.
+ */
+export function toggledStatus(status: string): string | null {
+  if (status === CAMPAIGN_STATUS.active) return CAMPAIGN_STATUS.paused;
+  if (status === CAMPAIGN_STATUS.paused) return CAMPAIGN_STATUS.active;
+
+  return null;
+}
+
 export const CREATIVE_STATUS = {
   draft: 'draft',
   pending: 'pending',

@@ -67,6 +67,8 @@ datlechin-placements:
       gone: That campaign no longer exists.
       house: House
       show_all: Show all campaigns
+      pause: Pause
+      resume: Resume
       filtered_to_advertiser: "Showing campaigns for {name}."
 
       # A member submitting an advert has an advertiser and a campaign
@@ -120,7 +122,7 @@ datlechin-placements:
       status: Status
       advertiser: Advertiser
       advertiser_help: Who this campaign is reported to. Optional.
-      no_advertiser: "&mdash;"
+      no_advertiser: "—"
       status_help: >
         What you intend. Whether a campaign is actually running is worked out
         from its dates and caps every time a page is served, so a campaign that
@@ -196,8 +198,8 @@ datlechin-placements:
       contact_label: Contact
       link_label: Report link
       campaigns_label: Campaigns
-      no_contact: "&mdash;"
-      no_link: "&mdash;"
+      no_contact: "—"
+      no_link: "—"
       view_campaigns: View campaigns
 
       user: Forum account
@@ -208,6 +210,12 @@ datlechin-placements:
       link_user: Link an account
       unlink_user: Unlink the account
       copy_link: Copy
+      copied: The report link is on your clipboard.
+      copy_failed: >
+        Your browser would not let this page write to the clipboard, which most
+        often means the forum is not being served over HTTPS. The link is
+        selected above — copy it before closing this window, because it is not
+        shown again.
       report_link: Report link
       report_link_help: >
         What an advertiser gets instead of a login. Unguessable, revocable, and
@@ -452,6 +460,7 @@ datlechin-placements:
       last_days: "Last {count} days"
       range_label: Period
       download: Download CSV
+      retry: Try again
       ctr_help: >
         Clicks as a share of impressions. Not reported below a thousand
         impressions: one click on eight is not a twelve per cent rate.
@@ -474,6 +483,8 @@ datlechin-placements:
     slots:
       title: Slots
       configure: Configure
+      load_failed: The slot settings could not be loaded, so these are the defaults the code declares.
+      save_failed: That change could not be saved.
       done: Done
       summary_max_fill: "Up to {count}"
 

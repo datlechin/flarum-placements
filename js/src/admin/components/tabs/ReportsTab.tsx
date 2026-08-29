@@ -114,7 +114,16 @@ export default class ReportsTab extends Component {
   }
 
   protected body(): Mithril.Children {
-    if (!this.report) return <Placeholder text={trans('reports.unavailable')} />;
+    if (!this.report) {
+      return (
+        <div className="PlacementDetail-section">
+          <Placeholder text={trans('reports.unavailable')} />
+          <Button className="Button" icon="fas fa-sync-alt" onclick={() => this.load()}>
+            {trans('reports.retry')}
+          </Button>
+        </div>
+      );
+    }
 
     const { totals } = this.report;
 

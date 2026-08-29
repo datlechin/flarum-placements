@@ -43,14 +43,23 @@ export default class SlotsTab extends Component {
   oninit(vnode: Mithril.Vnode<{}, this>) {
     super.oninit(vnode);
 
-    app.store.find<PlacementSetting[]>(RESOURCE.settings).then((rows) => {
-      rows.forEach((row) => {
-        this.settings[String(row.id())] = row;
+    app.store
+      .find<PlacementSetting[]>(RESOURCE.settings)
+      .then((rows) => {
+        rows.forEach((row) => {
+          this.settings[String(row.id())] = row;
+        });
+      })
+      .catch(() => {
+        // The slots themselves come from the page payload, so the list is
+        // still worth drawing at its declared defaults. Without this the tab
+        // spun for ever on a timeout.
+        app.alerts.show({ type: 'error' }, trans('slots.load_failed'));
+      })
+      .then(() => {
+        this.loading = false;
+        m.redraw();
       });
-
-      this.loading = false;
-      m.redraw();
-    });
 
     // Needed only by the passback picker, and fetched regardless: the picker
     // appears the moment somebody chooses that fallback, and a select that
@@ -385,7 +394,11 @@ export default class SlotsTab extends Component {
       .then((saved: PlacementSetting) => {
         this.settings[slot.key] = saved;
       })
-      .catch(() => {})
+      .catch(() => {
+        // Swallowing this is what hid the wrong-method bug for so long: the
+        // control sprang back and nothing anywhere said why.
+        app.alerts.show({ type: 'error' }, trans('slots.save_failed'));
+      })
       .then(() => {
         this.saving = null;
         m.redraw();

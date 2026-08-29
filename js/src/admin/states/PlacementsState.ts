@@ -57,6 +57,15 @@ export default class PlacementsState {
   }
 
   /**
+   * The setting streams the settings tab binds to.
+   *
+   * `AdminPage.setting()` memoises them on the page, and the page is rebuilt
+   * on every tab change -- so typing into `ads.txt` and then clicking another
+   * tab silently discarded the edit. They live here and the page adopts them.
+   */
+  public readonly settingStreams: Record<string, Stream<string>> = {};
+
+  /**
    * What the settings tab reports next to the retention field. Null until it
    * has been asked for, which is when that tab is first opened.
    */

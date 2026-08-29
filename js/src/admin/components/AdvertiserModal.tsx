@@ -153,7 +153,7 @@ export default class AdvertiserModal extends FormModal<AdvertiserModalAttrs> {
               value={this.issuedUrl}
               oncreate={(vnode: Mithril.VnodeDOM) => (vnode.dom as HTMLInputElement).select()}
             />
-            <Button className="Button" type="button" icon="fas fa-copy" onclick={() => navigator.clipboard?.writeText(this.issuedUrl!)}>
+            <Button className="Button" type="button" icon="fas fa-copy" onclick={() => this.copy()}>
               {trans('advertisers.copy_link')}
             </Button>
           </div>
@@ -172,6 +172,36 @@ export default class AdvertiserModal extends FormModal<AdvertiserModalAttrs> {
         </div>
       </div>
     );
+  }
+
+  /**
+   * Put the link on the clipboard, and say so either way.
+   *
+   * `navigator.clipboard` is undefined on any origin the browser does not
+   * consider secure, so a forum served over plain HTTP got a button that did
+   * nothing at all and said nothing about it. The link is shown exactly once,
+   * so the cost of that silence is a revoke-and-reissue cycle that breaks the
+   * URL the advertiser is already holding.
+   */
+  protected copy(): void {
+    const url = this.issuedUrl;
+
+    if (!url) return;
+
+    const selectInstead = () => {
+      // Selected, so the reader can copy it by hand.
+      (this.$('.PlacementReportUrl input')[0] as HTMLInputElement | undefined)?.select();
+
+      app.alerts.show({ type: 'warning' }, trans('advertisers.copy_failed'));
+    };
+
+    if (!navigator.clipboard) {
+      selectInstead();
+
+      return;
+    }
+
+    navigator.clipboard.writeText(url).then(() => app.alerts.show({ type: 'success' }, trans('advertisers.copied')), selectInstead);
   }
 
   /**

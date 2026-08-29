@@ -279,12 +279,20 @@ export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
     return [
       this.group(
         'html',
-        <textarea className="FormControl" rows="8" value={this.field('html')} oninput={this.payloadInput('html')} required />,
+        <textarea className="FormControl" rows="8" value={this.field('html')} name="html" oninput={this.payloadInput('html')} required />,
         trans('creatives.html_help')
       ),
       this.group(
         'frame_height',
-        <input className="FormControl" type="number" min="1" value={this.field('height')} oninput={this.payloadInput('height')} required />
+        <input
+          className="FormControl"
+          type="number"
+          min="1"
+          value={this.field('height')}
+          name="height"
+          oninput={this.payloadInput('height')}
+          required
+        />
       ),
     ];
   }
@@ -295,12 +303,19 @@ export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
         'asset',
         <ImageUploadField value={this.field('asset')} onchange={(url: string) => this.payload({ ...this.payload(), asset: url })} required />
       ),
-      this.group('alt', <input className="FormControl" value={this.field('alt')} oninput={this.payloadInput('alt')} />, trans('creatives.alt_help')),
+      this.group(
+        'alt',
+        <input className="FormControl" value={this.field('alt')} name="alt" oninput={this.payloadInput('alt')} />,
+        trans('creatives.alt_help')
+      ),
       <div className="Form-group PlacementSize">
-        {this.group('width', <input className="FormControl" type="number" value={this.field('width')} oninput={this.payloadInput('width')} />)}
+        {this.group(
+          'width',
+          <input className="FormControl" type="number" value={this.field('width')} name="width" oninput={this.payloadInput('width')} />
+        )}
         {this.group(
           'height',
-          <input className="FormControl" type="number" value={this.field('height')} oninput={this.payloadInput('height')} />,
+          <input className="FormControl" type="number" value={this.field('height')} name="height" oninput={this.payloadInput('height')} />,
           trans('creatives.size_help')
         )}
       </div>,
@@ -309,9 +324,12 @@ export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
 
   protected textFields(): Mithril.Children {
     return [
-      this.group('headline', <input className="FormControl" value={this.field('headline')} oninput={this.payloadInput('headline')} required />),
-      this.group('body', <textarea className="FormControl" value={this.field('body')} oninput={this.payloadInput('body')} />),
-      this.group('cta', <input className="FormControl" value={this.field('cta')} oninput={this.payloadInput('cta')} />),
+      this.group(
+        'headline',
+        <input className="FormControl" value={this.field('headline')} name="headline" oninput={this.payloadInput('headline')} required />
+      ),
+      this.group('body', <textarea className="FormControl" value={this.field('body')} name="body" oninput={this.payloadInput('body')} />),
+      this.group('cta', <input className="FormControl" value={this.field('cta')} name="cta" oninput={this.payloadInput('cta')} />),
     ];
   }
 
@@ -324,7 +342,7 @@ export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
     return [
       this.group(
         'source',
-        <textarea className="FormControl" rows="6" value={this.field('source')} oninput={this.payloadInput('source')} required />,
+        <textarea className="FormControl" rows="6" value={this.field('source')} name="source" oninput={this.payloadInput('source')} required />,
         trans('creatives.source_help')
       ),
     ];
@@ -378,7 +396,15 @@ export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
 
       this.group(
         'columns',
-        <input className="FormControl" type="number" min="1" max="8" value={this.field('columns') || '4'} oninput={this.payloadInput('columns')} />,
+        <input
+          className="FormControl"
+          type="number"
+          min="1"
+          max="8"
+          value={this.field('columns') || '4'}
+          name="columns"
+          oninput={this.payloadInput('columns')}
+        />,
         trans('creatives.columns_help')
       ),
     ];
@@ -451,7 +477,7 @@ export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
 
       this.group(
         'frame_height',
-        <input className="FormControl" type="number" min="1" value={this.field('height')} oninput={this.payloadInput('height')} />,
+        <input className="FormControl" type="number" min="1" value={this.field('height')} name="height" oninput={this.payloadInput('height')} />,
         trans('creatives.network_height_help')
       ),
 

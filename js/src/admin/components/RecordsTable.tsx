@@ -170,6 +170,14 @@ export default class RecordsTable<T extends Model> extends Component<RecordsTabl
 
     if (!perPage || state.total() <= perPage) return null;
 
-    return <Pagination total={state.total()} perPage={perPage} currentPage={state.currentPage()} onChange={(page: number) => state.goto(page)} />;
+    return (
+      <Pagination
+        total={state.total()}
+        perPage={perPage}
+        currentPage={state.currentPage()}
+        loadingPageNumber={state.pageBeingLoaded()}
+        onChange={(page: number) => state.goto(page)}
+      />
+    );
   }
 }

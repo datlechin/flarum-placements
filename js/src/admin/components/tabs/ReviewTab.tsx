@@ -61,11 +61,16 @@ export default class ReviewTab extends Component {
       return <Placeholder text={trans('review.none')} />;
     }
 
-    // Oldest first: a queue is worked from the front, and the thing that has
-    // been waiting longest is the one somebody is waiting on. The server is
-    // asked for this order too; sorting again here means a server that ignored
-    // the sort cannot quietly reorder the queue.
-    const ordered = [...state.items()].sort((a, b) => (a.createdAt()?.getTime() ?? 0) - (b.createdAt()?.getTime() ?? 0));
+    // Waiting first, then turned-down, and oldest first within each.
+    //
+    // Ordering the two together by age alone put a rejection from last year
+    // above a submission from this morning, while the count on the tab
+    // insisted three things needed deciding. Rejected creatives stay in view
+    // because a rejection is the start of a conversation, but nobody has to
+    // act on one.
+    const rank = (creative: Creative) => (creative.status() === CREATIVE_STATUS.rejected ? 1 : 0);
+
+    const ordered = [...state.items()].sort((a, b) => rank(a) - rank(b) || (a.createdAt()?.getTime() ?? 0) - (b.createdAt()?.getTime() ?? 0));
 
     return [
       <ul className="PlacementReview">{ordered.map((creative) => this.row(creative))}</ul>,

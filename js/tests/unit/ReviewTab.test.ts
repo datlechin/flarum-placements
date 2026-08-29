@@ -124,6 +124,23 @@ describe('the review queue', () => {
     expect((await render()).find('.PlacementReview-item')).toHaveLength(3);
   });
 
+  /**
+   * Ordering the two statuses together by age alone put a rejection from last
+   * year above a submission from this morning, while the badge on the tab
+   * insisted something needed deciding.
+   */
+  it('puts what is waiting above what was turned down, however old', async () => {
+    seed([
+      { id: 1, name: 'Old rejection', status: 'rejected', createdAt: '2025-01-01T00:00:00+00:00', reviewReason: 'No.' },
+      { id: 2, name: 'This morning', status: 'pending', createdAt: '2026-06-01T00:00:00+00:00' },
+      { id: 3, name: 'Last week', status: 'pending', createdAt: '2026-05-25T00:00:00+00:00' },
+    ]);
+
+    const names = Array.from((await render()).rootEl.querySelectorAll('.PlacementReview-name')).map((el: any) => el.textContent);
+
+    expect(names).toEqual(['Last week', 'This morning', 'Old rejection']);
+  });
+
   it('shows the reason a creative was turned down', async () => {
     seed([{ id: 1, name: 'Turned down', status: 'rejected', createdAt: '2026-01-01T00:00:00+00:00', reviewReason: 'Not for us.' }]);
 

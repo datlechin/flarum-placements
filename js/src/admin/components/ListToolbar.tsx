@@ -47,6 +47,7 @@ export default class ListToolbar<T> extends Component<ListToolbarAttrs<T>> {
             placeholder={extractText(searchLabel)}
             ariaLabel={extractText(searchLabel)}
             value={state.query}
+            loading={state.isLoading()}
             onchange={(value: string) => state.search(value)}
           />
 

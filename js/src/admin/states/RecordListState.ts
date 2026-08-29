@@ -65,6 +65,39 @@ export default abstract class RecordListState<T extends Model> extends Paginated
     return this.getLocation().page;
   }
 
+  /**
+   * The page a request is in flight for, or undefined when none is.
+   *
+   * Core's `Pagination` uses it to show the page being fetched in its input
+   * rather than the one still on screen, which is the difference between a
+   * pager that feels responsive and one that appears to ignore a click.
+   *
+   * Not `loadingPage`: the base class already has a boolean field by that
+   * name, and shadowing it with a method breaks its own paging.
+   */
+  public pageBeingLoaded(): number | undefined {
+    return this.isLoading() ? this.currentPage() : undefined;
+  }
+
+  /**
+   * Change what is being asked for without taking the rows off screen.
+   *
+   * The base class routes this through `refresh()`, which calls `clear()` and
+   * raises `initialLoading` before it asks the server for anything. That is
+   * right when the reader has navigated somewhere new, and wrong for every use
+   * here: a search filters as you type, so `refresh()` blanks the table on
+   * each keystroke and replaces it with a spinner. `goto()` keeps the rows and
+   * swaps them when the answer arrives -- which is what the loading overlay on
+   * the table was written for.
+   */
+  public refreshParams(newParams: PaginatedListParams, page: number): Promise<void> {
+    if (!this.isEmpty() && !this.paramsChanged(newParams)) return Promise.resolve();
+
+    this.params = newParams;
+
+    return this.goto(page);
+  }
+
   public total(): number {
     // Falls back to what is on screen rather than to zero: a server that sent
     // no total should give a pager that looks like one page, not one that looks
