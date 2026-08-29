@@ -97,14 +97,19 @@ export default class DeliveryChart extends Component<DeliveryChartAttrs> {
 
     const path = series.points.map((value, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(value).toFixed(1)}`).join(' ');
 
+    // `fill` and `stroke` as SVG presentation attributes rather than inline
+    // style. They are the idiomatic form for shapes, they are what the
+    // stylesheet would override if it ever needed to, and an SVGElement's
+    // `style` is read-only outside a real browser -- which made this chart
+    // impossible to render in a test.
     return [
       <path
         className="DeliveryChart-area"
         key={`${series.label}-area`}
         d={`${path} L${x(count - 1).toFixed(1)},${y(0)} L${x(0).toFixed(1)},${y(0)} Z`}
-        style={{ fill: series.colour }}
+        fill={series.colour}
       />,
-      <path className="DeliveryChart-line" key={series.label} d={path} style={{ stroke: series.colour }} />,
+      <path className="DeliveryChart-line" key={series.label} d={path} stroke={series.colour} />,
     ];
   }
 }

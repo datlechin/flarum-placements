@@ -224,8 +224,13 @@ export default class ReportsTab extends Component {
       { key: 'ctr', label: trans('reports.ctr'), number: true },
     ];
 
+    // Deliberately unkeyed. The four breakdowns are returned in one fixed
+    // array alongside the figures and the chart, which carry no key of their
+    // own, and Mithril refuses a fragment whose children are only partly
+    // keyed -- it throws, and the whole tab renders nothing. Keys would buy
+    // nothing here in any case: these sections never reorder.
     return (
-      <div className="PlacementDetail-section" key={breakdown}>
+      <div className="PlacementDetail-section">
         <h4>{trans(`reports.by_${breakdown}`)}</h4>
 
         <div className="PlacementTable-container">
