@@ -56,7 +56,14 @@ class CreativeImageUploader
 
         $name = Str::random(24).'.'.$this->extensionFor($file->getClientMediaType());
 
-        $this->disk->put($name, $stream->getContents(), 'public');
+        // Checked, because `put()` reports a failed write by returning false.
+        // A full disk, a directory that lost its permissions, or a remote disk
+        // refusing the object all took this path and still answered 201 with a
+        // URL to nothing -- which then sat in a creative's payload as a broken
+        // image nobody could explain.
+        if ($this->disk->put($name, $stream->getContents(), 'public') === false) {
+            throw new RuntimeException('The creative image could not be written to disk.');
+        }
 
         $url = $this->disk->url($name);
 

@@ -129,6 +129,9 @@ return [
         // What the retention setting is holding, so that the field saying "90
         // days" can say what 90 days currently amounts to.
         ->get('/placements/storage', 'datlechin-placements.storage', Api\Controller\StorageController::class)
+        // The first gate that refused one creative in one slot, which is most
+        // of the support an ad server ever generates.
+        ->get('/placements/diagnose', 'datlechin-placements.diagnose', Api\Controller\DiagnoseController::class)
         // Somewhere to put the banner a sponsor emailed you. Without it every
         // image creative needs a URL hosted elsewhere, and a member submitting
         // an advert has to solve image hosting first.

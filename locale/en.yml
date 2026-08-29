@@ -354,6 +354,32 @@ datlechin-placements:
         approved: Approved
         rejected: Rejected
 
+    # "Why is my advert not showing?" -- most of the support an ad server ever
+    # generates, and every gate that could answer it refused in silence.
+    diagnose:
+      title: "Why is {name} not showing?"
+      help: >
+        Checked for you, in each slot this creative is assigned to, at this
+        moment. Targeting depends on who is asking and scheduling on when, so
+        "would serve" means it would serve to you, now.
+      on_dimension: "on {dimension}"
+      reasons:
+        eligible: Would serve
+        slot_unknown: No extension declares this slot
+        slot_disabled: The slot is switched off
+        not_assigned: Not assigned to this slot
+        type_not_accepted: This slot does not accept this creative's type
+        not_approved: Waiting for review
+        no_campaign: It belongs to no campaign
+        campaign_not_running: Its campaign is a draft or archived
+        not_in_plan: Its campaign is not in the serving plan yet
+        campaign_not_live: Its campaign is outside its flight dates
+        campaign_capped: Its campaign has spent its cap
+        outside_daypart: Outside the campaign's scheduled hours
+        targeted_out: A targeting rule excluded you
+        paced: Held back by even pacing, which will serve it later
+        unavailable: Could not be checked
+
     daypart:
       label: Schedule
       help: >
@@ -623,6 +649,7 @@ datlechin-placements:
   forum:
 
     label: Advertisement
+    demo_exit: Leave demo mode
 
     notifications:
       campaign_stopped:

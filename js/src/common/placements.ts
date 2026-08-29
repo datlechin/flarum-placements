@@ -27,3 +27,15 @@ export default function placements(): PlacementState {
 export function setPlacements(next: PlacementState | null): void {
   state = next;
 }
+
+/**
+ * Demo mode, as the server names it.
+ *
+ * Kept beside the client rather than typed into a link, so the way out cannot
+ * drift from the way in.
+ *
+ * @see \Datlechin\Placements\Support\DemoMode
+ */
+export const DemoMode = {
+  PARAM: 'placement_demo',
+} as const;

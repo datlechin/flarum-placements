@@ -16,6 +16,7 @@ import type Creative from '../../models/Creative';
 import CampaignModal from '../CampaignModal';
 import CreativeModal from '../CreativeModal';
 import CreativePreviewModal from '../CreativePreviewModal';
+import DiagnoseModal from '../DiagnoseModal';
 import Figures, { rate } from '../Figures';
 import RecordsTable from '../RecordsTable';
 import type { Column } from '../RecordsTable';
@@ -326,6 +327,12 @@ export default class CampaignDetail extends Component<CampaignDetailAttrs> {
             icon="fas fa-eye"
             aria-label={extractText(trans('creatives.preview'))}
             onclick={() => app.modal.show(CreativePreviewModal, { creative })}
+          />,
+          <Button
+            className="Button Button--icon PlacementTable-controls-item"
+            icon="fas fa-stethoscope"
+            aria-label={extractText(trans('diagnose.title', { name: creative.name() }))}
+            onclick={() => app.modal.show(DiagnoseModal, { creative })}
           />,
           <Button
             className="Button Button--icon PlacementTable-controls-item"

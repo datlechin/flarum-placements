@@ -14,6 +14,7 @@ export { default as CampaignModal } from './components/CampaignModal';
 export { default as CreativeModal } from './components/CreativeModal';
 export { default as AdvertiserModal } from './components/AdvertiserModal';
 export { default as CreativePreviewModal } from './components/CreativePreviewModal';
+export { default as DiagnoseModal } from './components/DiagnoseModal';
 export { default as TabbedFormModal } from './components/TabbedFormModal';
 export { default as RulesEditor } from './components/RulesEditor';
 export { default as DaypartGrid } from './components/DaypartGrid';

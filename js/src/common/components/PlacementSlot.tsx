@@ -12,6 +12,7 @@ import placements from '../placements';
 import { rendererFor } from '../renderers';
 import { watchViewability } from '../viewability';
 import PlacementState from '../states/PlacementState';
+import { DemoMode } from '../placements';
 import type { Candidate, SlotConfig } from '../types';
 
 /**
@@ -235,6 +236,13 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
         <span className="Placement-demoName">{app.translator.trans(slot.label)}</span>
         <code className="Placement-demoKey">{slot.key}</code>
         {size && <span className="Placement-demoSize">{`${size[0]}×${size[1]}`}</span>}
+
+        {/* Demo mode is held in the session, so leaving it means knowing to
+            type `?placement_demo=0` -- which nothing anywhere says. A way in
+            with no way out is a trap, even a harmless one. */}
+        <a className="Placement-demoExit" href={`${app.forum.attribute('baseUrl')}/?${DemoMode.PARAM}=0`}>
+          {app.translator.trans('datlechin-placements.forum.demo_exit')}
+        </a>
       </div>
     );
   }
