@@ -41,14 +41,12 @@ const RANGES = [7, 30, 90, 365];
  * What was delivered.
  *
  * The range is in the address, so "the last quarter" is a link somebody can
- * send. It used to reset to thirty days on every visit and lived a scroll
- * below the campaign list, which made it the hardest screen here to refer to.
+ * send.
  */
 export default class ReportsTab extends Component {
   protected report: Report | null = null;
   protected loading = true;
 
-  /** Which column each breakdown is ordered by, and which way. */
   protected sorts: Record<Breakdown, { key: SortKey; descending: boolean }> = {
     campaigns: { key: 'impressions', descending: true },
     creatives: { key: 'impressions', descending: true },

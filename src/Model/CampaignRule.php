@@ -29,8 +29,6 @@ class CampaignRule extends AbstractModel
     protected $table = 'placement_campaign_rules';
 
     /**
-     * Whether this rule excludes rather than includes.
-     *
      * An exclusion always beats an inclusion on the same axis, so a campaign
      * targeted at the "support" tag but excluded from "support.billing" does
      * not run on the latter.

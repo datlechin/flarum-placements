@@ -13,7 +13,7 @@ import AdvertiserModal from '../AdvertiserModal';
 import ListToolbar from '../ListToolbar';
 import RecordsTable from '../RecordsTable';
 import type { Column } from '../RecordsTable';
-import StatusPill from '../StatusPill';
+import StatusPill from '../../../common/components/StatusPill';
 
 /**
  * Who campaigns are reported to.
@@ -104,9 +104,6 @@ export default class AdvertisersTab extends Component {
       {
         label: <span className="visually-hidden">{trans('advertisers.campaigns_label')}</span>,
         content: (advertiser) => (
-          // The cross-link the page never had. Answering "what is this
-          // advertiser running" used to mean reading the whole campaign list
-          // and checking each row's advertiser by eye.
           <Link href={tabRoute(TABS.campaigns, { advertiser: String(advertiser.id()) })} className="Button Button--text">
             {trans('advertisers.view_campaigns')}
           </Link>
@@ -159,13 +156,9 @@ export default class AdvertisersTab extends Component {
   }
 
   /**
-   * The API has always supported deleting an advertiser and the model has
-   * always had the cleanup for it -- campaigns are detached rather than
-   * removed -- but there was no way to ask for it from the interface.
-   *
-   * The confirmation says what happens to the campaigns, because "delete this
-   * advertiser?" does not tell somebody whether they are about to lose a year
-   * of campaigns with it.
+   * Campaigns are detached rather than removed -- the model does that -- and
+   * the confirmation says so, because "delete this advertiser?" does not tell
+   * somebody whether they are about to lose a year of campaigns with it.
    */
   protected remove(advertiser: Advertiser): void {
     if (!confirm(extractText(trans('advertisers.delete_confirm', { name: advertiser.name() })))) return;

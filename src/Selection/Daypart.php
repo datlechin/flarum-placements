@@ -34,9 +34,6 @@ final class Daypart
 {
     public const HOURS = 168;
 
-    /**
-     * 42 hex characters, or nothing at all.
-     */
     public const LENGTH = 42;
 
     /**

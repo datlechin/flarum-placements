@@ -53,7 +53,7 @@ class NetworkType extends AbstractCreativeType
     public function rules(): array
     {
         return [
-            // The element the network's snippet asks for, e.g. `ins` or `div`.
+            // The element the network's snippet asks for.
             'element' => ['required', 'string', 'in:ins,div'],
             // Its attributes, exactly as the network's documentation gives
             // them. Kept as data rather than as a pasted snippet so they can be

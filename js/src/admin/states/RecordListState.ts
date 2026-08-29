@@ -10,10 +10,6 @@ import type { PaginatedListParams } from 'flarum/common/states/PaginatedListStat
  * what the admin tables need on top: a public accessor for the rows, the page
  * size the server actually pages at, and a search that waits for somebody to
  * stop typing.
- *
- * The lists used to be plain arrays fetched once with no page parameter. The
- * server pages at fifty, so the fifty-first campaign and everything after it
- * was unreachable and nothing on screen said so.
  */
 export default abstract class RecordListState<T extends Model> extends PaginatedListState<T> {
   /**

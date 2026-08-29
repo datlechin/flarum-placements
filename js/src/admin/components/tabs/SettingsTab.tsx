@@ -43,7 +43,7 @@ export default class SettingsTab extends Component<SettingsTabAttrs> {
       })
       .catch(() => {
         // Leaving it null keeps the fields usable and simply says nothing
-        // about what is stored, which is where this screen started.
+        // about what is stored.
         m.redraw();
       });
   }

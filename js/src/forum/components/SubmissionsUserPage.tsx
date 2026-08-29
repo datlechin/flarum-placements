@@ -6,6 +6,7 @@ import Placeholder from 'flarum/common/components/Placeholder';
 import humanTime from 'flarum/common/helpers/humanTime';
 import type Mithril from 'mithril';
 
+import StatusPill, { creativeTone } from '../../common/components/StatusPill';
 import { SUBMISSION_RESOURCE, canSubmit, trans } from '../submissions';
 import type Submission from '../models/Submission';
 import SubmissionModal from './SubmissionModal';
@@ -94,12 +95,10 @@ export default class SubmissionsUserPage extends UserPage {
       <li className="SubmissionList-item" key={String(submission.id())}>
         <div className="SubmissionList-summary">
           <span className="SubmissionList-name">{submission.name()}</span>
-          <span className={`Badge Badge--${this.badge(status)}`}>{trans(`statuses.${status}`)}</span>
+          <StatusPill tone={creativeTone(status)}>{trans(`statuses.${status}`)}</StatusPill>
           {submission.createdAt() && <span className="SubmissionList-meta">{humanTime(submission.createdAt()!)}</span>}
         </div>
 
-        {/* The reason is the whole value of a rejection to the person who
-            wrote the advert. */}
         {status === 'rejected' && submission.reviewReason() && <div className="SubmissionList-reason">{submission.reviewReason()}</div>}
 
         <div className="SubmissionList-actions">
@@ -121,13 +120,6 @@ export default class SubmissionsUserPage extends UserPage {
         {status === 'approved' && <div className="SubmissionList-note helpText">{trans('approved_note')}</div>}
       </li>
     );
-  }
-
-  protected badge(status: string): string {
-    if (status === 'approved') return 'success';
-    if (status === 'rejected') return 'danger';
-
-    return 'warning';
   }
 
   protected remove(submission: Submission): void {

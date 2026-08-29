@@ -134,9 +134,6 @@ class Creative extends AbstractModel
         return $this->weight;
     }
 
-    /**
-     * Whether a destination is safe to store and to link to.
-     */
     public static function isAllowedDestination(string $url): bool
     {
         $scheme = parse_url($url, PHP_URL_SCHEME);

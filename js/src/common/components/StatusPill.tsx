@@ -16,18 +16,12 @@ export interface StatusPillAttrs extends ComponentAttrs {
 /**
  * A short piece of status text, as a pill.
  *
- * This exists because the obvious thing was wrong. The page used to write
- * status text inside core's `Badge`, and a `Badge` is not a text label: it is a
- * fixed 22-pixel circle -- `width: var(--size); height: var(--size);
- * border-radius: 50%` -- whose only intended child is an icon, and whose
- * `.Badge-label` is `display: none` precisely because any wording belongs in a
- * tooltip. "Pending review" in one was a circle with the words spilling out of
- * it.
- *
- * Two of the modifiers being asked for did not exist either. `Badge--important`
- * appears nowhere in core at all, and `Badge--warning` is only ever defined
- * nested inside `.AdminNav` and `.ExtensionWidget`, so outside those two places
- * it styles nothing. The badges were uncoloured as well as misshapen.
+ * Not `Badge`, which is the tempting one. A `Badge` is not a text label: it
+ * is a fixed 22-pixel circle whose only intended child is an icon, and whose
+ * `.Badge-label` is `display: none` because any wording belongs in a tooltip.
+ * `Badge--important` does not exist in core at all, and `Badge--warning` is
+ * only defined nested inside `.AdminNav` and `.ExtensionWidget`, so elsewhere
+ * it styles nothing.
  *
  * `Pill` is the primitive core provides for exactly this, and it takes its
  * colours from `--pill-bg` / `--pill-color`. The tones below set that pair from

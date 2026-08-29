@@ -85,9 +85,6 @@ final class Placement
         }
     }
 
-    /**
-     * Translation key for the placement's name.
-     */
     public function labelKey(): string
     {
         return $this->label ?? "datlechin-placements.admin.placements.$this->key.label";

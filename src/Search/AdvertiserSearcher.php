@@ -17,10 +17,6 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * Lets the advertiser list be searched and sorted.
  *
- * The list grows on its own: a member submitting an advert has an advertiser
- * record created for them, so on a forum that accepts submissions this is the
- * one list nobody chose the length of.
- *
  * @see AbstractManagedSearcher for why the permission is checked again here.
  */
 class AdvertiserSearcher extends AbstractManagedSearcher

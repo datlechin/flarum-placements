@@ -71,9 +71,6 @@ class StorageController implements RequestHandlerInterface
         ]);
     }
 
-    /**
-     * When the history starts, or null when nothing has been recorded yet.
-     */
     protected function oldestBucket(): ?string
     {
         $oldest = Stat::query()->min('bucket_start');

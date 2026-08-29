@@ -53,7 +53,7 @@ class PruneStatsCommand extends AbstractCommand
             ->setDescription('Delete advertising statistics older than the retention window')
             // No default. Absent means "whatever the forum was told to keep",
             // which is the admin panel's "Keep statistics for" field; a default
-            // here would quietly outrank it, which is what it used to do.
+            // here would quietly outrank it.
             ->addOption('days', null, InputOption::VALUE_REQUIRED, 'How many days to keep, overriding the setting')
             ->addOption('keep-images', null, InputOption::VALUE_NONE, 'Leave uploaded images that nothing refers to')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Report what would go without deleting anything');

@@ -88,8 +88,7 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
 
   /**
    * Reported from `oncreate` rather than from `view()`, so it fires once per
-   * mounted element rather than once per redraw — and flarum/realtime redraws
-   * an open discussion every time anybody posts to it.
+   * mounted element rather than once per redraw.
    */
   oncreate(vnode: Mithril.VnodeDOM<CustomAttrs, this>) {
     super.oncreate(vnode);
@@ -135,9 +134,6 @@ export default class PlacementSlot<CustomAttrs extends PlacementSlotAttrs = Plac
     );
   }
 
-  /**
-   * Whether a repeating slot belongs at the position it was handed.
-   */
   protected rendersHere(state: PlacementState, slot: SlotConfig): boolean {
     return !slot.repeating || state.repeatsAt(slot, this.attrs.position ?? 0);
   }

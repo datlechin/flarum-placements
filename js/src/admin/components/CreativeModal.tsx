@@ -26,8 +26,8 @@ export interface CreativeModalAttrs extends IFormModalAttrs {
  * Exactly what `NetworkType::normalize` keeps.
  *
  * Mirrored here so a name the server would drop is refused while it is being
- * typed. It used to be dropped silently: the form saved, the attribute was
- * gone, and the only symptom was a container the network never filled.
+ * typed rather than discarded on save, where the only symptom is a container
+ * the network never fills.
  */
 const ALLOWED_ATTRIBUTE = /^(data-[a-z0-9-]+|class|id|style)$/i;
 
@@ -125,11 +125,7 @@ export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
    * Anything the server rejected that no tab claims came from the payload, and
    * the payload is edited here.
    *
-   * Each creative type validates its own payload with its own rule names, so a
-   * rejection arrives as `/data/attributes/html` or `/data/attributes/asset` --
-   * the name of a field inside the payload, never `payload` itself. Listing
-   * them would mean this file knowing every field of every type, including the
-   * ones another extension registers.
+   * @see TabbedFormModal.tabHolding for why a payload field cannot be listed.
    */
   protected fallbackTab(): string | null {
     return 'content';
@@ -222,9 +218,6 @@ export default class CreativeModal extends TabbedFormModal<CreativeModalAttrs> {
     );
   }
 
-  /**
-   * The two fields that were writable over the API and had no control.
-   */
   protected advancedTab(): Mithril.Children {
     return (
       <div className="Form">

@@ -177,10 +177,8 @@ export default class AdvertiserModal extends FormModal<AdvertiserModalAttrs> {
   /**
    * `true` issues a link, invalidating any previous one; `false` revokes.
    *
-   * Both are confirmed first, and both used to fire the moment the button was
-   * pressed. Each destroys a URL that cannot be recovered -- the extension's
-   * own help text says so -- while deleting a campaign, which is recoverable
-   * from a backup, has always asked. That asymmetry was the wrong way round.
+   * Both are confirmed first. Each destroys a URL that cannot be recovered,
+   * which is a heavier thing than deleting a campaign a backup can restore.
    */
   protected issue(regenerate: boolean): void {
     const advertiser = this.attrs.advertiser!;

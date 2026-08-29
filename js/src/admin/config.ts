@@ -30,10 +30,8 @@ export const SETTING = {
 /**
  * The tabs the admin screen is divided into.
  *
- * One job each. They used to be seven sections stacked on a single scroll, in a
- * fixed order, with no way to link to one: reading a report meant scrolling
- * past the whole review queue and the whole campaign list, and telling somebody
- * else where to look meant describing it.
+ * One job each, and each one addressable: a report is a link somebody can
+ * send rather than a place described over somebody's shoulder.
  */
 export const TABS = {
   campaigns: 'campaigns',

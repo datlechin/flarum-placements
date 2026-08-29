@@ -49,9 +49,9 @@ export interface RecordsTableAttrs<T extends Model> extends ComponentAttrs {
  * in what order, and so another extension can add a column to any of these
  * tables without this file knowing about it.
  *
- * The states are the point. Every list on the old page reinvented them and one
- * of them collapsed "still loading" into "none": a slow request looked exactly
- * like an empty forum, which reads as a failed save.
+ * The three states are the point, and "still loading" must never collapse
+ * into "none": a slow request would then look exactly like an empty forum,
+ * which reads as a failed save.
  */
 export default class RecordsTable<T extends Model> extends Component<RecordsTableAttrs<T>> {
   view(): Mithril.Children {

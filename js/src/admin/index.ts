@@ -34,7 +34,7 @@ export { default as SettingsTab } from './components/tabs/SettingsTab';
 
 export { default as RecordsTable } from './components/RecordsTable';
 export { default as ListToolbar } from './components/ListToolbar';
-export { default as StatusPill } from './components/StatusPill';
+export { default as StatusPill } from '../common/components/StatusPill';
 export { default as Figures } from './components/Figures';
 export { default as DeliveryChart } from './components/DeliveryChart';
 export { default as CreativePreview } from './components/CreativePreview';

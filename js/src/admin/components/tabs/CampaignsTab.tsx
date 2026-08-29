@@ -16,7 +16,7 @@ import CampaignDetail from './CampaignDetail';
 import ListToolbar from '../ListToolbar';
 import RecordsTable from '../RecordsTable';
 import type { Column } from '../RecordsTable';
-import StatusPill, { campaignTone } from '../StatusPill';
+import StatusPill, { campaignTone } from '../../../common/components/StatusPill';
 
 /**
  * The campaign list, and the page of whichever campaign is open.
@@ -68,9 +68,8 @@ export default class CampaignsTab extends Component {
               options: Object.fromEntries(TIERS.map((tier) => [String(tier.value), extractText(trans(`campaigns.tiers.${tier.key}`))])),
             },
             {
-              // The distinction the list could not draw before: a member
-              // submitting an advert has a campaign provisioned for them,
-              // named after them, which then sits among the sold ones.
+              // A member submitting an advert has a campaign provisioned for
+              // them, named after them, which then sits among the sold ones.
               key: 'source',
               label: trans('campaigns.source_label'),
               options: {

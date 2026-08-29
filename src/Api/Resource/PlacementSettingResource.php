@@ -53,8 +53,7 @@ class PlacementSettingResource extends AbstractDatabaseResource
         return [
             Endpoint\Show::make()->authenticated()->can(Permissions::MANAGE),
             Endpoint\Index::make()->authenticated()->can(Permissions::MANAGE),
-            // Update only: an administrator configures a slot, never invents
-            // one. The row is created on first write by `find()` below.
+            // The row is created on first write by `find()` below.
             Endpoint\Update::make()->authenticated()->can(Permissions::MANAGE),
         ];
     }

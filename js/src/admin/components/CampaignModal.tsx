@@ -371,7 +371,7 @@ export default class CampaignModal extends TabbedFormModal<CampaignModalAttrs> {
       // `errorHandler` is what routes a rejection into this modal's own alert
       // and on to the tab holding the rejected field. Without it Flarum shows
       // its global error dialogue instead, and the form beneath it never says
-      // which field it disliked -- which is what used to happen here.
+      // which field it disliked.
       .save(data, { errorHandler: this.onerror.bind(this) })
       .then(() => {
         this.attrs.onsaved?.();

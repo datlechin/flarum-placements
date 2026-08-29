@@ -17,9 +17,7 @@ export default [
   // arrived as an empty row in the notification list.
   new Extend.Notification().add('datlechinPlacementCampaignStopped', CampaignStoppedNotification),
 
-  // A profile tab, because that is where Flarum already keeps everything
-  // belonging to one person -- and it comes with the routing and the layout.
-  // The page itself refuses to draw for anybody but its owner: the route is
+  // The page refuses to draw for anybody but its owner: the route is
   // reachable by typing it.
   //
   // `UserPageResolver` is what every core profile tab uses. Without it,

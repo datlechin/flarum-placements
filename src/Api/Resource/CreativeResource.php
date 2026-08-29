@@ -181,16 +181,6 @@ class CreativeResource extends AbstractDatabaseResource
     }
 
     /**
-     * Drop assignments to slots that do not exist.
-     *
-     * A key nothing renders would be an assignment that silently never shows,
-     * and the administrator would have no way to tell it apart from a
-     * targeting problem.
-     *
-     * @param  array<mixed>  $placements
-     * @return array<string, int|null>
-     */
-    /**
      * `createdAt` ascending is what the review queue asks for: whoever has
      * waited longest is served first.
      */
@@ -206,6 +196,16 @@ class CreativeResource extends AbstractDatabaseResource
         ];
     }
 
+    /**
+     * Drop assignments to slots that do not exist.
+     *
+     * A key nothing renders would be an assignment that silently never shows,
+     * and the administrator would have no way to tell it apart from a
+     * targeting problem.
+     *
+     * @param  array<mixed>  $placements
+     * @return array<string, int|null>
+     */
     protected function cleanPlacements(array $placements): array
     {
         $clean = [];

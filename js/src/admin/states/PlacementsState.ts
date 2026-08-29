@@ -90,10 +90,6 @@ export default class PlacementsState {
       });
   }
 
-  /**
-   * Point the creative list at a campaign, loading it if it is not already
-   * there.
-   */
   public creativesOf(campaignId: string): CreativeListState {
     if (this.creativesFor !== campaignId) {
       this.creativesFor = campaignId;

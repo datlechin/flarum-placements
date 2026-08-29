@@ -17,10 +17,6 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * Lets the campaign list be searched, filtered and sorted.
  *
- * Until this existed the admin list asked for every campaign at once and drew
- * the first fifty the server chose to send, so a forum that had sold more than
- * fifty campaigns simply could not see the rest.
- *
  * @see AbstractManagedSearcher for why the permission is checked again here.
  */
 class CampaignSearcher extends AbstractManagedSearcher

@@ -51,8 +51,7 @@ final class RuleEvaluator
      *
      * This is what the "why is my ad not showing?" overlay reports, and it is
      * the reason the evaluator returns a dimension rather than a boolean
-     * internally. Answering that question is most of the support an ad server
-     * ever generates.
+     * internally.
      *
      * @param  list<array{dimension: string, operator: string, value: string}>  $rules
      * @param  array<string, list<string>|string|int|null>  $viewer

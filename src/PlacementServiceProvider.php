@@ -62,8 +62,6 @@ class PlacementServiceProvider extends AbstractServiceProvider
 
     public function register(): void
     {
-        // Each of these resolves to a plain list that `Extend\Placements`
-        // appends to. The element types are named on the constants above.
         $this->container->singleton(self::PLACEMENTS, fn () => BuiltInPlacements::all());
         $this->container->singleton(self::CREATIVE_TYPES, fn () => [
             Type\ImageType::class,

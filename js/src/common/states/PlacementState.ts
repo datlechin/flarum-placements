@@ -89,9 +89,6 @@ export default class PlacementState {
     return occurrence;
   }
 
-  /**
-   * Whether a repeating slot renders at this position.
-   */
   repeatsAt(slot: SlotConfig, position: number): boolean {
     return this.occurrenceAt(slot, position) !== null;
   }
