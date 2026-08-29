@@ -18,3 +18,8 @@
 **/js/package-lock.json -diff
 
 * text=auto eol=lf
+
+# Screenshots are for the GitHub README only. Keeping them out of the Composer
+# package matters: Flarum renders the README inside the admin panel from the
+# installed package, so they are referenced by absolute URL rather than path.
+**/screenshots export-ignore
