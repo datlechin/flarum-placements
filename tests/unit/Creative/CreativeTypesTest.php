@@ -213,4 +213,58 @@ class CreativeTypesTest extends TestCase
         $this->assertFalse($type->normalize(['attributes' => [], 'requiresConsent' => false])['requiresConsent']);
         $this->assertTrue($type->normalize(['attributes' => [], 'refreshOnNavigate' => true])['refreshOnNavigate']);
     }
+
+    /**
+     * A creative type's name reaches both frontends, so it has to be a `lib.`
+     * key.
+     *
+     * `ForumFields` ships `placementSubmittableTypes` to anybody holding the
+     * SUBMIT permission, and the submission form on the forum renders each
+     * label. Under `admin` those labels were never sent there -- Flarum keeps
+     * only `<extension>.<frontend>.` and `<extension>.lib.` in a frontend's
+     * bundle -- so a member choosing what to submit was offered a list reading
+     * "datlechin-placements.admin.creatives.types.image".
+     *
+     * The literal-scanning guard in the JS tests cannot see this: the key is
+     * built in PHP and arrives in a payload.
+     */
+    #[Test]
+    #[DataProvider('everyType')]
+    public function a_type_is_named_in_a_namespace_both_frontends_are_served(string $class): void
+    {
+        // RawHtmlType is the only one that takes a dependency, and what it
+        // reads from the config has no bearing on its name.
+        $type = $class === RawHtmlType::class ? new RawHtmlType(self::config([])) : new $class();
+        $key = $type->label();
+
+        $this->assertStringStartsWith(
+            'datlechin-placements.lib.',
+            $key,
+            "Creative type [{$type->key()}] names [$key], which the forum frontend is not served."
+        );
+
+        /** @var array<string, mixed> $locale */
+        $locale = \Symfony\Component\Yaml\Yaml::parseFile(__DIR__.'/../../../locale/en.yml')['datlechin-placements'];
+
+        $value = $locale;
+        foreach (array_slice(explode('.', $key), 1) as $segment) {
+            $value = is_array($value) && array_key_exists($segment, $value) ? $value[$segment] : null;
+        }
+
+        $this->assertNotEmpty($value, "Creative type [{$type->key()}] has no label at [$key].");
+    }
+
+    /**
+     * @return list<array{class-string}>
+     */
+    public static function everyType(): array
+    {
+        return [
+            [ImageType::class],
+            [TextType::class],
+            [NetworkType::class],
+            [RawHtmlType::class],
+            [\Datlechin\Placements\Creative\Type\LogoWallType::class],
+        ];
+    }
 }

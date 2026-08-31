@@ -340,14 +340,6 @@ datlechin-placements:
         advert the reader did not ask for. Flarum is a single-page application,
         so a route change would otherwise count as a new page view.
 
-      types:
-        image: Image
-        text: Text
-        rich_text: Formatted text
-        logo_wall: Logo wall
-        raw_html: HTML
-        network: Network container
-
       statuses:
         draft: Draft
         pending: Pending review
@@ -627,6 +619,15 @@ datlechin-placements:
   # component under `js/src/common` has to live here: a `forum.` key used in
   # the admin panel is simply absent there, and Flarum renders the key itself.
   lib:
+
+    creatives:
+      types:
+        image: Image
+        text: Text
+        rich_text: Formatted text
+        logo_wall: Logo wall
+        raw_html: HTML
+        network: Network container
 
     placements:
 

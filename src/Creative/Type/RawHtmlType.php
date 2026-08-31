@@ -58,7 +58,7 @@ class RawHtmlType extends AbstractCreativeType
 
     public function label(): string
     {
-        return 'datlechin-placements.admin.creatives.types.raw_html';
+        return 'datlechin-placements.lib.creatives.types.raw_html';
     }
 
     /**

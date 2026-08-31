@@ -26,7 +26,7 @@ class TextType extends AbstractCreativeType
 
     public function label(): string
     {
-        return 'datlechin-placements.admin.creatives.types.text';
+        return 'datlechin-placements.lib.creatives.types.text';
     }
 
     public function rules(): array

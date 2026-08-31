@@ -52,7 +52,7 @@ class RichTextType extends AbstractCreativeType
 
     public function label(): string
     {
-        return 'datlechin-placements.admin.creatives.types.rich_text';
+        return 'datlechin-placements.lib.creatives.types.rich_text';
     }
 
     public function rules(): array

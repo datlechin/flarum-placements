@@ -47,7 +47,7 @@ class NetworkType extends AbstractCreativeType
 
     public function label(): string
     {
-        return 'datlechin-placements.admin.creatives.types.network';
+        return 'datlechin-placements.lib.creatives.types.network';
     }
 
     public function rules(): array

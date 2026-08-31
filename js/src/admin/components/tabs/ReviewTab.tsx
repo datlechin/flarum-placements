@@ -99,7 +99,7 @@ export default class ReviewTab extends Component {
           <span className="PlacementReview-meta">
             {trans('review.from', {
               campaign: campaign ? campaign.name() : '',
-              type: app.translator.trans(`datlechin-placements.admin.creatives.types.${creative.type()}`),
+              type: app.translator.trans(`datlechin-placements.lib.creatives.types.${creative.type()}`),
             })}
           </span>
 

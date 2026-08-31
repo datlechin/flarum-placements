@@ -45,7 +45,7 @@ class LogoWallType extends AbstractCreativeType
 
     public function label(): string
     {
-        return 'datlechin-placements.admin.creatives.types.logo_wall';
+        return 'datlechin-placements.lib.creatives.types.logo_wall';
     }
 
     public function rules(): array

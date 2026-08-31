@@ -24,7 +24,7 @@ class ImageType extends AbstractCreativeType
 
     public function label(): string
     {
-        return 'datlechin-placements.admin.creatives.types.image';
+        return 'datlechin-placements.lib.creatives.types.image';
     }
 
     public function rules(): array
