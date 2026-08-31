@@ -33,7 +33,7 @@ export default class RulesEditor extends Component<RulesEditorAttrs> {
 
         {this.attrs.rules.map((rule, index) => this.row(rule, index))}
 
-        <Button className="Button Button--link" icon="fas fa-plus" onclick={() => this.add()}>
+        <Button className="Button" icon="fas fa-plus" onclick={() => this.add()}>
           {trans('rules.add')}
         </Button>
       </div>
@@ -48,7 +48,7 @@ export default class RulesEditor extends Component<RulesEditorAttrs> {
         <Select
           value={rule.dimension}
           options={Object.fromEntries(dimensions().map((d) => [d.key, app.translator.trans(d.label)]))}
-          onchange={(value: string) => this.change(index, { dimension: value, operator: this.firstOperator(value), value: '' })}
+          onchange={(value: string) => this.change(index, { dimension: value, operator: this.firstOperator(value), value: this.firstValue(value) })}
         />
 
         <Select
@@ -111,10 +111,22 @@ export default class RulesEditor extends Component<RulesEditorAttrs> {
     return dimensions().find((d) => d.key === dimensionKey)?.operators[0] ?? 'is';
   }
 
+  /**
+   * The value a rule starts on.
+   *
+   * An axis that offers a list starts on the first of them, rather than on the
+   * empty string: nothing in the list matches `''`, so the select rendered
+   * blank and a new rule looked like a control that had failed to load. An
+   * axis taking free text has nothing to preselect.
+   */
+  protected firstValue(dimensionKey: string): string {
+    return dimensions().find((d) => d.key === dimensionKey)?.options?.[0]?.value ?? '';
+  }
+
   protected add(): void {
     const first = dimensions()[0];
 
-    this.attrs.onchange([...this.attrs.rules, { dimension: first.key, operator: first.operators[0], value: '' }]);
+    this.attrs.onchange([...this.attrs.rules, { dimension: first.key, operator: first.operators[0], value: this.firstValue(first.key) }]);
   }
 
   protected change(index: number, patch: Partial<TargetingRule>): void {

@@ -32,9 +32,24 @@
 // time somebody needed it.
 .placement-row() {
   display: flex;
+
+  // Stated, not assumed. Core's `.FieldSet-items` is already a flex *column*,
+  // and this mixin is called into it: without resetting the direction, the
+  // `flex: 1 1 140px` below became a 140px **height** on every child and the
+  // three reserved-height fields were drawn as a stack of tall empty boxes
+  // rather than as a row. The other callers are plain divs, where this is a
+  // no-op.
+  flex-direction: row;
+
   flex-wrap: wrap;
   gap: 10px;
   align-items: flex-start;
+
+  // Without this, a row that wraps inside a container taller than its content
+  // has its lines spread to fill the height. In the slot configure panel that
+  // put 80px of dead space between "Phone", "Tablet" and "Desktop", because
+  // the panel had already been stretched to the height of its tallest column.
+  align-content: flex-start;
 
   > * {
     flex: 1 1 140px;
@@ -47,7 +62,12 @@
 // -------------------------------------------------------------------------
 
 .PlacementsPage-tabs {
-  margin-block-start: 20px;
+  // No margin of its own. Core's `.ExtensionPage-settings` already opens the
+  // section with 20px of margin and 10px of padding; adding 20px more here
+  // made the gap above the tab strip 50px against the 20px used between every
+  // other block on the page, which is what made the spacing look accidental
+  // rather than deliberate.
+  margin-block-start: 0;
 }
 
 .PlacementsPage-content {
@@ -80,28 +100,28 @@
 // The row above a table
 // -------------------------------------------------------------------------
 
+// Two columns: everything on the left, the primary action pinned to the right.
+//
+// A flex row let the filters push the button onto a line of its own, so it
+// moved whenever a list gained a filter. Giving the button its own row instead
+// fixed that but left a full-width empty band beside it. A grid does both:
+// the button never moves, and the filters wrap inside the space left over
+// rather than beneath it.
 .PlacementToolbar {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 12px 15px;
-  align-items: flex-end;
+  align-items: end;
 
   &-filters {
+    grid-column: 1;
+    grid-row: 1;
+
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     align-items: flex-end;
-
-    // Always a row of its own, below the primary action. Sharing one with that
-    // button meant the filters pushed it off the end onto a second line, so it
-    // moved every time a list gained a filter, and the last filter was left
-    // stranded beside it.
-    //
-    // Ordered from here rather than by pulling the action forward: this
-    // toolbar is also used with a description instead of filters, and moving
-    // the action would have put the button in front of its own explanation.
-    order: 1;
-    flex: 1 1 100%;
+    min-width: 0;
   }
 
   &-search {
@@ -122,19 +142,21 @@
     font-size: 12px;
   }
 
+  // The slots tab puts a description here instead of filters.
   &-help {
-    flex: 1 1 300px;
+    grid-column: 1;
+    grid-row: 1;
     margin: 0;
   }
 
   &-actions {
+    grid-column: 2;
+    grid-row: 1;
+
     display: flex;
     gap: 10px;
     align-items: center;
-
-    // Against the end of its row, whether that row also holds a description
-    // or nothing at all.
-    margin-inline-start: auto;
+    justify-self: end;
   }
 }
 
@@ -498,13 +520,31 @@
   padding-block-start: 15px;
   border-block-start: 1px solid var(--control-bg);
 
+  // Each column ends where its own content ends. Stretching them to a common
+  // height is what handed the reserved-height column 471px to spread three
+  // number fields across.
+  align-items: flex-start;
+
   .FieldSet {
     flex: 1 1 240px;
+  }
+
+  // Three fields rather than one, so it needs the room to keep them on a line
+  // instead of wrapping each onto its own.
+  .PlacementSlots-fieldset--inline {
+    flex: 2 1 380px;
   }
 }
 
 .PlacementSlots-fieldset--inline .FieldSet-items {
   .placement-row();
+
+  // Three fields holding at most four digits each. The mixin's 140px basis
+  // fits two of them across this column and drops the third onto a line of
+  // its own; these need far less than that.
+  > * {
+    flex: 1 1 100px;
+  }
 }
 
 .PlacementDiagnosis {
@@ -631,6 +671,14 @@
   .placement-row();
 }
 
+// A date, a time and a two-digit number each need about a third of the space a
+// stretched form field gives them, and a control four times wider than
+// anything it can hold reads as a mistake rather than as room to grow.
+.PlacementFlight input[type='datetime-local'],
+.PlacementSize input[type='number'] {
+  max-width: 260px;
+}
+
 .PlacementPairs,
 .PlacementLogos {
   display: flex;
@@ -669,8 +717,49 @@
   margin: 2px 0 0;
 }
 
+// Flarum paints a modal body with `--control-bg`, and that is also the
+// background of a secondary `.Button` -- so inside a modal such a button is
+// exactly the colour behind it and reads as a line of text rather than as a
+// control. The form's own inputs sit on `--body-bg` there, so the actions
+// take the same surface and stop disappearing into it.
+.Modal {
+  .PlacementRules > .Button,
+  .DaypartGrid-actions > .Button {
+    background: var(--body-bg);
+  }
+}
+
+// The editor had no styles of its own at all, so its rows sat flush against
+// one another: four rules read as one block of controls rather than four
+// things, each of which can be removed on its own.
+.PlacementRules {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+
+  > .helpText {
+    margin: 0;
+  }
+
+  > .Button {
+    margin-block-start: 2px;
+  }
+}
+
 .PlacementRules-row {
   .placement-row();
+
+  align-self: stretch;
+
+  // Each control fills the column it was given, so the three columns line up
+  // down the list instead of every select shrinking to its own longest
+  // option and leaving a ragged gap beside it.
+  .Select,
+  .Select-input,
+  .FormControl {
+    width: 100%;
+  }
 
   .Button--icon {
     flex: 0 0 auto;
@@ -782,10 +871,12 @@
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  margin-block-start: 8px;
+  margin-block-start: 10px;
 
+  // Its own line, below the two presets. Sharing theirs put a sentence and
+  // two controls in one row with nothing to tell them apart.
   .helpText {
-    flex: 1 1 200px;
+    flex: 1 1 100%;
     margin: 0;
   }
 }
@@ -891,8 +982,22 @@
   }
 
   // The toolbar's search and its primary action stack rather than squeezing.
-  .PlacementToolbar,
+  // One column, so the grid's second track collapses and the action lands
+  // under the filters instead of beside them.
+  .PlacementToolbar {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .PlacementToolbar-actions,
+  .PlacementToolbar-help {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: stretch;
+  }
+
   .PlacementToolbar-filters {
+    grid-row: auto;
     flex-direction: column;
     align-items: stretch;
   }

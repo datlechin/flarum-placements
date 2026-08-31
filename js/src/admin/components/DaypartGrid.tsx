@@ -58,10 +58,13 @@ export default class DaypartGrid extends Component<DaypartGridAttrs> {
         </div>
 
         <div className="DaypartGrid-actions">
-          <Button className="Button Button--link" onclick={() => this.attrs.onchange(null)}>
+          {/* Plain buttons, not `Button--link`. That variant is transparent
+              with no border and no underline, so beside the help sentence
+              these two presets read as part of it rather than as controls. */}
+          <Button className="Button" onclick={() => this.attrs.onchange(null)}>
             {trans('daypart.always')}
           </Button>
-          <Button className="Button Button--link" onclick={() => this.set(this.officeHours())}>
+          <Button className="Button" onclick={() => this.set(this.officeHours())}>
             {trans('daypart.office_hours')}
           </Button>
           <span className="helpText">{trans('daypart.timezone_note')}</span>
