@@ -35,6 +35,15 @@ export default class RulesEditor extends Component<RulesEditorAttrs> {
      */
     protected label(label: string): Mithril.Children;
     protected firstOperator(dimensionKey: string): string;
+    /**
+     * The value a rule starts on.
+     *
+     * An axis that offers a list starts on the first of them, rather than on the
+     * empty string: nothing in the list matches `''`, so the select rendered
+     * blank and a new rule looked like a control that had failed to load. An
+     * axis taking free text has nothing to preselect.
+     */
+    protected firstValue(dimensionKey: string): string;
     protected add(): void;
     protected change(index: number, patch: Partial<TargetingRule>): void;
     protected remove(index: number): void;
