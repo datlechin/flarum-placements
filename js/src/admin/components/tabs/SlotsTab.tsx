@@ -241,8 +241,9 @@ export default class SlotsTab extends Component {
 
     return (
       <FieldSet label={extractText(trans('slots.group_fallback'))} className="PlacementSlots-fieldset">
+        {/* The legend already says "When nothing matched"; repeating it on the
+            select gave the column the same heading twice. */}
         <div className="Form-group">
-          <label>{trans('slots.fallback')}</label>
           <Select
             value={fallback}
             options={{
@@ -312,8 +313,10 @@ export default class SlotsTab extends Component {
   protected rotationControl(slot: SlotConfig, setting: PlacementSetting | undefined): Mithril.Children {
     return (
       <FieldSet label={extractText(trans('slots.group_rotation'))} className="PlacementSlots-fieldset">
+        {/* No label of its own: `FieldSet` already renders one, and this
+            group holds a single control that the legend names exactly. Two
+            "Rotation" headings stacked on one select is furniture. */}
         <div className="Form-group">
-          <label>{trans('slots.rotation')}</label>
           <Select
             value={setting?.rotation() ?? 'random'}
             options={{

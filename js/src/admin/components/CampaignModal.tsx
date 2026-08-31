@@ -255,7 +255,9 @@ export default class CampaignModal extends TabbedFormModal<CampaignModalAttrs> {
       <div className="Form">
         <div className="Form-group">
           <label>{trans('rules.label')}</label>
-          <div className="helpText">{trans('rules.help')}</div>
+          {/* The editor renders `rules.help` itself, since it is the component
+              whose behaviour the sentence describes. Repeating it here printed
+              the same paragraph twice, one directly under the other. */}
           <RulesEditor rules={this.rules()} onchange={this.rules} />
         </div>
       </div>
