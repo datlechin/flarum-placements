@@ -16,8 +16,15 @@
         "issues": "https://github.com/datlechin/flarum-placements/issues",
         "source": "https://github.com/datlechin/flarum-placements"
     },
+    "homepage": "https://nqd.vn",
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/datlechin"
+        }
+    ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "flarum/core": "^2.0",
         "jenssegers/agent": "^2.6.4"
     },
