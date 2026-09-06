@@ -22,8 +22,12 @@ use Flarum\Extend;
 // `Datlechin\Placements\Flarum\Search\...`, and the failure is a 500 from
 // the search manager rather than anything that names the mistake.
 use Flarum\Foundation\Paths;
+// Not `Extend\...` for the same reason as above, and doubly so here: this one
+// really does live under an `Extend` namespace, just not Flarum's own.
+use Flarum\Gdpr\Extend\UserData;
 use Flarum\Http\UrlGenerator;
 use Flarum\Search\Database\DatabaseSearchDriver;
+use Flarum\User\Event\Deleted;
 use Illuminate\Console\Scheduling\Event;
 
 return [
@@ -172,6 +176,12 @@ return [
         ->exemptRoute('datlechin-placements.events')
         ->exemptRoute('datlechin-placements.tokens'),
 
+    // Three columns here point at a forum account, and Flarum writes no
+    // database-level foreign keys, so nothing was putting them right when the
+    // account went away.
+    (new Extend\Event())
+        ->listen(Deleted::class, Listener\DetachDeletedUser::class),
+
     // Alerts only, and not email by default: a campaign reaching its cap is
     // useful to know and not worth waking somebody up for.
     (new Extend\Notification())
@@ -192,6 +202,15 @@ return [
         ->schedule(Console\PruneStatsCommand::class, function (Event $event): void {
             $event->daily();
         }),
+
+    // An advertiser record provisioned for a member holds their name and their
+    // email address, so this extension has to answer for it when they ask for
+    // their data, ask to be anonymised, or ask to be erased.
+    (new Extend\Conditional())
+        ->whenExtensionEnabled('flarum-gdpr', fn () => [
+            (new UserData())
+                ->addType(Gdpr\AdvertisingData::class),
+        ]),
 
     // The tag directory only exists when flarum/tags does. A tag-filtered
     // listing at /t/{slug} is still a plain IndexPage, so it is already

@@ -208,6 +208,12 @@ window.flarumPlacement.setConsent(true);
 
 Consent is unknown until something says otherwise, and unknown counts as no, so a container creative that needs consent renders nothing. First-party images are unaffected.
 
+## Personal data
+
+Delivery is counted in hourly totals per campaign, creative, slot and device. Nothing there names anybody, and no cookie or identifier is set.
+
+The one place a person appears is a member who submits an advert: they get an advertiser record holding their name and email. With `flarum/gdpr` installed, that record is in their export, is stripped on anonymisation, and goes with them on erasure. Delivery totals stay either way. Deleting an account without `flarum/gdpr` unlinks the record and leaves the adverts running.
+
 ## Member submissions
 
 <img src="https://raw.githubusercontent.com/datlechin/flarum-placements/main/screenshots/admin-review.png" alt="The review queue: each submitted creative with a preview of how it will render, and approve and reject buttons" width="1190">

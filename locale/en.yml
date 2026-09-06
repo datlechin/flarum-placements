@@ -620,6 +620,19 @@ datlechin-placements:
   # the admin panel is simply absent there, and Flarum renders the key itself.
   lib:
 
+    # Shown by flarum/gdpr, next to its own data types, on the extension page
+    # and on the page a member confirms an erasure from.
+    gdpr:
+      export_description: >
+        Your advertiser record, the adverts you submitted, and how they did.
+      anonymize_description: >
+        Your name, email address and report link are removed from the
+        advertiser record. The adverts stay up and the delivery figures stay
+        as they are, because they name nobody.
+      delete_description: >
+        The advertiser record and every advert filed against it are deleted.
+        Delivery figures are hourly totals that name nobody, so they remain.
+
     creatives:
       types:
         image: Image

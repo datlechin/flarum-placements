@@ -44,6 +44,11 @@ First release. Requires Flarum 2.0 and PHP 8.3.
 - Hourly buckets that identify nobody. Reports break delivery down by campaign, creative, slot and device, with a daily chart and CSV export.
 - A retention setting, and a storage summary saying what it currently amounts to.
 
+### Personal data
+
+- `flarum/gdpr` integration. A member's advertiser record is in their data export, is stripped of their name, email and report link on anonymisation, and is deleted with its adverts on erasure. Delivery totals name nobody and stay either way.
+- Deleting an account without `flarum/gdpr` unlinks the advertiser record and drops the ids on campaigns and creatives it created or reviewed. The adverts themselves stay, because the delivery already happened.
+
 ### Publisher tools
 
 - `ads.txt` served at the path the IAB specification fixes.
