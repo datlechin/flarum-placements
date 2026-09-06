@@ -20,7 +20,7 @@ use Datlechin\Placements\Support\Permissions;
 use Datlechin\Placements\Targeting\TargetingContext;
 use Flarum\User\User;
 use Illuminate\Contracts\Cache\Repository as Cache;
-use Jenssegers\Agent\Agent;
+use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -226,6 +226,13 @@ class PlacementPlan
         return $slots;
     }
 
+    /**
+     * `jaybizzle/crawler-detect` rather than `jenssegers/agent`, which is what
+     * this used to ask and is only a wrapper around it: the wrapper is
+     * archived, still declares `php >= 5.6`, and brings Mobile-Detect along
+     * for device detection this extension does not do on the server. One
+     * question, one dependency.
+     */
     protected function isRobot(ServerRequestInterface $request): bool
     {
         $userAgent = $request->getHeaderLine('User-Agent');
@@ -234,6 +241,6 @@ class PlacementPlan
             return true;
         }
 
-        return (new Agent())->isRobot($userAgent);
+        return (new CrawlerDetect())->isCrawler($userAgent);
     }
 }

@@ -26,7 +26,7 @@
     "require": {
         "php": "^8.3",
         "flarum/core": "^2.0",
-        "jenssegers/agent": "^2.6.4"
+        "jaybizzle/crawler-detect": "^1.2"
     },
     "authors": [
         {
