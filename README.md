@@ -81,6 +81,8 @@ A creative must be approved and a slot must be assigned before anything shows.
 
 ## Campaigns
 
+<img src="https://raw.githubusercontent.com/datlechin/flarum-placements/main/screenshots/admin-campaign.png" alt="One campaign: delivery figures, its flight, advertiser, cap and rate, and the creatives under it" width="1190">
+
 | Field | Values |
 | --- | --- |
 | Status | `draft`, `scheduled`, `active`, `paused`, `archived` |
