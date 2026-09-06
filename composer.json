@@ -14,7 +14,8 @@
     "license": "MIT",
     "support": {
         "issues": "https://github.com/datlechin/flarum-placements/issues",
-        "source": "https://github.com/datlechin/flarum-placements"
+        "source": "https://github.com/datlechin/flarum-placements",
+        "forum": "https://discuss.flarum.org/d/39812"
     },
     "homepage": "https://nqd.vn",
     "funding": [

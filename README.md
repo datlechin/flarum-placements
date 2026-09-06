@@ -274,3 +274,4 @@ If this extension is useful to you, you can sponsor the work via [GitHub Sponsor
 
 - [Packagist](https://packagist.org/packages/datlechin/flarum-placements)
 - [GitHub](https://github.com/datlechin/flarum-placements)
+- [Discuss](https://discuss.flarum.org/d/39812)
